@@ -259,7 +259,7 @@ const Navbar = () => {
                                                                     href={
                                                                         item.href
                                                                     }
-                                                                    className="-m-2 block p-2 text-gray-500"
+                                                                    className="-m-2 block p-2 text-muted-foreground"
                                                                 >
                                                                     {item.name}
                                                                 </a>
@@ -330,10 +330,7 @@ const Navbar = () => {
                     Get free delivery on orders over $100
                 </p>
 
-                <nav
-                    aria-label="Top"
-                    className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 "
-                >
+                <nav aria-label="Top" className=" mx-2 px-4 sm:px-6 lg:px-8 ">
                     <div className="border-b border-gray-200">
                         <div className="flex h-16 items-center">
                             <button
@@ -374,7 +371,7 @@ const Navbar = () => {
 
                                             <PopoverPanel
                                                 transition
-                                                className="absolute inset-x-0 top-full text-sm text-gray-500 transition data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150 data-[enter]:ease-out data-[leave]:ease-in"
+                                                className="absolute inset-x-0 top-full text-sm text-muted-foreground transition data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150 data-[enter]:ease-out data-[leave]:ease-in"
                                             >
                                                 {/* Presentational element used to render the bottom shadow, if we put the shadow on the actual panel it pokes out the top, so we use this shorter element to hide the top of the shadow */}
                                                 <div
@@ -383,7 +380,7 @@ const Navbar = () => {
                                                 />
 
                                                 <div className="relative bg-white">
-                                                    <div className="mx-auto max-w-7xl px-8">
+                                                    <div className="mx-2 px-8">
                                                         <div className="grid grid-cols-2 gap-x-8 gap-y-10 py-16">
                                                             <div className="col-start-2 grid grid-cols-2 gap-x-8">
                                                                 {category.featured.map(
@@ -543,7 +540,7 @@ const Navbar = () => {
                                 <div className="flex lg:ml-6">
                                     <a
                                         href="#"
-                                        className="p-2 text-gray-400 hover:text-gray-500"
+                                        className="p-2 text-gray-400 hover:text-muted-foreground"
                                     >
                                         <span className="sr-only">Search</span>
                                         <SearchIcon
@@ -562,7 +559,7 @@ const Navbar = () => {
                                     >
                                         <ShoppingBag
                                             aria-hidden="true"
-                                            className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                                            className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-muted-foreground"
                                         />
                                         <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
                                             0

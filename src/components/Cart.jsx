@@ -13,39 +13,53 @@ import Link from "next/link";
 import { buttonVariants } from "./ui/button";
 import { Separator } from "./ui/separator";
 import { ScrollArea } from "./ui/scroll-area";
-// import CartItem from "./CartItem";
 import { formatPrice } from "@/lib/utils";
+import CartItem from "./CartItem";
+import { useGlobalContext } from "@/context/GlobalContext";
 
 const Cart = () => {
-    const itemCount = 0;
+    const { cartItems, allProducts } = useGlobalContext();
+    const itemCount = cartItems.reduce(
+        (count, item) => count + item.quantity,
+        0
+    );
     const fee = 1;
-    const cartTotal = 10;
+    const cartTotal = cartItems.reduce((total, item) => {
+        const product = allProducts.find((p) => p.id === item.productId);
+        return total + (product ? product.price * item.quantity : 0);
+    }, 0);
 
     return (
         <Sheet>
             <SheetTrigger className="group -m-2 flex items-center p-2 ">
                 <ShoppingCart
                     aria-hidden="true"
-                    className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500 z-[1000000]"
+                    className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-muted-foreground z-[1000000]"
                 />
                 <span className=" ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                    2
+                    {itemCount}
                 </span>
             </SheetTrigger>
             <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg z-[1000000] ">
                 <SheetHeader className="space-y-2.5 pr-6">
-                    <SheetTitle>Cart (2)</SheetTitle>
+                    <SheetTitle>Cart ({itemCount})</SheetTitle>
                 </SheetHeader>
                 {itemCount > 0 ? (
                     <>
-                        <div className="flex w-full flex-col pr-6">
+                        <div className="flex w-full flex-col pr-6 overflow-y-auto">
                             <ScrollArea>
-                                {/* {items.map(({ product }) => (
-                                    <CartItem
-                                        product={product}
-                                        key={product.id}
-                                    />
-                                ))} */}
+                                {cartItems.map((cartItem) => {
+                                    const product = allProducts.find(
+                                        (p) => p.id === cartItem.productId
+                                    );
+                                    return product ? (
+                                        <CartItem
+                                            product={product}
+                                            quantity={cartItem.quantity}
+                                            key={cartItem.productId}
+                                        />
+                                    ) : null;
+                                })}
                             </ScrollArea>
                         </div>
                         <div className="space-y-4 pr-6">
@@ -59,11 +73,11 @@ const Cart = () => {
                                     <span className="flex-1">
                                         Transaction Fee
                                     </span>
-                                    <span>{formatPrice(fee)}</span>
+                                    {/* <span>{formatPrice(fee)}</span> */}
                                 </div>
                                 <div className="flex">
                                     <span className="flex-1">Total</span>
-                                    <span>{formatPrice(cartTotal + fee)}</span>
+                                    {/* <span>{formatPrice(cartTotal + fee)}</span> */}
                                 </div>
                             </div>
 

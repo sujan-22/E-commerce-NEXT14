@@ -22,8 +22,18 @@ const products = {
             ],
             availableSizes: ["S", "M", "L"],
             stock: 75,
-            onSale: true,
-            newPrice: 6.99,
+            collection: {
+                winter: {},
+                summer: {},
+                spring: {},
+                onsale: {
+                    type: "On Sale",
+                    title: "Discounted Products",
+                    description:
+                        "Grab these amazing deals before they're gone!",
+                    newPrice: 6.99,
+                },
+            },
         },
         {
             id: 2,
@@ -56,6 +66,16 @@ const products = {
             ],
             availableSizes: ["S", "M", "L"],
             stock: 37,
+            collection: {
+                winter: {
+                    type: "Winter",
+                    title: "Winter Collection",
+                    description: "Cozy, warm clothing for the chilly season.",
+                },
+                summer: {},
+                spring: {},
+                onsale: {},
+            },
         },
         {
             id: 3,
@@ -74,6 +94,18 @@ const products = {
                 },
             ],
             stock: 100,
+            collection: {
+                winter: {},
+                summer: {},
+                spring: {},
+                onsale: {
+                    type: "On Sale",
+                    title: "Discounted Products",
+                    description:
+                        "Grab these amazing deals before they're gone!",
+                    newPrice: 21.99,
+                },
+            },
         },
         {
             id: 4,
@@ -94,7 +126,16 @@ const products = {
             availableSizes: ["S", "M", "L", "XL"],
             stock: 50,
             onSale: true,
-            newPrice: 41.99,
+            collection: {
+                winter: {
+                    type: "Winter",
+                    title: "Winter Collection",
+                    description: "Cozy, warm clothing for the chilly season.",
+                },
+                summer: {},
+                spring: {},
+                onsale: {},
+            },
         },
         {
             id: 5,
@@ -109,9 +150,6 @@ const products = {
                         "/assets/product_images/cowboy-hat-black-1.png",
                         "/assets/product_images/cowboy-hat-black-2.png",
                         "/assets/product_images/cowboy-hat-black-3.png",
-                        "/assets/product_images/cowboy-hat-black-4.png",
-                        "/assets/product_images/cowboy-hat-black-5.png",
-                        "/assets/product_images/cowboy-hat-black-6.png",
                     ],
                 },
                 {
@@ -119,15 +157,17 @@ const products = {
                     images: [
                         "/assets/product_images/cowboy-hat-tan-1.png",
                         "/assets/product_images/cowboy-hat-tan-2.png",
-                        "/assets/product_images/cowboy-hat-tan-3.png",
-                        "/assets/product_images/cowboy-hat-tan-4.png",
-                        "/assets/product_images/cowboy-hat-tan-5.png",
-                        "/assets/product_images/cowboy-hat-tan-6.png",
                     ],
                 },
             ],
             availableSizes: ["S", "M", "L"],
             stock: 40,
+            collection: {
+                winter: {},
+                summer: {},
+                spring: {},
+                onsale: {},
+            },
         },
         {
             id: 6,
@@ -146,7 +186,12 @@ const products = {
                 },
             ],
             stock: 200,
-            newCollection: true,
+            collection: {
+                winter: {},
+                summer: {},
+                spring: {},
+                onsale: {},
+            },
         },
         {
             id: 7,
@@ -165,6 +210,12 @@ const products = {
             ],
             availableSizes: ["S", "M", "L"],
             stock: 60,
+            collection: {
+                winter: {},
+                summer: {},
+                spring: {},
+                onsale: {},
+            },
         },
         {
             id: 8,
@@ -178,13 +229,17 @@ const products = {
                     images: [
                         "/assets/product_images/hat-1.png",
                         "/assets/product_images/hat-2.png",
-                        "/assets/product_images/hat-3.png",
                     ],
                 },
             ],
             availableSizes: ["S", "M", "L"],
             stock: 80,
-            newCollection: true,
+            collection: {
+                winter: {},
+                summer: {},
+                spring: {},
+                onsale: {},
+            },
         },
         {
             id: 9,
@@ -203,8 +258,16 @@ const products = {
             ],
             availableSizes: ["S", "M", "L", "XL"],
             stock: 120,
-            isWeeklyDrop: true,
-            newCollection: true,
+            collection: {
+                winter: {
+                    type: "Winter",
+                    title: "Winter Collection",
+                    description: "Cozy, warm clothing for the chilly season.",
+                },
+                summer: {},
+                spring: {},
+                onsale: {},
+            },
         },
         {
             id: 10,
@@ -232,6 +295,12 @@ const products = {
             ],
             availableSizes: ["S", "M", "L", "XL"],
             stock: 100,
+            collection: {
+                winter: {},
+                summer: {},
+                spring: {},
+                onsale: {},
+            },
         },
         {
             id: 11,
@@ -262,45 +331,19 @@ const products = {
                 },
             ],
             availableSizes: ["S", "M", "L", "XL"],
-            stock: 100,
-            onSale: true,
-            newPrice: 19.99,
-            isWeeklyDrop: true,
-        },
-        {
-            id: 12,
-            name: "T-shirt Spiral",
-            category: "T-Shirts",
-            price: 25.99,
-            description: "Unique spiral design t-shirt.",
-            availableColors: [
-                {
-                    color: "Black",
-                    images: [
-                        "/assets/product_images/t-shirt-spiral-1.png",
-                        "/assets/product_images/t-shirt-spiral-2.png",
-                        "/assets/product_images/t-shirt-spiral-3.png",
-                        "/assets/product_images/t-shirt-spiral-4.png",
-                    ],
+            stock: 200,
+            collection: {
+                winter: {},
+                summer: {},
+                spring: {},
+                onsale: {
+                    type: "On Sale",
+                    title: "Discounted Products",
+                    description:
+                        "Grab these amazing deals before they're gone!",
+                    newPrice: 19.99,
                 },
-            ],
-            availableSizes: ["S", "M", "L", "XL"],
-            stock: 70,
-        },
-        {
-            id: 13,
-            name: "Webcam Cover",
-            category: "Accessories",
-            price: 4.99,
-            description: "Simple and effective webcam cover.",
-            availableColors: [
-                {
-                    color: "Black",
-                    images: ["/assets/product_images/webcam-cover.png"],
-                },
-            ],
-            stock: 500,
-            isWeeklyDrop: true,
+            },
         },
     ],
 };

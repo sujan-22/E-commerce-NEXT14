@@ -43,7 +43,7 @@ export default function Footer() {
                     </div>
                 </div>
                 <div className="border-t border-gray-200 mt-8 py-4 text-center">
-                    <p className="text-gray-500 text-sm">
+                    <p className="text-muted-foreground text-sm">
                         &copy; {new Date().getFullYear()} DIGI, Inc. All rights
                         reserved.
                     </p>

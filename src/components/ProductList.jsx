@@ -46,24 +46,37 @@ const ProductList = ({ products, headerLink, headerTitle }) => {
             <div className="grid cursor-pointer grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
                 {products.map((product) => (
                     <div key={product.id} className="flex flex-col">
-                        <Product
+                        <Link href={`/products/${product.id}`}>
+                            <Product
+                                initialImage={
+                                    product.availableColors[0].images[0]
+                                }
+                                className="mx-auto"
+                                size={size}
+                                isFeatured={true}
+                            />
+                        </Link>
+                        {/* <Product
                             initialImage={product.availableColors[0].images[0]}
                             className="mx-auto"
                             size={size}
                             isFeatured={true}
-                        />
+                        /> */}
                         <div className="flex justify-between mt-4">
                             <p className="text-md" data-testid="product-title">
                                 {product.name}
                             </p>
                             <div className="flex items-center gap-x-2 text-md font-semibold">
-                                {product.onSale ? (
+                                {product.collection.onsale.newPrice ? (
                                     <>
-                                        <span className="line-through text-gray-500">
+                                        <span className="line-through text-muted-foreground">
                                             ${product.price.toFixed(2)}
                                         </span>
                                         <span>
-                                            ${product.newPrice.toFixed(2)}
+                                            $
+                                            {product.collection.onsale.newPrice.toFixed(
+                                                2
+                                            )}
                                         </span>
                                     </>
                                 ) : (

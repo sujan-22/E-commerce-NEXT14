@@ -1,5 +1,4 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import Product from "@/components/Product";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
     ArrowDownToLine,
@@ -47,10 +46,25 @@ const perks = [
 ];
 
 export default function Home() {
-    const newCollectionProducts = products.products.filter(
-        (product) => product.newCollection
-    );
-    const onSale = products.products.filter((product) => product.onSale);
+    const collectionsMap = {};
+
+    // Populate collectionsMap with collections and their products
+    products.products.forEach((product) => {
+        // Check if the product is part of a collection
+        for (const collectionName in product.collection) {
+            const collection = product.collection[collectionName];
+            if (collection.type && !collectionsMap[collection.type]) {
+                collectionsMap[collection.type] = {
+                    title: collection.title,
+                    products: [],
+                };
+            }
+            if (collectionsMap[collection.type]) {
+                collectionsMap[collection.type].products.push(product);
+            }
+        }
+    });
+
     return (
         <>
             <MaxWidthWrapper>
@@ -74,20 +88,18 @@ export default function Home() {
                     </div>
                 </div>
                 {/* LIST PRODUCT */}
-                <div className="py-20">
-                    <ProductList
-                        products={newCollectionProducts}
-                        headerTitle={"Latest Drops"}
-                        headerLink={"/"}
-                    />
-                </div>
-                <div className="py-20">
-                    <ProductList
-                        products={onSale}
-                        headerTitle={"Weekly Drops"}
-                        headerLink={"/"}
-                    />
-                </div>
+                {/* Dynamic Collection Rendering */}
+                {Object.entries(collectionsMap).map(
+                    ([collectionType, { title, products }]) => (
+                        <div key={collectionType} className="py-20">
+                            <ProductList
+                                products={products}
+                                headerTitle={title}
+                                headerLink={"/"}
+                            />
+                        </div>
+                    )
+                )}
             </MaxWidthWrapper>
             <MaxWidthWrapper className="">
                 <section className="border-t py-20">
