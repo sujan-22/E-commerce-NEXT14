@@ -16,7 +16,7 @@ const Product = ({ size, isFeatured, initialImage, className }) => {
                     "aspect-[1/1]": size === "square",
                     "w-[180px]": size === "small",
                     "w-[320px]": size === "medium",
-                    "w-[385px]": size === "large",
+                    "w-[420px]": size === "large",
                     "w-full": size === "full",
                 }
             )}

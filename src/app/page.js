@@ -1,3 +1,5 @@
+"use client";
+
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -8,9 +10,10 @@ import {
     PhoneCall,
 } from "lucide-react";
 import Link from "next/link";
-import products from "@/data/products.js";
+// import products from "@/data/products.js";
 import ProductList from "@/components/ProductList";
 import SubscribeToNewsletter from "@/components/SubscribeToNewsletter";
+import useStore from "@/context/useStore";
 
 const perks = [
     {
@@ -46,10 +49,11 @@ const perks = [
 ];
 
 export default function Home() {
+    const products = useStore((state) => state.allProducts);
     const collectionsMap = {};
 
     // Populate collectionsMap with collections and their products
-    products.products.forEach((product) => {
+    products.forEach((product) => {
         // Check if the product is part of a collection
         for (const collectionName in product.collection) {
             const collection = product.collection[collectionName];

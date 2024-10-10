@@ -5,14 +5,12 @@ export function cn(...inputs) {
     return twMerge(clsx(inputs));
 }
 
-export function formatPrice(price, options) {
-    const { currency = "CAD", notation = "compact" } = options;
+export function formatPrice(price) {
     const numericPrice = typeof price === "string" ? parseFloat(price) : price;
 
     return new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency,
-        notation,
+        currency: "CAD",
         maximumFractionDigits: 2,
     }).format(numericPrice);
 }

@@ -1,7 +1,6 @@
 // pages/products/[productId]/page.js
 
 "use client";
-import products from "@/data/products.js";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import Link from "next/link";
 import ProductInfo from "@/components/ProductInfo";
@@ -9,14 +8,24 @@ import ProductTabs from "@/components/ProductTabs";
 import ImageGallery from "@/components/ImageGallery";
 import ProductActions from "@/components/ProductActions";
 import { Button } from "@/components/ui/button";
-import { useGlobalContext } from "@/context/GlobalContext";
+import { useState } from "react";
+import { Separator } from "@/components/ui/separator";
+import { formatPrice } from "@/lib/utils";
+import useStore from "@/context/useStore";
 
 const Page = ({ params }) => {
+    const products = useStore((state) => state.allProducts);
+    const addToCart = useStore((state) => state.addToCart);
+
     const id = params.productId;
-    const { addToCart } = useGlobalContext();
+    const product = products.find((prod) => prod.id === parseInt(id));
+    const [selectedColor, setSelectedColor] = useState(
+        product.availableColors[0]
+    );
+
+    const [selectedSize, setSelectedSize] = useState(product.availableSizes[0]);
 
     // Find the product by ID from dummy data
-    const product = products.products.find((prod) => prod.id === parseInt(id));
 
     // If the product is not found
     if (!product) {
@@ -28,8 +37,15 @@ const Page = ({ params }) => {
         );
     }
 
-    const images =
-        product.availableColors.flatMap((color) => color.images) || [];
+    const handleAddToCart = () => {
+        const productConfig = {
+            productId: product.id,
+            quantity: 1,
+            selectedColor,
+            selectedSize,
+        };
+        addToCart(productConfig);
+    };
 
     return (
         <MaxWidthWrapper>
@@ -44,7 +60,7 @@ const Page = ({ params }) => {
 
                 {/* Middle part */}
                 <div className="block w-full relative ">
-                    <ImageGallery images={images || []} />
+                    <ImageGallery images={product.availableImages || []} />
                 </div>
 
                 {/* Right part */}
@@ -52,14 +68,31 @@ const Page = ({ params }) => {
                     <ProductActions
                         options={product.availableColors}
                         title="Color"
+                        onSelect={(color) => setSelectedColor(color)}
                     />
                     <ProductActions
                         options={product.availableSizes}
                         title="Size"
+                        onSelect={(size) => setSelectedSize(size)}
                     />
-                    <Button onClick={() => addToCart(product.id)}>
-                        Add to cart
-                    </Button>
+                    <Separator />
+                    <div className="flex items-center gap-x-2 text-md font-semibold">
+                        {product.collection.onsale.newPrice ? (
+                            <>
+                                <span>
+                                    {formatPrice(
+                                        `${product.collection.onsale.newPrice}`
+                                    )}
+                                </span>
+                                <span className="line-through text-muted-foreground">
+                                    {formatPrice(`${product.price}`)}
+                                </span>
+                            </>
+                        ) : (
+                            <span>{formatPrice(`${product.price}`)}</span>
+                        )}
+                    </div>
+                    <Button onClick={handleAddToCart}>Add to cart</Button>
                 </div>
             </div>
             <div

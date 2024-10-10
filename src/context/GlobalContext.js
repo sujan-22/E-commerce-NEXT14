@@ -7,7 +7,8 @@ const GlobalContext = createContext();
 
 // Dummy function for default cart state
 const getDefaultCart = () => {
-    return JSON.parse(localStorage.getItem("cart")) || [];
+    const cart = JSON.parse(localStorage.getItem("cart"));
+    return Array.isArray(cart) ? cart : []; // Ensure it returns an array
 };
 
 // Global Provider component
@@ -21,59 +22,60 @@ export const GlobalProvider = ({ children }) => {
 
     // setAllProducts(products.products);
 
-    // Load products
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const response = await fetch("/api/products"); // Adjust API endpoint
-                const data = await response.json();
-                setAllProducts(data);
-            } catch (error) {
-                console.error("Failed to fetch products", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProducts();
-    }, []);
-
-    const addToCart = (itemId) => {
+    const addToCart = (item) => {
         setCartItems((prevItems) => {
             const existingItem = prevItems.find(
-                (item) => item.productId === itemId
+                (cartItem) =>
+                    cartItem.productId === item.productId &&
+                    cartItem.selectedColor === item.selectedColor &&
+                    cartItem.selectedSize === item.selectedSize
             );
+
+            let updatedCart;
 
             if (existingItem) {
                 // If item already exists, increase quantity
-                return prevItems.map((item) =>
-                    item.productId === itemId
-                        ? { ...item, quantity: item.quantity + 1 }
-                        : item
+                updatedCart = prevItems.map((cartItem) =>
+                    cartItem.productId === item.productId &&
+                    cartItem.selectedColor === item.selectedColor &&
+                    cartItem.selectedSize === item.selectedSize
+                        ? { ...cartItem, quantity: cartItem.quantity + 1 }
+                        : cartItem
                 );
             } else {
                 // Add new item with quantity 1
-                return [...prevItems, { productId: itemId, quantity: 1 }];
+                updatedCart = [...prevItems, { ...item, quantity: 1 }]; // Ensure quantity is set to 1 for new items
             }
+
+            // Update localStorage
+            localStorage.setItem("cart", JSON.stringify(updatedCart));
+            return updatedCart;
         });
     };
 
-    // Function to remove items from the cart
     const removeFromCart = (itemId) => {
         setCartItems((prevItems) => {
             const existingItem = prevItems.find(
                 (item) => item.productId === itemId
             );
 
+            let updatedCart;
+
             if (existingItem && existingItem.quantity > 1) {
-                return prevItems.map((item) =>
+                updatedCart = prevItems.map((item) =>
                     item.productId === itemId
                         ? { ...item, quantity: item.quantity - 1 }
                         : item
                 );
             } else {
-                return prevItems.filter((item) => item.productId !== itemId);
+                updatedCart = prevItems.filter(
+                    (item) => item.productId !== itemId
+                );
             }
+
+            // Update localStorage
+            localStorage.setItem("cart", JSON.stringify(updatedCart));
+            return updatedCart;
         });
     };
 
@@ -81,7 +83,6 @@ export const GlobalProvider = ({ children }) => {
         <GlobalContext.Provider
             value={{
                 allProducts,
-                setAllProducts,
                 cartItems,
                 addToCart,
                 removeFromCart,

@@ -6,19 +6,11 @@ const products = {
             category: "Baby Clothing",
             price: 9.99,
             description: "Soft and comfortable baby cap.",
-            availableColors: [
-                {
-                    color: "Black",
-                    images: ["/assets/product_images/baby-cap-black.png"],
-                },
-                {
-                    color: "Gray",
-                    images: ["/assets/product_images/baby-cap-gray.png"],
-                },
-                {
-                    color: "White",
-                    images: ["/assets/product_images/baby-cap-white.png"],
-                },
+            availableColors: ["Black", "Gray", "White"],
+            availableImages: [
+                "/assets/product_images/baby-cap-black.png",
+                "/assets/product_images/baby-cap-gray.png",
+                "/assets/product_images/baby-cap-white.png",
             ],
             availableSizes: ["S", "M", "L"],
             stock: 75,
@@ -41,28 +33,14 @@ const products = {
             category: "Baby Clothing",
             price: 19.99,
             description: "Cozy onesie for babies, soft and stylish.",
-            availableColors: [
-                {
-                    color: "Beige",
-                    images: [
-                        "/assets/product_images/baby-onesie-beige-1.png",
-                        "/assets/product_images/baby-onesie-beige-2.png",
-                    ],
-                },
-                {
-                    color: "Black",
-                    images: [
-                        "/assets/product_images/baby-onesie-black-1.png",
-                        "/assets/product_images/baby-onesie-black-2.png",
-                    ],
-                },
-                {
-                    color: "White",
-                    images: [
-                        "/assets/product_images/baby-onesie-white-1.png",
-                        "/assets/product_images/baby-onesie-white-2.png",
-                    ],
-                },
+            availableColors: ["Beige", "Black", "White"],
+            availableImages: [
+                "/assets/product_images/baby-onesie-beige-1.png",
+                "/assets/product_images/baby-onesie-beige-2.png",
+                "/assets/product_images/baby-onesie-black-1.png",
+                "/assets/product_images/baby-onesie-black-2.png",
+                "/assets/product_images/baby-onesie-white-1.png",
+                "/assets/product_images/baby-onesie-white-2.png",
             ],
             availableSizes: ["S", "M", "L"],
             stock: 37,
@@ -83,16 +61,12 @@ const products = {
             category: "Accessories",
             price: 24.99,
             description: "Durable bag for everyday use.",
-            availableColors: [
-                {
-                    color: "Black",
-                    images: ["/assets/product_images/bag-black.png"],
-                },
-                {
-                    color: "White",
-                    images: ["/assets/product_images/bag-white.png"],
-                },
+            availableColors: ["Black", "White"],
+            availableImages: [
+                "/assets/product_images/bag-black.png",
+                "/assets/product_images/bag-white.png",
             ],
+            availableSizes: ["S", "M", "L"],
             stock: 100,
             collection: {
                 winter: {},
@@ -113,19 +87,13 @@ const products = {
             category: "Outerwear",
             price: 49.99,
             description: "Stylish bomber jacket for all seasons.",
-            availableColors: [
-                {
-                    color: "Army",
-                    images: ["/assets/product_images/bomber-jacket-army.png"],
-                },
-                {
-                    color: "Black",
-                    images: ["/assets/product_images/bomber-jacket-black.png"],
-                },
+            availableColors: ["Army", "Black"],
+            availableImages: [
+                "/assets/product_images/bomber-jacket-army.png",
+                "/assets/product_images/bomber-jacket-black.png",
             ],
             availableSizes: ["S", "M", "L", "XL"],
             stock: 50,
-            onSale: true,
             collection: {
                 winter: {
                     type: "Winter",
@@ -143,22 +111,13 @@ const products = {
             category: "Accessories",
             price: 34.99,
             description: "Classic cowboy hat for outdoor adventures.",
-            availableColors: [
-                {
-                    color: "Black",
-                    images: [
-                        "/assets/product_images/cowboy-hat-black-1.png",
-                        "/assets/product_images/cowboy-hat-black-2.png",
-                        "/assets/product_images/cowboy-hat-black-3.png",
-                    ],
-                },
-                {
-                    color: "Tan",
-                    images: [
-                        "/assets/product_images/cowboy-hat-tan-1.png",
-                        "/assets/product_images/cowboy-hat-tan-2.png",
-                    ],
-                },
+            availableColors: ["Black", "Tan"], // Simplified colors
+            availableImages: [
+                "/assets/product_images/cowboy-hat-black-1.png",
+                "/assets/product_images/cowboy-hat-black-2.png",
+                "/assets/product_images/cowboy-hat-black-3.png",
+                "/assets/product_images/cowboy-hat-tan-1.png",
+                "/assets/product_images/cowboy-hat-tan-2.png",
             ],
             availableSizes: ["S", "M", "L"],
             stock: 40,
@@ -175,16 +134,12 @@ const products = {
             category: "Accessories",
             price: 14.99,
             description: "Classic cup for coffee lovers.",
-            availableColors: [
-                {
-                    color: "Black",
-                    images: ["/assets/product_images/cup-black.png"],
-                },
-                {
-                    color: "White",
-                    images: ["/assets/product_images/cup-white.png"],
-                },
+            availableColors: ["Black", "White"], // Simplified colors
+            availableImages: [
+                "/assets/product_images/cup-black.png",
+                "/assets/product_images/cup-white.png",
             ],
+            availableSizes: ["S", "M", "L"],
             stock: 200,
             collection: {
                 winter: {},
@@ -199,14 +154,10 @@ const products = {
             category: "Pet Clothing",
             price: 19.99,
             description: "Warm and cozy sweater for your dog.",
-            availableColors: [
-                {
-                    color: "Gray",
-                    images: [
-                        "/assets/product_images/dog-sweater-1.png",
-                        "/assets/product_images/dog-sweater-2.png",
-                    ],
-                },
+            availableColors: ["Gray"], // Simplified colors
+            availableImages: [
+                "/assets/product_images/dog-sweater-1.png",
+                "/assets/product_images/dog-sweater-2.png",
             ],
             availableSizes: ["S", "M", "L"],
             stock: 60,
@@ -223,14 +174,10 @@ const products = {
             category: "Accessories",
             price: 15.99,
             description: "A trendy hat for everyday use.",
-            availableColors: [
-                {
-                    color: "Black",
-                    images: [
-                        "/assets/product_images/hat-1.png",
-                        "/assets/product_images/hat-2.png",
-                    ],
-                },
+            availableColors: ["Black"], // Simplified colors
+            availableImages: [
+                "/assets/product_images/hat-1.png",
+                "/assets/product_images/hat-2.png",
             ],
             availableSizes: ["S", "M", "L"],
             stock: 80,
@@ -247,14 +194,10 @@ const products = {
             category: "Outerwear",
             price: 39.99,
             description: "Comfortable hoodie for casual wear.",
-            availableColors: [
-                {
-                    color: "Black",
-                    images: [
-                        "/assets/product_images/hoodie-1.png",
-                        "/assets/product_images/hoodie-2.png",
-                    ],
-                },
+            availableColors: ["Black"], // Simplified colors
+            availableImages: [
+                "/assets/product_images/hoodie-1.png",
+                "/assets/product_images/hoodie-2.png",
             ],
             availableSizes: ["S", "M", "L", "XL"],
             stock: 120,
@@ -275,23 +218,11 @@ const products = {
             category: "T-Shirts",
             price: 24.99,
             description: "Trendy t-shirt with circular designs.",
-            availableColors: [
-                {
-                    color: "Black",
-                    images: [
-                        "/assets/product_images/t-shirt-circles-black.png",
-                    ],
-                },
-                {
-                    color: "Blue",
-                    images: ["/assets/product_images/t-shirt-circles-blue.png"],
-                },
-                {
-                    color: "White",
-                    images: [
-                        "/assets/product_images/t-shirt-circles-white.png",
-                    ],
-                },
+            availableColors: ["Black", "Blue", "White"], // Simplified colors
+            availableImages: [
+                "/assets/product_images/t-shirt-circles-black.png",
+                "/assets/product_images/t-shirt-circles-blue.png",
+                "/assets/product_images/t-shirt-circles-white.png",
             ],
             availableSizes: ["S", "M", "L", "XL"],
             stock: 100,
@@ -308,27 +239,13 @@ const products = {
             category: "T-Shirts",
             price: 22.99,
             description: "Colorful t-shirt in multiple shades.",
-            availableColors: [
-                {
-                    color: "Black",
-                    images: ["/assets/product_images/t-shirt-color-black.png"],
-                },
-                {
-                    color: "Blue",
-                    images: ["/assets/product_images/t-shirt-color-blue.png"],
-                },
-                {
-                    color: "Gray",
-                    images: ["/assets/product_images/t-shirt-color-gray.png"],
-                },
-                {
-                    color: "Pink",
-                    images: ["/assets/product_images/t-shirt-color-pink.png"],
-                },
-                {
-                    color: "White",
-                    images: ["/assets/product_images/t-shirt-color-white.png"],
-                },
+            availableColors: ["Black", "Blue", "Gray", "Pink", "White"], // Simplified colors
+            availableImages: [
+                "/assets/product_images/t-shirt-color-black.png",
+                "/assets/product_images/t-shirt-color-blue.png",
+                "/assets/product_images/t-shirt-color-gray.png",
+                "/assets/product_images/t-shirt-color-pink.png",
+                "/assets/product_images/t-shirt-color-white.png",
             ],
             availableSizes: ["S", "M", "L", "XL"],
             stock: 200,
