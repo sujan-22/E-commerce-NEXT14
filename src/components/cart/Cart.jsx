@@ -8,11 +8,11 @@ import {
     SheetHeader,
     SheetTitle,
     SheetTrigger,
-} from "./ui/sheet";
+} from "../ui/sheet";
 import Link from "next/link";
-import { buttonVariants } from "./ui/button";
-import { Separator } from "./ui/separator";
-import { ScrollArea } from "./ui/scroll-area";
+import { buttonVariants } from "../ui/button";
+import { Separator } from "../ui/separator";
+import { ScrollArea } from "../ui/scroll-area";
 import { formatPrice } from "@/lib/utils";
 import CartItem from "./CartItem";
 import useStore from "@/context/useStore";
@@ -30,6 +30,23 @@ const Cart = () => {
         const product = allProducts.find((p) => p.id === item.productId);
         return total + (product ? product.price * item.quantity : 0);
     }, 0);
+
+    const handleAddProducts = async () => {
+        try {
+            const response = await fetch("/api", {
+                method: "POST",
+            });
+            const data = await response.json();
+            if (response.ok) {
+                alert(data.message);
+            } else {
+                alert(data.error);
+            }
+        } catch (error) {
+            console.error("Error adding products:", error);
+            alert("An error occurred while adding products.");
+        }
+    };
 
     return (
         <Sheet>
@@ -110,6 +127,7 @@ const Cart = () => {
                             <SheetTrigger asChild>
                                 <Link
                                     href="/cart"
+                                    onClick={handleAddProducts}
                                     className={buttonVariants({
                                         className: "w-full",
                                     })}

@@ -3,10 +3,10 @@
 "use client";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import Link from "next/link";
-import ProductInfo from "@/components/ProductInfo";
-import ProductTabs from "@/components/ProductTabs";
+import ProductInfo from "@/components/product/ProductInfo";
+import ProductTabs from "@/components/product/ProductTabs";
 import ImageGallery from "@/components/ImageGallery";
-import ProductActions from "@/components/ProductActions";
+import ProductActions from "@/components/product/ProductActions";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Separator } from "@/components/ui/separator";

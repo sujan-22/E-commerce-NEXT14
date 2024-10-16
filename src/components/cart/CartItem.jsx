@@ -41,10 +41,16 @@ const CartItem = ({ product, quantity, selectedSize, selectedColor }) => {
                     </span>
                     <span>
                         <button
-                            onClick={() => removeFromCart(product.id)}
+                            onClick={() =>
+                                removeFromCart({
+                                    productId: product.productId,
+                                    selectedColor,
+                                    selectedSize,
+                                })
+                            }
                             className="flex items-center gap-0.5"
                         >
-                            <Trash2Icon className="w-5 h-5" />
+                            <Trash2Icon className="w-5 h-5 cursor-pointer" />
                         </button>
                     </span>
                 </div>

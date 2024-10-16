@@ -19,7 +19,7 @@ import {
 import { SearchIcon, XIcon } from "lucide-react";
 import Link from "next/link";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
-import Cart from "./Cart";
+import Cart from "./cart/Cart";
 
 const navigation = {
     categories: [

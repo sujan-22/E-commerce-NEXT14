@@ -2,13 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Product from "./Product";
-import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { buttonVariants } from "./ui/button";
+import { buttonVariants } from "../ui/button";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { formatPrice } from "@/lib/utils";
 
-const ProductList = ({ products, headerLink, headerTitle }) => {
+const ProductList = ({ products, headerLink = "", headerTitle = "" }) => {
     const [size, setSize] = useState("full");
 
     useEffect(() => {
@@ -33,16 +32,20 @@ const ProductList = ({ products, headerLink, headerTitle }) => {
     return (
         <div className=" py-20">
             <div className="flex justify-between mb-6">
-                <h2 className="text-xl font-bold">{headerTitle}</h2>
-                <Link
-                    href={headerLink}
-                    className={`flex items-center ${buttonVariants({
-                        size: "sm",
-                    })}`}
-                >
-                    View Collection{" "}
-                    <ArrowTopRightIcon className="ml-1 w-4 h-4" />
-                </Link>
+                {headerLink !== "" && (
+                    <>
+                        <h2 className="text-xl font-bold">{headerTitle}</h2>
+                        <Link
+                            href={headerLink}
+                            className={`flex items-center ${buttonVariants({
+                                size: "sm",
+                            })}`}
+                        >
+                            View Collection{" "}
+                            <ArrowTopRightIcon className="ml-1 w-4 h-4" />
+                        </Link>
+                    </>
+                )}
             </div>
             <div className="grid cursor-pointer grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
                 {products.map((product) => (

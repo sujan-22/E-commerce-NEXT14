@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import React from "react";
-import { Label } from "./ui/label";
+import { Label } from "../ui/label";
 
 const ProductActions = ({ options, title, onSelect }) => {
     const [selectedOption, setSelectedOption] = React.useState(options[0]);

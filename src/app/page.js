@@ -10,8 +10,7 @@ import {
     PhoneCall,
 } from "lucide-react";
 import Link from "next/link";
-// import products from "@/data/products.js";
-import ProductList from "@/components/ProductList";
+import ProductList from "@/components/product/ProductList";
 import SubscribeToNewsletter from "@/components/SubscribeToNewsletter";
 import useStore from "@/context/useStore";
 
@@ -33,17 +32,17 @@ const perks = [
     },
     {
         name: "1 Month Return Policy",
-        Icon: RotateCcw, // Using the "RotateCcw" icon from lucide-react for returns
+        Icon: RotateCcw,
         desc: "Not satisfied with your purchase? No worries! We offer a 1-month hassle-free return policy.",
     },
     {
         name: "24/7 Customer Service",
-        Icon: PhoneCall, // Using the "PhoneCall" icon from lucide-react for customer service
+        Icon: PhoneCall,
         desc: "We’re here for you, anytime. Get in touch with our support team 24/7 for assistance.",
     },
     {
         name: "Easy Exchange Policy",
-        Icon: CheckCircle, // Reusing the CheckCircle icon for easy exchange
+        Icon: CheckCircle,
         desc: "Need to exchange your item? Our simple exchange policy makes it quick and effortless.",
     },
 ];
