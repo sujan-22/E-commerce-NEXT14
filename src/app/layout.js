@@ -12,7 +12,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
     return (
         <html lang="en">
-            <body className={`font-sans`}>
+            <body className={`font-sans scrollbar-hide`}>
                 <ReactQueryProvider>
                     <Navbar />
                     <main className="flex flex-col min-h-[calc(100vh-2.5rem-1px)] pt-[104.8px]">

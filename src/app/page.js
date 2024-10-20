@@ -13,6 +13,7 @@ import Link from "next/link";
 import ProductList from "@/components/product/ProductList";
 import SubscribeToNewsletter from "@/components/SubscribeToNewsletter";
 import useStore from "@/context/useStore";
+import { useEffect, useState } from "react";
 
 const perks = [
     {
@@ -48,6 +49,27 @@ const perks = [
 ];
 
 export default function Home() {
+    const [size, setSize] = useState("full");
+
+    useEffect(() => {
+        const handleResize = () => {
+            const width = window.innerWidth;
+            if (width >= 1205) {
+                setSize("large");
+            } else if (width > 1024 && width < 1205) {
+                setSize("medium");
+            } else {
+                setSize("full");
+            }
+        };
+
+        handleResize();
+
+        window.addEventListener("resize", handleResize);
+
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     const products = useStore((state) => state.allProducts);
     const collectionsMap = {};
 
@@ -99,6 +121,7 @@ export default function Home() {
                                 products={products}
                                 headerTitle={title}
                                 headerLink={"/"}
+                                size={size}
                             />
                         </div>
                     )

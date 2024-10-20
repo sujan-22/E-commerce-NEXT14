@@ -7,31 +7,10 @@ import { buttonVariants } from "../ui/button";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { formatPrice } from "@/lib/utils";
 
-const ProductList = ({ products, headerLink = "", headerTitle = "" }) => {
-    const [size, setSize] = useState("full");
-
-    useEffect(() => {
-        const handleResize = () => {
-            const width = window.innerWidth;
-            if (width >= 1205) {
-                setSize("large");
-            } else if (width > 1024 && width < 1205) {
-                setSize("medium");
-            } else {
-                setSize("full");
-            }
-        };
-
-        handleResize();
-
-        window.addEventListener("resize", handleResize);
-
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
+const ProductList = ({ products, headerLink = "", headerTitle = "", size }) => {
     return (
         <div className=" py-20">
-            <div className="flex justify-between mb-6">
+            <div className="flex justify-between mb-2">
                 {headerLink !== "" && (
                     <>
                         <h2 className="text-xl font-bold">{headerTitle}</h2>
