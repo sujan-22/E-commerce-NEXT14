@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
+import { useRouter, useSearchParams } from "next/navigation"; // Import necessary hooks
 import {
     Select,
     SelectContent,
@@ -8,23 +9,31 @@ import {
     SelectTrigger,
     SelectValue,
 } from "./ui/select";
+import { cn } from "@/lib/utils";
 
 const SortSidebar = ({ mobileView }) => {
-    const [selectedKeys, setSelectedKeys] = useState(new Set(["relevance"]));
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const currentSort = searchParams.get("sort") || "relevance";
 
     const sortItems = [
         { key: "relevance", label: "Relevance" },
-        { key: "trending", label: "Trending" },
         { key: "latest", label: "Latest arrivals" },
         { key: "price_low_to_high", label: "Price: Low to High" },
         { key: "price_high_to_low", label: "Price: High to Low" },
     ];
 
+    const handleSortChange = (value) => {
+        const params = new URLSearchParams(searchParams);
+        params.set("sort", value);
+        router.push(`?${params.toString()}`);
+    };
+
     return mobileView ? (
         <Select
             variant="bordered"
-            value={selectedKeys.size > 0 ? Array.from(selectedKeys)[0] : ""}
-            onValueChange={(value) => setSelectedKeys(new Set([value]))}
+            value={currentSort}
+            onValueChange={handleSortChange}
         >
             <SelectTrigger className=" w-full">
                 <SelectValue placeholder="Select sort option" />
@@ -43,9 +52,18 @@ const SortSidebar = ({ mobileView }) => {
     ) : (
         <div className="pl-5 text-sm pt-20">
             <p className="font-bold mb-4">Sort by</p>
-            <ul className="space-y-2 text-gray-300">
+            <ul className="space-y-2 text-muted-foreground">
                 {sortItems.map((item) => (
-                    <li key={item.key}>{item.label}</li>
+                    <li
+                        key={item.key}
+                        className={cn(
+                            "cursor-pointer hover:text-primary",
+                            currentSort === item.key && "text-primary font-bold"
+                        )}
+                        onClick={() => handleSortChange(item.key)}
+                    >
+                        {item.label}
+                    </li>
                 ))}
             </ul>
         </div>

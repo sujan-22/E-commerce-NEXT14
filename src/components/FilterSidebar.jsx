@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
     Select,
     SelectContent,
@@ -9,12 +9,20 @@ import {
     SelectTrigger,
     SelectValue,
 } from "./ui/select";
-import useStore from "@/context/useStore"; // Import zustand store
+import useStore from "@/context/useStore";
+import { cn } from "@/lib/utils";
 
 const FilterSidebar = ({ mobileView }) => {
-    const [selectedKeys, setSelectedKeys] = useState(new Set(["all"]));
-    const { categories, loading } = useStore();
+    const pathName = usePathname();
     const router = useRouter();
+
+    const currentCategory = pathName.split("/").pop();
+    const [selectedCategory, setSelectedCategory] = useState(
+        currentCategory || "all"
+    );
+    const { categories, loading } = useStore();
+    const searchParams = useSearchParams(); // Get search params
+    const currentSort = searchParams.get("sort"); // Get the current sort option
 
     const fallbackFilterItems = [{ key: "all", label: "All" }];
 
@@ -26,24 +34,25 @@ const FilterSidebar = ({ mobileView }) => {
               ]
             : fallbackFilterItems;
 
-    const sanitizeCategoryName = (name) => {
-        return name
-            .toLowerCase()
-            .replace(/\s+/g, "-")
-            .replace(/[^\w-]+/g, "");
-    };
-
-    // Handle category change
     const handleCategoryChange = (value) => {
-        setSelectedKeys(new Set([value]));
-        const sanitizedCategory = sanitizeCategoryName(value); // Sanitize the category name
-        router.push(`/products/category/${sanitizedCategory}`);
+        setSelectedCategory(value);
+
+        // Create new URLSearchParams object
+        const params = new URLSearchParams(searchParams);
+
+        // Retain the current sort option
+        if (currentSort) {
+            params.set("sort", currentSort); // Retain the current sort option
+        }
+
+        // Navigate to the new URL without redundant category query parameter
+        router.push(`/products/category/${value}?${params.toString()}`);
     };
 
     return mobileView ? (
         <Select
             variant="bordered"
-            value={selectedKeys.size > 0 ? Array.from(selectedKeys)[0] : ""}
+            value={selectedCategory}
             onValueChange={handleCategoryChange}
         >
             <SelectTrigger className="w-full">
@@ -51,10 +60,11 @@ const FilterSidebar = ({ mobileView }) => {
             </SelectTrigger>
             <SelectContent>
                 <SelectGroup>
-                    <SelectLabel>Collections</SelectLabel>
+                    <SelectLabel>Categories</SelectLabel>
                     {filterItems.map((item) => (
                         <SelectItem key={item.key} value={item.key}>
-                            {item.label}
+                            {item.label.charAt(0).toUpperCase() +
+                                item.label.slice(1)}
                         </SelectItem>
                     ))}
                 </SelectGroup>
@@ -62,20 +72,27 @@ const FilterSidebar = ({ mobileView }) => {
         </Select>
     ) : (
         <div className="pr-5 text-sm pt-20">
-            <p className="font-bold mb-4">Collections</p>
+            <p className="font-bold mb-4">Categories</p>
             {loading ? (
-                <p>Loading...</p> // Display loading state
+                <p>Loading...</p>
             ) : (
-                <ul className="space-y-2 text-secondary-foreground">
-                    {filterItems.map((item) => (
-                        <li
-                            key={item.key}
-                            className="cursor-pointer hover:text-primary"
-                            onClick={() => handleCategoryChange(item.key)}
-                        >
-                            {item.label}
-                        </li>
-                    ))}
+                <ul className="space-y-2 text-muted-foreground">
+                    {filterItems.map((item) => {
+                        const isActive = pathName.endsWith(item.key);
+                        return (
+                            <li
+                                key={item.key}
+                                className={cn(
+                                    "cursor-pointer hover:text-primary",
+                                    isActive && "text-primary font-bold"
+                                )}
+                                onClick={() => handleCategoryChange(item.key)}
+                            >
+                                {item.label.charAt(0).toUpperCase() +
+                                    item.label.slice(1)}
+                            </li>
+                        );
+                    })}
                 </ul>
             )}
         </div>

@@ -1,4 +1,4 @@
-// app/products/[category]/page.js
+// app/products/category/[category]/page.js
 
 "use client";
 

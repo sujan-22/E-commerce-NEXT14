@@ -3,7 +3,7 @@ const products = {
         {
             id: 1,
             name: "Baby Cap",
-            category: "Baby Clothing",
+            category: "baby ",
             price: 9.99,
             description: "Soft and comfortable baby cap.",
             availableColors: ["Black", "Gray", "White"],
@@ -30,7 +30,7 @@ const products = {
         {
             id: 2,
             name: "Baby Onesie",
-            category: "Baby Clothing",
+            category: "baby",
             price: 19.99,
             description: "Cozy onesie for babies, soft and stylish.",
             availableColors: ["Beige", "Black", "White"],
@@ -58,7 +58,7 @@ const products = {
         {
             id: 3,
             name: "Bag",
-            category: "Accessories",
+            category: "accessories",
             price: 24.99,
             description: "Durable bag for everyday use.",
             availableColors: ["Black", "White"],
@@ -84,7 +84,7 @@ const products = {
         {
             id: 4,
             name: "Bomber Jacket",
-            category: "Men",
+            category: "men",
             price: 49.99,
             description: "Stylish bomber jacket for all seasons.",
             availableColors: ["Army", "Black"],
@@ -108,7 +108,7 @@ const products = {
         {
             id: 5,
             name: "Cowboy Hat",
-            category: "Accessories",
+            category: "accessories",
             price: 34.99,
             description: "Classic cowboy hat for outdoor adventures.",
             availableColors: ["Black", "Tan"],
@@ -131,7 +131,7 @@ const products = {
         {
             id: 6,
             name: "Cup",
-            category: "Accessories",
+            category: "accessories",
             price: 14.99,
             description: "Classic cup for coffee lovers.",
             availableColors: ["Black", "White"],
@@ -151,7 +151,7 @@ const products = {
         {
             id: 7,
             name: "Dog Sweater",
-            category: "Pet Clothing",
+            category: "pet",
             price: 19.99,
             description: "Warm and cozy sweater for your dog.",
             availableColors: ["Gray"],
@@ -171,7 +171,7 @@ const products = {
         {
             id: 8,
             name: "Hat",
-            category: "Accessories",
+            category: "accessories",
             price: 15.99,
             description: "A trendy hat for everyday use.",
             availableColors: ["Black"],
@@ -191,7 +191,7 @@ const products = {
         {
             id: 9,
             name: "Hoodie",
-            category: "Men",
+            category: "men",
             price: 39.99,
             description: "Comfortable hoodie for casual wear.",
             availableColors: ["Black"],
@@ -215,7 +215,7 @@ const products = {
         {
             id: 10,
             name: "T-shirt Circles",
-            category: "Men",
+            category: "men",
             price: 24.99,
             description: "Trendy t-shirt with circular designs.",
             availableColors: ["Black", "Blue", "White"],
@@ -236,7 +236,7 @@ const products = {
         {
             id: 11,
             name: "Comfy T-shirt",
-            category: "Men",
+            category: "men",
             price: 22.99,
             description: "Colorful t-shirt in multiple shades.",
             availableColors: ["Black", "Blue", "Gray", "Pink", "White"],
@@ -265,7 +265,7 @@ const products = {
         {
             id: 12,
             name: "Stylish Bag",
-            category: "Bags",
+            category: "bags",
             price: 49.99,
             description: "Durable and stylish bag for everyday use.",
             availableColors: ["Black", "Brown", "Gray"],
@@ -287,8 +287,8 @@ const products = {
         },
         {
             id: 13,
-            name: "Men's Wrist Watch",
-            category: "Accessories",
+            name: "men's Wrist Watch",
+            category: "accessories",
             price: 149.99,
             description:
                 "Elegant wristwatch for men, perfect for any occasion.",
@@ -306,7 +306,7 @@ const products = {
         {
             id: 14,
             name: "Black Hoodie",
-            category: "Men",
+            category: "men",
             price: 39.99,
             description: "Comfortable black hoodie for all seasons.",
             availableColors: ["Black", "Gray"],
@@ -323,7 +323,7 @@ const products = {
         {
             id: 15,
             name: "Wireless Headphones",
-            category: "Electronics",
+            category: "electronics",
             price: 79.99,
             description:
                 "High-quality wireless headphones with excellent sound clarity.",

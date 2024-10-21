@@ -1,12 +1,17 @@
 "use client";
+
 import { useQuery } from "@tanstack/react-query";
 import useStore from "@/context/useStore";
 import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 const Product = () => {
-    async function fetchProducts() {
+    const searchParams = useSearchParams();
+
+    const currentSort = searchParams.get("sort") || "relevance";
+    async function fetchProducts(sort) {
         try {
-            const response = await fetch("/api/products", {
+            const response = await fetch(`/api/products?sort=${sort}`, {
                 method: "GET",
             });
 
@@ -24,13 +29,14 @@ const Product = () => {
     const { setAllProducts, setLoading, setError } = useStore();
 
     const { data, error, isLoading } = useQuery({
-        queryKey: ["products"],
-        queryFn: fetchProducts,
+        queryKey: ["products", currentSort], // Add currentSort to the query key
+        queryFn: () => fetchProducts(currentSort), // Call fetchProducts with the currentSort
         refetchInterval: 60000,
         staleTime: 5 * 60 * 1000,
         retry: 1,
         refetchOnWindowFocus: false,
     });
+
     useEffect(() => {
         setLoading(isLoading);
         if (data) {
