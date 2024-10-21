@@ -1,3 +1,5 @@
+// app/products/[category]/page.js
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,11 +9,11 @@ import useStore from "@/context/useStore";
 import FilterSidebar from "@/components/FilterSidebar";
 import SortSidebar from "@/components/SortSidebar";
 
-const Page = () => {
+const Page = ({ params }) => {
     const products = useStore((state) => state.allProducts);
     const [isMobileView, setIsMobileView] = useState(false);
+    const category = params.category;
 
-    // Handle screen width changes for product size and mobile view
     useEffect(() => {
         const handleResize = () => {
             const width = window.innerWidth;
@@ -24,6 +26,11 @@ const Page = () => {
 
         return () => window.removeEventListener("resize", handleResize);
     }, []);
+
+    const filteredProducts =
+        category === "all"
+            ? products
+            : products.filter((product) => product.category === category);
 
     return (
         <MaxWidthWrapper>
@@ -48,8 +55,8 @@ const Page = () => {
                 {!isMobileView && <FilterSidebar mobileView={isMobileView} />}
 
                 {/* Main Content - Products */}
-                <div className={`w-full mx-2 ${isMobileView ? "" : "w-[80%]"}`}>
-                    <ProductList products={products} size={"full"} />
+                <div className={`w-full ${isMobileView ? "" : "w-[80%]"}`}>
+                    <ProductList products={filteredProducts} size={"full"} />
                 </div>
 
                 {/* Right Sidebar - Sorting (hidden on mobile) */}

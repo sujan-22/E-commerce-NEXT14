@@ -4,6 +4,7 @@ import { create } from "zustand";
 const useStore = create((set) => ({
     allProducts: [],
     cartItems: [],
+    categories: [],
     userData: [],
     loading: true,
     searchQuery: "",
@@ -12,6 +13,7 @@ const useStore = create((set) => ({
     setAllProducts: (products) => set({ allProducts: products }),
     setLoading: (loading) => set({ loading }), // Action to set loading
     setError: (error) => set({ error }),
+    setCategories: (categories) => set({ categories }),
 
     // Async function to fetch products from API
     fetchAllProducts: async () => {

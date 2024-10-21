@@ -65,16 +65,23 @@ const Page = ({ params }) => {
 
                 {/* Right part */}
                 <div className="flex flex-col lg:sticky lg:top-48 lg:py-0 lg:max-w-[300px] w-full py-8 gap-y-6">
-                    <ProductActions
-                        options={product.availableColors}
-                        title="Color"
-                        onSelect={(color) => setSelectedColor(color)}
-                    />
-                    <ProductActions
-                        options={product.availableSizes}
-                        title="Size"
-                        onSelect={(size) => setSelectedSize(size)}
-                    />
+                    {Array.isArray(product.availableColors) &&
+                        product.availableColors.length > 0 && (
+                            <ProductActions
+                                options={product.availableColors}
+                                title="Color"
+                                onSelect={(color) => setSelectedColor(color)}
+                            />
+                        )}
+                    {Array.isArray(product.availableSizes) &&
+                        product.availableSizes.length > 0 && (
+                            <ProductActions
+                                options={product.availableSizes}
+                                title="Size"
+                                onSelect={(size) => setSelectedSize(size)}
+                            />
+                        )}
+
                     <Separator />
                     <div className="flex items-center gap-x-2 text-md font-semibold">
                         {product.collection.onsale.newPrice ? (

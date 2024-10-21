@@ -84,7 +84,7 @@ const products = {
         {
             id: 4,
             name: "Bomber Jacket",
-            category: "Outerwear",
+            category: "Men",
             price: 49.99,
             description: "Stylish bomber jacket for all seasons.",
             availableColors: ["Army", "Black"],
@@ -111,7 +111,7 @@ const products = {
             category: "Accessories",
             price: 34.99,
             description: "Classic cowboy hat for outdoor adventures.",
-            availableColors: ["Black", "Tan"], // Simplified colors
+            availableColors: ["Black", "Tan"],
             availableImages: [
                 "/assets/product_images/cowboy-hat-black-1.png",
                 "/assets/product_images/cowboy-hat-black-2.png",
@@ -134,7 +134,7 @@ const products = {
             category: "Accessories",
             price: 14.99,
             description: "Classic cup for coffee lovers.",
-            availableColors: ["Black", "White"], // Simplified colors
+            availableColors: ["Black", "White"],
             availableImages: [
                 "/assets/product_images/cup-black.png",
                 "/assets/product_images/cup-white.png",
@@ -154,7 +154,7 @@ const products = {
             category: "Pet Clothing",
             price: 19.99,
             description: "Warm and cozy sweater for your dog.",
-            availableColors: ["Gray"], // Simplified colors
+            availableColors: ["Gray"],
             availableImages: [
                 "/assets/product_images/dog-sweater-1.png",
                 "/assets/product_images/dog-sweater-2.png",
@@ -174,7 +174,7 @@ const products = {
             category: "Accessories",
             price: 15.99,
             description: "A trendy hat for everyday use.",
-            availableColors: ["Black"], // Simplified colors
+            availableColors: ["Black"],
             availableImages: [
                 "/assets/product_images/hat-1.png",
                 "/assets/product_images/hat-2.png",
@@ -191,10 +191,10 @@ const products = {
         {
             id: 9,
             name: "Hoodie",
-            category: "Outerwear",
+            category: "Men",
             price: 39.99,
             description: "Comfortable hoodie for casual wear.",
-            availableColors: ["Black"], // Simplified colors
+            availableColors: ["Black"],
             availableImages: [
                 "/assets/product_images/hoodie-1.png",
                 "/assets/product_images/hoodie-2.png",
@@ -215,10 +215,10 @@ const products = {
         {
             id: 10,
             name: "T-shirt Circles",
-            category: "T-Shirts",
+            category: "Men",
             price: 24.99,
             description: "Trendy t-shirt with circular designs.",
-            availableColors: ["Black", "Blue", "White"], // Simplified colors
+            availableColors: ["Black", "Blue", "White"],
             availableImages: [
                 "/assets/product_images/t-shirt-circles-black.png",
                 "/assets/product_images/t-shirt-circles-blue.png",
@@ -235,11 +235,11 @@ const products = {
         },
         {
             id: 11,
-            name: "T-shirt Color",
-            category: "T-Shirts",
+            name: "Comfy T-shirt",
+            category: "Men",
             price: 22.99,
             description: "Colorful t-shirt in multiple shades.",
-            availableColors: ["Black", "Blue", "Gray", "Pink", "White"], // Simplified colors
+            availableColors: ["Black", "Blue", "Gray", "Pink", "White"],
             availableImages: [
                 "/assets/product_images/t-shirt-color-black.png",
                 "/assets/product_images/t-shirt-color-blue.png",
@@ -260,6 +260,82 @@ const products = {
                         "Grab these amazing deals before they're gone!",
                     newPrice: 19.99,
                 },
+            },
+        },
+        {
+            id: 12,
+            name: "Stylish Bag",
+            category: "Bags",
+            price: 49.99,
+            description: "Durable and stylish bag for everyday use.",
+            availableColors: ["Black", "Brown", "Gray"],
+            availableImages: ["/assets/product_images/bag.png"],
+            availableSizes: [],
+            stock: 150,
+            collection: {
+                winter: {},
+                summer: {},
+                spring: {},
+                onsale: {
+                    type: "On Sale",
+                    title: "Discounted Products",
+                    description:
+                        "Grab these amazing deals before they're gone!",
+                    newPrice: 39.99,
+                },
+            },
+        },
+        {
+            id: 13,
+            name: "Men's Wrist Watch",
+            category: "Accessories",
+            price: 149.99,
+            description:
+                "Elegant wristwatch for men, perfect for any occasion.",
+            availableColors: ["Black", "Silver", "Gold"],
+            availableImages: ["/assets/product_images/watch.png"],
+            availableSizes: [],
+            stock: 100,
+            collection: {
+                winter: {},
+                summer: {},
+                spring: {},
+                onsale: {},
+            },
+        },
+        {
+            id: 14,
+            name: "Black Hoodie",
+            category: "Men",
+            price: 39.99,
+            description: "Comfortable black hoodie for all seasons.",
+            availableColors: ["Black", "Gray"],
+            availableImages: ["/assets/product_images/black-hoodie.png"],
+            availableSizes: ["S", "M", "L", "XL", "XXL"],
+            stock: 250,
+            collection: {
+                winter: {},
+                summer: {},
+                spring: {},
+                onsale: {},
+            },
+        },
+        {
+            id: 15,
+            name: "Wireless Headphones",
+            category: "Electronics",
+            price: 79.99,
+            description:
+                "High-quality wireless headphones with excellent sound clarity.",
+            availableColors: [],
+            availableImages: ["/assets/product_images/headphone.png"],
+            availableSizes: [],
+            stock: 180,
+            collection: {
+                winter: {},
+                summer: {},
+                spring: {},
+                onsale: {},
             },
         },
     ],

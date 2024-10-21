@@ -3,10 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import useStore from "@/context/useStore";
 import { useEffect } from "react";
 
-const Product = () => {
-    async function fetchProducts() {
+const Category = () => {
+    async function fetchCategories() {
         try {
-            const response = await fetch("/api/products", {
+            const response = await fetch("/api/getCategory", {
                 method: "GET",
             });
 
@@ -15,34 +15,39 @@ const Product = () => {
             }
 
             const data = await response.json();
+            console.log(data);
+
             return data;
         } catch (error) {
             return null;
         }
     }
 
-    const { setAllProducts, setLoading, setError } = useStore();
+    const { setCategories, setLoading, setError } = useStore();
 
     const { data, error, isLoading } = useQuery({
-        queryKey: ["products"],
-        queryFn: fetchProducts,
-        refetchInterval: 60000,
-        staleTime: 5 * 60 * 1000,
+        queryKey: ["categories"],
+        queryFn: fetchCategories,
+        refetchInterval: 60000, // Re-fetch categories every minute
+        staleTime: 5 * 60 * 1000, // Cache categories for 5 minutes
         retry: 1,
         refetchOnWindowFocus: false,
     });
+
+    console.log(data);
+
     useEffect(() => {
         setLoading(isLoading);
         if (data) {
-            setAllProducts(data.products);
+            setCategories(data.categories);
         }
 
         if (error) {
             setError(error.message);
         }
-    }, [data, isLoading, error, setAllProducts, setLoading, setError]);
+    }, [data, isLoading, error, setCategories, setLoading, setError]);
 
     return null;
 };
 
-export default Product;
+export default Category;

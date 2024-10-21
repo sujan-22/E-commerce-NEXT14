@@ -3,7 +3,6 @@ import clientPromise from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-    // return NextResponse.json({ hello: "world" });
     try {
         const client = await clientPromise;
         const db = client.db();

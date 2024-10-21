@@ -49,27 +49,6 @@ const perks = [
 ];
 
 export default function Home() {
-    const [size, setSize] = useState("full");
-
-    useEffect(() => {
-        const handleResize = () => {
-            const width = window.innerWidth;
-            if (width >= 1205) {
-                setSize("large");
-            } else if (width > 1024 && width < 1205) {
-                setSize("medium");
-            } else {
-                setSize("full");
-            }
-        };
-
-        handleResize();
-
-        window.addEventListener("resize", handleResize);
-
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
     const products = useStore((state) => state.allProducts);
     const collectionsMap = {};
 
@@ -104,7 +83,10 @@ export default function Home() {
                         and style.
                     </p>
                     <div className=" flex flex-col sm:flex-row gap-4 mt-6">
-                        <Link href="/product" className={buttonVariants()}>
+                        <Link
+                            href="/products/category/all"
+                            className={buttonVariants()}
+                        >
                             Shop the Latest Collection
                         </Link>
                         <Button variant="ghost">
@@ -121,7 +103,7 @@ export default function Home() {
                                 products={products}
                                 headerTitle={title}
                                 headerLink={"/"}
-                                size={size}
+                                size={"full"}
                             />
                         </div>
                     )

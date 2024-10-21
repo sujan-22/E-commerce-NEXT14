@@ -1,6 +1,7 @@
 import "./globals.css";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import Category from "@/hooks/useCategory";
 import Product from "@/hooks/useProducts";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
 
@@ -22,6 +23,7 @@ export default function RootLayout({ children }) {
                         <Footer />
                     </main>
                     <Product />
+                    <Category />
                 </ReactQueryProvider>
             </body>
         </html>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
     Select,
     SelectContent,
@@ -8,32 +9,44 @@ import {
     SelectTrigger,
     SelectValue,
 } from "./ui/select";
+import useStore from "@/context/useStore"; // Import zustand store
 
 const FilterSidebar = ({ mobileView }) => {
     const [selectedKeys, setSelectedKeys] = useState(new Set(["all"]));
+    const { categories, loading } = useStore();
+    const router = useRouter();
 
-    const filterItems = [
-        { key: "all", label: "All" },
-        { key: "bags", label: "Bags" },
-        { key: "drinkware", label: "Drinkware" },
-        { key: "electronics", label: "Electronics" },
-        { key: "footwear", label: "Footwear" },
-        { key: "headwear", label: "Headwear" },
-        { key: "hoodies", label: "Hoodies" },
-        { key: "jackets", label: "Jackets" },
-        { key: "kids", label: "Kids" },
-        { key: "pets", label: "Pets" },
-        { key: "shirts", label: "Shirts" },
-        { key: "stickers", label: "Stickers" },
-    ];
+    const fallbackFilterItems = [{ key: "all", label: "All" }];
+
+    const filterItems =
+        categories.length > 0
+            ? [
+                  { key: "all", label: "All" },
+                  ...categories.map((cat) => ({ key: cat, label: cat })),
+              ]
+            : fallbackFilterItems;
+
+    const sanitizeCategoryName = (name) => {
+        return name
+            .toLowerCase()
+            .replace(/\s+/g, "-")
+            .replace(/[^\w-]+/g, "");
+    };
+
+    // Handle category change
+    const handleCategoryChange = (value) => {
+        setSelectedKeys(new Set([value]));
+        const sanitizedCategory = sanitizeCategoryName(value); // Sanitize the category name
+        router.push(`/products/category/${sanitizedCategory}`);
+    };
 
     return mobileView ? (
         <Select
             variant="bordered"
             value={selectedKeys.size > 0 ? Array.from(selectedKeys)[0] : ""}
-            onValueChange={(value) => setSelectedKeys(new Set([value]))}
+            onValueChange={handleCategoryChange}
         >
-            <SelectTrigger className=" w-full">
+            <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select sort option" />
             </SelectTrigger>
             <SelectContent>
@@ -50,11 +63,21 @@ const FilterSidebar = ({ mobileView }) => {
     ) : (
         <div className="pr-5 text-sm pt-20">
             <p className="font-bold mb-4">Collections</p>
-            <ul className="space-y-2 text-gray-300">
-                {filterItems.map((item) => (
-                    <li key={item.key}>{item.label}</li>
-                ))}
-            </ul>
+            {loading ? (
+                <p>Loading...</p> // Display loading state
+            ) : (
+                <ul className="space-y-2 text-secondary-foreground">
+                    {filterItems.map((item) => (
+                        <li
+                            key={item.key}
+                            className="cursor-pointer hover:text-primary"
+                            onClick={() => handleCategoryChange(item.key)}
+                        >
+                            {item.label}
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     );
 };
