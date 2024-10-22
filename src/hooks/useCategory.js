@@ -4,50 +4,47 @@ import useStore from "@/context/useStore";
 import { useEffect } from "react";
 
 const Category = () => {
-    async function fetchCategories() {
-        try {
-            const response = await fetch("/api/getCategory", {
-                method: "GET",
-            });
+  async function fetchCategories() {
+    try {
+      const response = await fetch("/api/getCategory", {
+        method: "GET",
+      });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-            const data = await response.json();
-            console.log(data);
+      const data = await response.json();
 
-            return data;
-        } catch (error) {
-            return null;
-        }
+      return data;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  const { setCategories, setLoading, setError } = useStore();
+
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+    refetchInterval: 60000, // Re-fetch categories every minute
+    staleTime: 5 * 60 * 1000, // Cache categories for 5 minutes
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
+
+  useEffect(() => {
+    setLoading(isLoading);
+    if (data) {
+      setCategories(data.categories);
     }
 
-    const { setCategories, setLoading, setError } = useStore();
+    if (error) {
+      setError(error.message);
+    }
+  }, [data, isLoading, error, setCategories, setLoading, setError]);
 
-    const { data, error, isLoading } = useQuery({
-        queryKey: ["categories"],
-        queryFn: fetchCategories,
-        refetchInterval: 60000, // Re-fetch categories every minute
-        staleTime: 5 * 60 * 1000, // Cache categories for 5 minutes
-        retry: 1,
-        refetchOnWindowFocus: false,
-    });
-
-    console.log(data);
-
-    useEffect(() => {
-        setLoading(isLoading);
-        if (data) {
-            setCategories(data.categories);
-        }
-
-        if (error) {
-            setError(error.message);
-        }
-    }, [data, isLoading, error, setCategories, setLoading, setError]);
-
-    return null;
+  return null;
 };
 
 export default Category;
