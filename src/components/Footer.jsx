@@ -1,12 +1,6 @@
-import Link from "next/link";
 import MaxWidthWrapper from "./MaxWidthWrapper";
-import {
-    TwitterLogoIcon,
-    InstagramLogoIcon,
-    LinkedInLogoIcon,
-} from "@radix-ui/react-icons";
 
-export default function Footer() {
+const Footer = () => {
     return (
         <MaxWidthWrapper>
             <footer className="">
@@ -51,4 +45,6 @@ export default function Footer() {
             </footer>
         </MaxWidthWrapper>
     );
-}
+};
+
+export default Footer;

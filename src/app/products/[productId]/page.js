@@ -8,7 +8,7 @@ import ProductTabs from "@/components/product/ProductTabs";
 import ImageGallery from "@/components/ImageGallery";
 import ProductActions from "@/components/product/ProductActions";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { formatPrice } from "@/lib/utils";
 import useStore from "@/context/useStore";
@@ -19,15 +19,19 @@ const Page = ({ params }) => {
 
     const id = params.productId;
     const product = products.find((prod) => prod.id === parseInt(id));
-    const [selectedColor, setSelectedColor] = useState(
-        product.availableColors[0]
-    );
 
-    const [selectedSize, setSelectedSize] = useState(product.availableSizes[0]);
+    // Initialize selectedColor and selectedSize with safe default values
+    const [selectedColor, setSelectedColor] = useState("");
+    const [selectedSize, setSelectedSize] = useState("");
 
-    // Find the product by ID from dummy data
+    // Update the selected color and size when the product becomes available
+    useEffect(() => {
+        if (product) {
+            setSelectedColor(product.availableColors?.[0] || "");
+            setSelectedSize(product.availableSizes?.[0] || "");
+        }
+    }, [product]);
 
-    // If the product is not found
     if (!product) {
         return (
             <MaxWidthWrapper>

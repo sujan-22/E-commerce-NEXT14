@@ -15,25 +15,6 @@ const useStore = create((set) => ({
     setError: (error) => set({ error }),
     setCategories: (categories) => set({ categories }),
 
-    // Async function to fetch products from API
-    fetchAllProducts: async () => {
-        set({ loading: true }); // Start loading
-
-        try {
-            const response = await fetch("/api/products"); // Fetch products from API
-            const data = await response.json();
-
-            if (response.ok) {
-                set({ allProducts: data.products, loading: false }); // Set products and stop loading
-            } else {
-                set({ error: data.error, loading: false }); // Handle errors
-            }
-        } catch (error) {
-            console.error("Error fetching products:", error);
-            set({ error: "Failed to fetch products", loading: false }); // Handle fetch failure
-        }
-    },
-
     addToCart: (item) =>
         set((state) => {
             const existingItem = state.cartItems.find(
