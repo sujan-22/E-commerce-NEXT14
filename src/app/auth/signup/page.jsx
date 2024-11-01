@@ -1,11 +1,10 @@
-// app/auth/signin/page.jsx
+// app/auth/signup/page.jsx
 
 "use client";
 
-import useStore from "@/context/useStore";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signInSchema } from "@/lib/validationSchema";
+import { signUpSchema } from "@/lib/validationSchema";
 import {
   Form,
   FormField,
@@ -17,51 +16,52 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-
-import { handleCredentialsSignIn } from "@/app/actions/authActions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-export default function SignIn() {
+export default function SignUp() {
   const methods = useForm({
-    resolver: zodResolver(signInSchema),
+    resolver: zodResolver(signUpSchema),
   });
-  const [loading, setLoading] = useState(false);
+
   const router = useRouter();
-  const setUserData = useStore((state) => state.setUserData);
+
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data) => {
-    setLoading(true); // Start loading
+    setLoading(true);
     try {
-      const result = await handleCredentialsSignIn(data);
-      if (result.message) {
-        toast.error(result.message);
-      } else {
-        toast.success("Signed in successfully!");
-        router.replace("/");
-        console.log(result);
+      const response = await fetch("/api/sign-up", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-        setUserData(result);
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast.error(result.error || "Failed to register.");
+        methods.setError("root", { message: result.error });
+      } else {
+        toast.success("User registered successfully!");
+        router.push("/auth/signin");
       }
     } catch (error) {
-      console.error("Unexpected error during sign-in:", error);
-      methods.setError("root", {
-        type: "manual",
-        message: "An unexpected error occurred. Please try again later.",
-      });
+      console.error("Error during registration:", error);
+      toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <MaxWidthWrapper className={" flex justify-center items-center"}>
+    <MaxWidthWrapper className="flex justify-center items-center">
       <div className="container relative flex pt-20 flex-col items-center justify-center lg:px-0">
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col items-center space-y-2 text-center">
             <h1 className="text-8xl font-extralight mb-10">DIGI</h1>
             <h1 className="text-2xl font-semibold tracking-tight">
-              Sign in to your account
+              Create an account
             </h1>
           </div>
 
@@ -72,6 +72,25 @@ export default function SignIn() {
                 className="space-y-8"
               >
                 <div className="grid gap-2">
+                  <div className="grid gap-1 py-2">
+                    <FormField
+                      name="name"
+                      render={({ field }) => (
+                        <>
+                          <FormLabel>Name</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              placeholder="Your Name"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </>
+                      )}
+                    />
+                  </div>
+
                   <div className="grid gap-1 py-2">
                     <FormField
                       name="email"
@@ -110,7 +129,7 @@ export default function SignIn() {
                     />
                   </div>
 
-                  <Button>Sign in</Button>
+                  <Button isLoading={loading}>Sign up</Button>
                 </div>
               </form>
             </Form>
@@ -127,9 +146,9 @@ export default function SignIn() {
                 </span>
               </div>
             </div>
-            <a href="/auth/signup">
-              <Button className="w-full" isLoading={true}>
-                Sign up
+            <a href="/auth/signin">
+              <Button className="w-full" isLoading={loading}>
+                Sign in
               </Button>
             </a>
           </div>
