@@ -1,35 +1,64 @@
-// app/api/addproduct/route.js
+// api/api/addProduct/route.js
+
 import clientPromise from "@/lib/mongodb";
-import products from "@/data/products";
 import { NextResponse } from "next/server";
 
-export async function POST() {
+export async function POST(request) {
     try {
         const client = await clientPromise;
         const db = client.db();
 
-        // Get the current date for createdAt and updatedAt
-        const currentDate = new Date();
+        const productData = await request.json();
 
-        // Add createdAt and updatedAt fields to each product
-        const productsWithTimestamps = products.products.map((product) => ({
-            ...product,
-            createdAt: currentDate,
-            updatedAt: currentDate,
-        }));
+        // Check for required fields
+        const { name, category, price, description, availableImages, stock } =
+            productData;
+        if (
+            !name ||
+            !category ||
+            price === undefined ||
+            !description ||
+            !availableImages ||
+            stock === undefined
+        ) {
+            return NextResponse.json(
+                { error: "Missing required fields." },
+                { status: 400 }
+            );
+        }
 
-        const result = await db
-            .collection("products")
-            .insertMany(productsWithTimestamps);
+        // Prepare the product data
+        const newProduct = {
+            name,
+            category,
+            price,
+            description,
+            availableColors: productData.availableColors || [],
+            availableImages,
+            availableSizes: productData.availableSizes || [],
+            stock,
+            collection: {
+                winter: productData.collection?.winter || {},
+                summer: productData.collection?.summer || {},
+                spring: productData.collection?.spring || {},
+                onsale: productData.collection?.onsale || {},
+            },
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
+
+        // Insert product into the database
+        const result = await db.collection("products").insertOne(newProduct);
 
         return NextResponse.json({
-            message: "Products added successfully!",
-            result,
+            success: true,
+            message: "Product added successfully!",
+            productId: result.insertedId,
         });
     } catch (error) {
-        console.error("Error adding products:", error);
+        console.error("Error adding product:", error);
         return NextResponse.json(
-            { error: "Failed to add products" },
+            { error: "Failed to add product." },
             { status: 500 }
         );
     }

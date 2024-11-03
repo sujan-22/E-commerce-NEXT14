@@ -26,7 +26,7 @@ const Product = ({ size, isFeatured, initialImage, className }) => {
     );
 };
 
-const ImageOrPlaceholder = ({ image }) => {
+export const ImageOrPlaceholder = ({ image }) => {
     return (
         <Image
             src={image}
