@@ -8,6 +8,7 @@ const useStore = create((set) => ({
     categories: [],
     searchQuery: "",
     searchResults: [],
+    uploadedImageUrls: [],
 
     setUserData: (data) => {
         set({ userData: data });
@@ -15,6 +16,7 @@ const useStore = create((set) => ({
     setLoading: (loading) => set({ loading }),
     setAllProducts: (products) => set({ allProducts: products }),
     setCategories: (categories) => set({ categories }),
+    setUploadedImageUrls: (urls) => set({ uploadedImageUrls: urls }),
     addToCart: (item) =>
         set((state) => {
             const existingItem = state.cartItems.find(

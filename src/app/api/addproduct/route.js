@@ -1,6 +1,7 @@
 // api/api/addProduct/route.js
 
 import clientPromise from "@/lib/mongodb";
+import { ProductSchema } from "@/lib/validationSchema";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
@@ -10,44 +11,34 @@ export async function POST(request) {
 
         const productData = await request.json();
 
-        // Check for required fields
-        const { name, category, price, description, availableImages, stock } =
-            productData;
-        if (
-            !name ||
-            !category ||
-            price === undefined ||
-            !description ||
-            !availableImages ||
-            stock === undefined
-        ) {
+        const validation = ProductSchema.safeParse(productData);
+
+        if (!validation.success) {
             return NextResponse.json(
-                { error: "Missing required fields." },
+                {
+                    error: "Validation failed",
+                    details: validation.error.errors,
+                },
                 { status: 400 }
             );
         }
 
-        // Prepare the product data
+        const lastProduct = await db
+            .collection("products")
+            .find({})
+            .sort({ id: -1 })
+            .limit(1)
+            .toArray();
+
+        const newProductId = lastProduct.length > 0 ? lastProduct[0].id + 1 : 1;
+
         const newProduct = {
-            name,
-            category,
-            price,
-            description,
-            availableColors: productData.availableColors || [],
-            availableImages,
-            availableSizes: productData.availableSizes || [],
-            stock,
-            collection: {
-                winter: productData.collection?.winter || {},
-                summer: productData.collection?.summer || {},
-                spring: productData.collection?.spring || {},
-                onsale: productData.collection?.onsale || {},
-            },
+            ...validation.data,
+            id: newProductId,
             createdAt: new Date(),
             updatedAt: new Date(),
         };
 
-        // Insert product into the database
         const result = await db.collection("products").insertOne(newProduct);
 
         return NextResponse.json({

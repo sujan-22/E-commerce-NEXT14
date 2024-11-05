@@ -7,15 +7,15 @@ const ProductSchema = new mongoose.Schema(
         price: { type: Number, required: true },
         description: { type: String, required: true },
         availableColors: { type: [String], default: [] },
-        availableImages: { type: [String], required: true },
+        availableImages: { type: [String], default: [] },
         availableSizes: { type: [String], default: [] },
         stock: { type: Number, required: true, min: 0 },
         collection: {
             winter: {
                 type: {
                     type: String,
-                    enum: ["Winter", "On Sale", null],
-                    default: null,
+                    enum: ["Winter"],
+                    default: "Winter",
                 },
                 title: { type: String, default: null },
                 description: { type: String, default: null },
@@ -23,8 +23,8 @@ const ProductSchema = new mongoose.Schema(
             summer: {
                 type: {
                     type: String,
-                    enum: ["Summer", null],
-                    default: null,
+                    enum: ["Summer"],
+                    default: "Summer",
                 },
                 title: { type: String, default: null },
                 description: { type: String, default: null },
@@ -32,8 +32,8 @@ const ProductSchema = new mongoose.Schema(
             spring: {
                 type: {
                     type: String,
-                    enum: ["Spring", null],
-                    default: null,
+                    enum: ["Spring"],
+                    default: "Spring",
                 },
                 title: { type: String, default: null },
                 description: { type: String, default: null },
@@ -41,8 +41,8 @@ const ProductSchema = new mongoose.Schema(
             onsale: {
                 type: {
                     type: String,
-                    enum: ["On Sale", null],
-                    default: null,
+                    enum: ["On Sale"],
+                    default: "On Sale",
                 },
                 title: { type: String, default: null },
                 description: { type: String, default: null },
