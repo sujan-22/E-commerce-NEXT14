@@ -10,8 +10,6 @@ const s3Client = new S3Client({
 });
 
 async function uploadFileToS3(fileBuffer, fileName) {
-    console.log(fileName, fileBuffer);
-
     const params = {
         Bucket: process.env.AWS_S3_BUCKET_NAME,
         Key: `ecommerce/${fileName}-${Date.now()}`,
@@ -30,7 +28,6 @@ export async function POST(request) {
     try {
         const formData = await request.formData();
         const files = formData.getAll("files");
-        console.log(files);
 
         if (!files || files.length === 0) {
             return NextResponse.json(
