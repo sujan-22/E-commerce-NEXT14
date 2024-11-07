@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,6 @@ import { Label } from "@/components/ui/label";
 import useStore from "@/context/useStore";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import Product from "@/components/product/Product";
 import { ProductSchema } from "@/lib/validationSchema";
 import {
     Carousel,
@@ -22,19 +22,11 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel";
-<<<<<<< Updated upstream
 import ImageGallery from "@/components/ImageGallery";
-
-const Page = () => {
-  const { categories, uploadedImageUrls } = useStore();
-=======
-
-import { CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 const Page = () => {
     const { categories, uploadedImageUrls } = useStore();
-    console.log(uploadedImageUrls);
->>>>>>> Stashed changes
 
     const [options, setOptions] = useState({
         name: "",
@@ -67,259 +59,77 @@ const Page = () => {
     }
 
     return (
-        <div className="relative mt-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-10 gap-12">
-            {/* Left side: Uploaded Images (smaller screen 100%) */}
-            <div className="col-span-1 md:col-span-6 flex flex-col items-center">
-                {/* Grid Layout for medium and larger screens */}
-                <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-2 gap-4 w-full">
-                    {uploadedImageUrls.map((url, index) => (
-                        <Product
-                            key={index}
-                            initialImage={url}
-                            size={"square"}
-                            className="w-full h-auto"
-                        />
-                    ))}
+        <div
+            className="w-full flex flex-col lg:flex-row lg:items-start py-6"
+            data-testid="product-container"
+        >
+            {/* Left Side - Image Gallery */}
+            <div className="w-full lg:w-1/2 mt-7 mb-10 lg:mb-0">
+                <div className="hidden md:block w-full relative">
+                    <ImageGallery images={uploadedImageUrls || []} />
                 </div>
 
-<<<<<<< Updated upstream
-  return (
-    <div
-      className="w-full flex flex-col lg:flex-row lg:items-start py-6"
-      data-testid="product-container"
-    >
-      {/* Left Side - Image Gallery */}
-      <div className="w-full lg:w-1/2 mt-7 mb-10 lg:mb-0">
-        <div className="hidden sm:block w-full relative">
-          <ImageGallery images={uploadedImageUrls || []} />
-        </div>
-
-        {/* Carousel for small screens */}
-        <div className=" relative left max-w-xs mt-4 lg:hidden">
-          <Carousel>
-            <CarouselContent>
-              {uploadedImageUrls.map((url, index) => (
-                <CarouselItem key={index}>
-                  <Product initialImage={url} size="medium" isFeatured={true} />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
-        </div>
-      </div>
-
-      {/* Right Side - Product Details Form */}
-      <div className="flex flex-col lg:w-1/2 lg:sticky lg:top-16 space-y-6">
-        <h2 className="text-3xl font-bold mb-4">Add Product Details</h2>
-
-        {/* Product Fields */}
-        <div className="space-y-6">
-          {/* Product Name */}
-          <div>
-            <Label>Product name</Label>
-            <Input
-              placeholder="Product name"
-              name="name"
-              value={options.name}
-              onChange={handleInputChange}
-            />
-          </div>
-
-          {/* Product Description */}
-          <div>
-            <Label>Product description</Label>
-            <Input
-              placeholder="Product description"
-              name="description"
-              value={options.description}
-              onChange={handleInputChange}
-            />
-          </div>
-
-          {/* Category Dropdown */}
-          <div>
-            <Label>Select a category for your product</Label>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full justify-between">
-                  {options.category}
-                  <ChevronsUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {categories.map((category) => (
-                  <DropdownMenuItem
-                    key={category}
-                    className={cn("flex items-center text-sm gap-2", {
-                      "bg-gray-100": options.category === category,
-                    })}
-                    onClick={() =>
-                      setOptions((prev) => ({
-                        ...prev,
-                        category:
-                          category.charAt(0).toUpperCase() + category.slice(1),
-                      }))
-                    }
-                  >
-                    <CheckIcon
-                      className={cn("h-4 w-4", {
-                        "opacity-100": category === options.category,
-                        "opacity-0": category !== options.category,
-                      })}
-                    />
-                    {category.charAt(0).toUpperCase() + category.slice(1)}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
-          {/* Product Price */}
-          <div>
-            <Label>Price ($)</Label>
-            <Input
-              type="number"
-              name="price"
-              value={options.price}
-              onChange={handleInputChange}
-              placeholder="Enter product price"
-            />
-          </div>
-
-          {/* Stock Quantity */}
-          <div>
-            <Label>Stock Quantity</Label>
-            <Input
-              type="number"
-              name="stock"
-              value={options.stock}
-              onChange={handleInputChange}
-              placeholder="Enter stock quantity"
-            />
-          </div>
-
-          {/* Available Colors */}
-          <div>
-            <Label>Available Colors</Label>
-            <Input
-              placeholder="Enter colors separated by commas"
-              name="availableColors"
-              value={options.availableColors.join(", ")}
-              onChange={(e) =>
-                setOptions((prev) => ({
-                  ...prev,
-                  availableColors: e.target.value
-                    .split(",")
-                    .map((color) => color.trim()),
-                }))
-              }
-            />
-          </div>
-
-          {/* Available Sizes */}
-          <div>
-            <Label>Available Sizes</Label>
-            <Input
-              placeholder="Enter sizes separated by commas"
-              name="availableSizes"
-              value={options.availableSizes.join(", ")}
-              onChange={(e) =>
-                setOptions((prev) => ({
-                  ...prev,
-                  availableSizes: e.target.value
-                    .split(",")
-                    .map((size) => size.trim()),
-                }))
-              }
-            />
-          </div>
-
-          {/* Collection Dropdown */}
-          <div>
-            <Label>Select a Collection</Label>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full justify-between">
-                  {options.collection || "Choose collection"}
-                  <ChevronsUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {["Winter", "Summer", "Spring", "On Sale"].map((collection) => (
-                  <DropdownMenuItem
-                    key={collection}
-                    className={cn("flex items-center text-sm gap-2", {
-                      "bg-gray-100": options.collection === collection,
-                    })}
-                    onClick={() =>
-                      setOptions((prev) => ({ ...prev, collection }))
-                    }
-                  >
-                    <CheckIcon
-                      className={cn("h-4 w-4", {
-                        "opacity-100": collection === options.collection,
-                        "opacity-0": collection !== options.collection,
-                      })}
-                    />
-                    {collection}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-
-        {/* Continue Button */}
-        <Button
-          isLoading={false}
-          disabled={
-            !options.name ||
-            !options.description ||
-            !options.price ||
-            options.stock < 0
-          }
-          onClick={handleContinue}
-          className="w-full mt-4"
-        >
-          Continue <ArrowRight className="h-4 w-4 ml-1.5" />
-        </Button>
-      </div>
-    </div>
-  );
-=======
-                {/* Carousel Layout for small screens */}
-                <div className="sm:hidden w-full max-w-xs">
+                {/* Carousel for small screens */}
+                {/* <div className=" relative left max-w-xs mt-4 lg:hidden">
                     <Carousel>
                         <CarouselContent>
                             {uploadedImageUrls.map((url, index) => (
                                 <CarouselItem key={index}>
+                                    <Product
+                                        initialImage={url}
+                                        size="medium"
+                                        isFeatured={true}
+                                    />
+                                </CarouselItem>
+                            ))}
+                        </CarouselContent>
+                        <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10" />
+                        <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10" />
+                    </Carousel>
+                </div> */}
+                <div className="max-w-full md:hidden overflow-hidden px-2">
+                    <Carousel
+                        opts={{
+                            align: "center",
+                        }}
+                        className="w-full"
+                    >
+                        <CarouselContent className="flex">
+                            {uploadedImageUrls.map((file, index) => (
+                                <CarouselItem
+                                    key={index}
+                                    className="basis-full sm:basis-1/2 lg:basis-1/3"
+                                >
                                     <div className="p-1">
-                                        <CardContent className="flex aspect-square items-center justify-center ">
-                                            <Product
-                                                key={index}
-                                                initialImage={url}
-                                                size={"medium"}
-                                                className="w-full h-auto"
-                                            />
-                                        </CardContent>
+                                        <Card>
+                                            <CardContent className="flex p-6">
+                                                <img
+                                                    src={file}
+                                                    alt=""
+                                                    className="w-full"
+                                                />
+                                            </CardContent>
+                                        </Card>
                                     </div>
                                 </CarouselItem>
                             ))}
                         </CarouselContent>
-                        <CarouselPrevious />
-                        <CarouselNext />
+
+                        {/* Carousel Arrows with Responsive Positioning */}
+                        <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10" />
+                        <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10" />
                     </Carousel>
                 </div>
             </div>
 
-            {/* Right side: Product Details Form (smaller screen 100%) */}
-            <div className="col-span-1 sm:col-span-2 md:col-span-4 flex flex-col">
+            {/* Right Side - Product Details Form */}
+            <div className="flex flex-col lg:w-1/2 lg:sticky lg:top-16 space-y-6">
                 <h2 className="text-3xl font-bold mb-4">Add Product Details</h2>
-                <div className="flex flex-col gap-6">
+
+                {/* Product Fields */}
+                <div className="space-y-6">
                     {/* Product Name */}
-                    <div className="flex flex-col gap-3">
+                    <div>
                         <Label>Product name</Label>
                         <Input
                             placeholder="Product name"
@@ -330,7 +140,7 @@ const Page = () => {
                     </div>
 
                     {/* Product Description */}
-                    <div className="flex flex-col gap-3">
+                    <div>
                         <Label>Product description</Label>
                         <Input
                             placeholder="Product description"
@@ -341,7 +151,7 @@ const Page = () => {
                     </div>
 
                     {/* Category Dropdown */}
-                    <div className="flex flex-col gap-3">
+                    <div>
                         <Label>Select a category for your product</Label>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -350,7 +160,7 @@ const Page = () => {
                                     className="w-full justify-between"
                                 >
                                     {options.category}
-                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                    <ChevronsUpDown className="ml-2 h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
@@ -358,9 +168,9 @@ const Page = () => {
                                     <DropdownMenuItem
                                         key={category}
                                         className={cn(
-                                            "flex text-sm gap-1 items-center cursor-default hover:bg-zinc-100",
+                                            "flex items-center text-sm gap-2",
                                             {
-                                                "bg-zinc-100":
+                                                "bg-gray-100":
                                                     options.category ===
                                                     category,
                                             }
@@ -377,12 +187,14 @@ const Page = () => {
                                         }
                                     >
                                         <CheckIcon
-                                            className={cn(
-                                                "mr-2 h-4 w-4",
-                                                category === options.category
-                                                    ? "opacity-100"
-                                                    : "opacity-0"
-                                            )}
+                                            className={cn("h-4 w-4", {
+                                                "opacity-100":
+                                                    category ===
+                                                    options.category,
+                                                "opacity-0":
+                                                    category !==
+                                                    options.category,
+                                            })}
                                         />
                                         {category.charAt(0).toUpperCase() +
                                             category.slice(1)}
@@ -393,11 +205,10 @@ const Page = () => {
                     </div>
 
                     {/* Product Price */}
-                    <div className="flex flex-col gap-3">
-                        <Label htmlFor="price">Price ($)</Label>
+                    <div>
+                        <Label>Price ($)</Label>
                         <Input
                             type="number"
-                            id="price"
                             name="price"
                             value={options.price}
                             onChange={handleInputChange}
@@ -406,11 +217,10 @@ const Page = () => {
                     </div>
 
                     {/* Stock Quantity */}
-                    <div className="flex flex-col gap-3">
-                        <Label htmlFor="stock">Stock Quantity</Label>
+                    <div>
+                        <Label>Stock Quantity</Label>
                         <Input
                             type="number"
-                            id="stock"
                             name="stock"
                             value={options.stock}
                             onChange={handleInputChange}
@@ -419,7 +229,7 @@ const Page = () => {
                     </div>
 
                     {/* Available Colors */}
-                    <div className="flex flex-col gap-3">
+                    <div>
                         <Label>Available Colors</Label>
                         <Input
                             placeholder="Enter colors separated by commas"
@@ -437,7 +247,7 @@ const Page = () => {
                     </div>
 
                     {/* Available Sizes */}
-                    <div className="flex flex-col gap-3">
+                    <div>
                         <Label>Available Sizes</Label>
                         <Input
                             placeholder="Enter sizes separated by commas"
@@ -455,7 +265,7 @@ const Page = () => {
                     </div>
 
                     {/* Collection Dropdown */}
-                    <div className="flex flex-col gap-3">
+                    <div>
                         <Label>Select a Collection</Label>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -464,7 +274,7 @@ const Page = () => {
                                     className="w-full justify-between"
                                 >
                                     {options.collection || "Choose collection"}
-                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                    <ChevronsUpDown className="ml-2 h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
@@ -473,9 +283,9 @@ const Page = () => {
                                         <DropdownMenuItem
                                             key={collection}
                                             className={cn(
-                                                "flex text-sm gap-1 items-center cursor-default hover:bg-zinc-100",
+                                                "flex items-center text-sm gap-2",
                                                 {
-                                                    "bg-zinc-100":
+                                                    "bg-gray-100":
                                                         options.collection ===
                                                         collection,
                                                 }
@@ -488,13 +298,14 @@ const Page = () => {
                                             }
                                         >
                                             <CheckIcon
-                                                className={cn(
-                                                    "mr-2 h-4 w-4",
-                                                    collection ===
-                                                        options.collection
-                                                        ? "opacity-100"
-                                                        : "opacity-0"
-                                                )}
+                                                className={cn("h-4 w-4", {
+                                                    "opacity-100":
+                                                        collection ===
+                                                        options.collection,
+                                                    "opacity-0":
+                                                        collection !==
+                                                        options.collection,
+                                                })}
                                             />
                                             {collection}
                                         </DropdownMenuItem>
@@ -506,27 +317,22 @@ const Page = () => {
                 </div>
 
                 {/* Continue Button */}
-                <div className="flex justify-end w-full mt-4">
-                    <Button
-                        isLoading={false}
-                        disabled={
-                            !options.name ||
-                            !options.description ||
-                            !options.price ||
-                            options.stock < 0
-                        }
-                        onClick={handleContinue}
-                        size="sm"
-                        className="w-full"
-                    >
-                        Continue{" "}
-                        <ArrowRight className="h-4 w-4 ml-1.5 inline" />
-                    </Button>
-                </div>
+                <Button
+                    isLoading={false}
+                    disabled={
+                        !options.name ||
+                        !options.description ||
+                        !options.price ||
+                        options.stock < 0
+                    }
+                    onClick={handleContinue}
+                    className="w-full mt-4"
+                >
+                    Continue <ArrowRight className="h-4 w-4 ml-1.5" />
+                </Button>
             </div>
         </div>
     );
->>>>>>> Stashed changes
 };
 
 export default Page;

@@ -19,7 +19,6 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
-import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 
 const Page = () => {
     const [isDragOver, setIsDragOver] = useState(false);
@@ -155,7 +154,7 @@ const Page = () => {
                 </Button>
             </div>
             {/* Preview Section */}
-            <MaxWidthWrapper className="max-w-full overflow-hidden px-2">
+            <div className="max-w-full overflow-hidden px-2">
                 <Carousel
                     opts={{
                         align: "center",
@@ -187,7 +186,7 @@ const Page = () => {
                     <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10" />
                     <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10" />
                 </Carousel>
-            </MaxWidthWrapper>
+            </div>
 
             <div className="grid cursor-pointer grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 mt-4 w-full">
                 {uploadedImageUrls && uploadedImageUrls.length > 0
