@@ -2,17 +2,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { ArrowRight, CheckIcon, ChevronsUpDown } from "lucide-react";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { ArrowRight } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import useStore from "@/context/useStore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { ProductSchema } from "@/lib/validationSchema";
 import {
@@ -24,20 +17,113 @@ import {
 } from "@/components/ui/carousel";
 import ImageGallery from "@/components/ImageGallery";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
+import { toast } from "sonner";
+
+const COLLECTION_DATA = {
+    winter: {
+        type: "Winter",
+        title: "Winter Collection",
+        description: "Cozy, warm clothing for the chilly season.",
+    },
+    summer: {
+        type: "Summer",
+        title: "Summer Collection",
+        description: "Light and breezy clothes for sunny days.",
+    },
+    spring: {
+        type: "Spring",
+        title: "Spring Collection",
+        description: "Fresh and colorful clothing for the new season.",
+    },
+    onsale: {
+        type: "On Sale",
+        title: "Discounted Products",
+        description: "Grab these amazing deals before they're gone!",
+        newPrice: null,
+    },
+};
+
+const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
+
+const COLORS = [
+    "Aqua",
+    "Beige",
+    "Blush",
+    "Blue",
+    "Brown",
+    "Burgundy",
+    "Charcoal",
+    "Cobalt",
+    "Copper",
+    "Coral",
+    "Cream",
+    "Cyan",
+    "Gold",
+    "Gray",
+    "Green",
+    "Indigo",
+    "Ivory",
+    "Khaki",
+    "Lavender",
+    "Magenta",
+    "Mint",
+    "Mocha",
+    "Mustard",
+    "Navy",
+    "Olive",
+    "Peach",
+    "Pink",
+    "Pistachio",
+    "Purple",
+    "Red",
+    "Rose",
+    "Silver",
+    "Slate",
+    "Slate Blue",
+    "Sky Blue",
+    "Tan",
+    "Teal",
+    "Turquoise",
+    "Wine",
+    "Yellow",
+];
 
 const Page = () => {
     const { categories, uploadedImageUrls } = useStore();
 
+    useEffect(() => {
+        setOptions((prevOptions) => ({
+            ...prevOptions,
+            availableImages: uploadedImageUrls,
+        }));
+    }, [uploadedImageUrls]);
+
     const [options, setOptions] = useState({
         name: "",
         category: categories[0],
-        images: uploadedImageUrls,
+        availableImages: uploadedImageUrls,
         price: 0,
         description: "",
         stock: 0,
         availableSizes: [],
         availableColors: [],
-        collection: null,
+        collection: "",
     });
 
     const handleInputChange = (e) => {
@@ -45,12 +131,59 @@ const Page = () => {
         setOptions((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleContinue = () => {
+    const handleSizeChange = (selectedSizes) => {
+        setOptions((prevOptions) => ({
+            ...prevOptions,
+            availableSizes: selectedSizes,
+        }));
+    };
+
+    const handleColorChange = (selectedColors) => {
+        setOptions((prevOptions) => ({
+            ...prevOptions,
+            availableColors: selectedColors,
+        }));
+    };
+
+    const handleContinue = async () => {
         try {
-            const validatedData = ProductSchema.parse(options);
+            const selectedCollection = COLLECTION_DATA[options.collection];
+
+            const productData = {
+                ...options,
+                collection: selectedCollection,
+            };
+
+            // Validate product data
+            const validatedData = ProductSchema.parse(productData);
             console.log("Validated Product details:", validatedData);
+
+            // Make API call to add product
+            const response = await fetch("/api/addproduct", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(validatedData),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                toast.success("Product added successfully!"); // Success toast
+                console.log("Product added successfully:", data);
+            } else {
+                toast.error(data.error || "Error adding product."); // Error toast
+                console.error("Error adding product:", data.error);
+            }
         } catch (e) {
-            console.error(e.errors);
+            toast.error(
+                "Validation or request failed: " + (e.message || e.errors)
+            ); // Error toast
+            console.error(
+                "Validation or request failed:",
+                e.message || e.errors
+            );
         }
     };
 
@@ -60,33 +193,14 @@ const Page = () => {
 
     return (
         <div
-            className="w-full flex flex-col lg:flex-row lg:items-start py-6"
+            className="w-full flex flex-col lg:flex-row lg:items-start pb-4 pt-10"
             data-testid="product-container"
         >
             {/* Left Side - Image Gallery */}
-            <div className="w-full lg:w-1/2 mt-7 mb-10 lg:mb-0">
+            <div className="w-full lg:w-1/2 mb-10 lg:mb-0">
                 <div className="hidden md:block w-full relative">
                     <ImageGallery images={uploadedImageUrls || []} />
                 </div>
-
-                {/* Carousel for small screens */}
-                {/* <div className=" relative left max-w-xs mt-4 lg:hidden">
-                    <Carousel>
-                        <CarouselContent>
-                            {uploadedImageUrls.map((url, index) => (
-                                <CarouselItem key={index}>
-                                    <Product
-                                        initialImage={url}
-                                        size="medium"
-                                        isFeatured={true}
-                                    />
-                                </CarouselItem>
-                            ))}
-                        </CarouselContent>
-                        <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10" />
-                        <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10" />
-                    </Carousel>
-                </div> */}
                 <div className="max-w-full md:hidden overflow-hidden px-2">
                     <Carousel
                         opts={{
@@ -152,56 +266,35 @@ const Page = () => {
 
                     {/* Category Dropdown */}
                     <div>
-                        <Label>Select a category for your product</Label>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    className="w-full justify-between"
-                                >
-                                    {options.category}
-                                    <ChevronsUpDown className="ml-2 h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                {categories.map((category) => (
-                                    <DropdownMenuItem
-                                        key={category}
-                                        className={cn(
-                                            "flex items-center text-sm gap-2",
-                                            {
-                                                "bg-gray-100":
-                                                    options.category ===
-                                                    category,
-                                            }
-                                        )}
-                                        onClick={() =>
-                                            setOptions((prev) => ({
-                                                ...prev,
-                                                category:
-                                                    category
-                                                        .charAt(0)
-                                                        .toUpperCase() +
-                                                    category.slice(1),
-                                            }))
-                                        }
-                                    >
-                                        <CheckIcon
-                                            className={cn("h-4 w-4", {
-                                                "opacity-100":
-                                                    category ===
-                                                    options.category,
-                                                "opacity-0":
-                                                    category !==
-                                                    options.category,
-                                            })}
-                                        />
-                                        {category.charAt(0).toUpperCase() +
-                                            category.slice(1)}
-                                    </DropdownMenuItem>
-                                ))}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <Label>Select a category for your product</Label>{" "}
+                        <Select
+                            variant="bordered"
+                            value={options.category}
+                            onValueChange={(value) =>
+                                setOptions((prev) => ({
+                                    ...prev,
+                                    category: value,
+                                }))
+                            }
+                        >
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select a category" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectLabel>Categories</SelectLabel>
+                                    {categories.map((category) => (
+                                        <SelectItem
+                                            key={category}
+                                            value={category}
+                                        >
+                                            {category.charAt(0).toUpperCase() +
+                                                category.slice(1)}{" "}
+                                        </SelectItem>
+                                    ))}
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     {/* Product Price */}
@@ -230,106 +323,125 @@ const Page = () => {
 
                     {/* Available Colors */}
                     <div>
-                        <Label>Available Colors</Label>
-                        <Input
-                            placeholder="Enter colors separated by commas"
-                            name="availableColors"
-                            value={options.availableColors.join(", ")}
-                            onChange={(e) =>
-                                setOptions((prev) => ({
-                                    ...prev,
-                                    availableColors: e.target.value
-                                        .split(",")
-                                        .map((color) => color.trim()),
-                                }))
-                            }
-                        />
+                        <Accordion type="multiple" collapsible>
+                            <AccordionItem value={"Available Colors"}>
+                                <AccordionTrigger>
+                                    {"Available Colors"}
+                                </AccordionTrigger>
+                                <AccordionContent className="p-2">
+                                    <ToggleGroup
+                                        type="multiple"
+                                        size="lg"
+                                        variant="outline"
+                                        onValueChange={(newSelection) =>
+                                            handleColorChange(newSelection)
+                                        }
+                                    >
+                                        <div className="flex flex-wrap gap-2">
+                                            {COLORS.map((color) => (
+                                                <ToggleGroupItem
+                                                    key={color}
+                                                    value={color}
+                                                    aria-label={`Toggle ${color}`}
+                                                    className="inline-block px-3 py-1 text-sm whitespace-nowrap border rounded-md"
+                                                >
+                                                    {color}
+                                                </ToggleGroupItem>
+                                            ))}
+                                        </div>
+                                    </ToggleGroup>
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
                     </div>
 
                     {/* Available Sizes */}
                     <div>
-                        <Label>Available Sizes</Label>
-                        <Input
-                            placeholder="Enter sizes separated by commas"
-                            name="availableSizes"
-                            value={options.availableSizes.join(", ")}
-                            onChange={(e) =>
-                                setOptions((prev) => ({
-                                    ...prev,
-                                    availableSizes: e.target.value
-                                        .split(",")
-                                        .map((size) => size.trim()),
-                                }))
-                            }
-                        />
+                        <Accordion type="multiple" collapsible>
+                            <AccordionItem value={"Available Colors"}>
+                                <AccordionTrigger>
+                                    {"Available Colors"}
+                                </AccordionTrigger>
+                                <AccordionContent className="p-2">
+                                    <ToggleGroup
+                                        type="multiple"
+                                        size="lg"
+                                        variant="outline"
+                                        onValueChange={(newSelection) =>
+                                            handleSizeChange(newSelection)
+                                        }
+                                    >
+                                        {" "}
+                                        <div className="flex flex-wrap gap-2">
+                                            {SIZES.map((size) => (
+                                                <ToggleGroupItem
+                                                    key={size}
+                                                    value={size}
+                                                    aria-label={`Toggle ${size}`}
+                                                >
+                                                    {size}
+                                                </ToggleGroupItem>
+                                            ))}
+                                        </div>
+                                    </ToggleGroup>
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
                     </div>
 
                     {/* Collection Dropdown */}
                     <div>
                         <Label>Select a Collection</Label>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    className="w-full justify-between"
-                                >
-                                    {options.collection || "Choose collection"}
-                                    <ChevronsUpDown className="ml-2 h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                {["Winter", "Summer", "Spring", "On Sale"].map(
-                                    (collection) => (
-                                        <DropdownMenuItem
-                                            key={collection}
-                                            className={cn(
-                                                "flex items-center text-sm gap-2",
+
+                        <Select
+                            variant="bordered"
+                            value={options.collection}
+                            onValueChange={(value) => {
+                                setOptions((prev) => ({
+                                    ...prev,
+                                    collection: value, // Store just the collection name
+                                }));
+                            }}
+                        >
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Choose a collection" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectLabel>Collections</SelectLabel>
+                                    {Object.keys(COLLECTION_DATA).map(
+                                        (collection) => (
+                                            <SelectItem
+                                                key={collection}
+                                                value={collection}
+                                            >
                                                 {
-                                                    "bg-gray-100":
-                                                        options.collection ===
-                                                        collection,
+                                                    COLLECTION_DATA[collection]
+                                                        .title
                                                 }
-                                            )}
-                                            onClick={() =>
-                                                setOptions((prev) => ({
-                                                    ...prev,
-                                                    collection,
-                                                }))
-                                            }
-                                        >
-                                            <CheckIcon
-                                                className={cn("h-4 w-4", {
-                                                    "opacity-100":
-                                                        collection ===
-                                                        options.collection,
-                                                    "opacity-0":
-                                                        collection !==
-                                                        options.collection,
-                                                })}
-                                            />
-                                            {collection}
-                                        </DropdownMenuItem>
-                                    )
-                                )}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                                            </SelectItem>
+                                        )
+                                    )}
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+
+                        {/* Continue Button */}
+                        <Button
+                            isLoading={false}
+                            disabled={
+                                !options.name ||
+                                !options.description ||
+                                !options.price ||
+                                options.stock < 0
+                            }
+                            onClick={handleContinue}
+                            className="w-full mt-4"
+                        >
+                            Continue <ArrowRight className="h-4 w-4 ml-1.5" />
+                        </Button>
                     </div>
                 </div>
-
-                {/* Continue Button */}
-                <Button
-                    isLoading={false}
-                    disabled={
-                        !options.name ||
-                        !options.description ||
-                        !options.price ||
-                        options.stock < 0
-                    }
-                    onClick={handleContinue}
-                    className="w-full mt-4"
-                >
-                    Continue <ArrowRight className="h-4 w-4 ml-1.5" />
-                </Button>
             </div>
         </div>
     );

@@ -5,8 +5,8 @@ import { Label } from "../ui/label";
 const ProductActions = ({ options, title, onSelect }) => {
     const [selectedOption, setSelectedOption] = React.useState(options[0]);
     const handleSelect = (optionValue) => {
-        setSelectedOption(optionValue); // Update the local state
-        onSelect(optionValue); // Notify the parent component
+        setSelectedOption(optionValue);
+        onSelect(optionValue);
     };
 
     return (

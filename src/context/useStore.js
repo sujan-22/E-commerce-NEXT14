@@ -26,6 +26,13 @@ const useStore = create(
                     uploadedImageUrls: [...state.uploadedImageUrls, ...urls],
                 })),
 
+            removeUploadedImageUrl: (urlToRemove) =>
+                set((state) => ({
+                    uploadedImageUrls: state.uploadedImageUrls.filter(
+                        (url) => url !== urlToRemove
+                    ),
+                })),
+
             addToCart: (item) =>
                 set((state) => {
                     const existingItem = state.cartItems.find(
