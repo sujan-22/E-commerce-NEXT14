@@ -19,10 +19,9 @@ export const signUpSchema = z.object({
 
 // Collection Schema
 export const CollectionSchema = z.object({
-    type: z.enum(["Winter", "Summer", "Spring", "On Sale"]),
+    type: z.enum(["Winter", "Summer", "Spring", "On Sale"]).optional(),
     title: z.string().nullable().optional(),
     description: z.string().nullable().optional(),
-    newPrice: z.number().nullable().optional(),
 });
 
 // Product schema
@@ -40,6 +39,13 @@ export const ProductSchema = z.object({
     description: z.string().nonempty("Description is required"),
     availableSizes: z.array(z.string()).optional(),
     availableColors: z.array(z.string()).optional(),
-    availableImages: z.array(z.string()).min(0, "Image is required"),
-    collection: CollectionSchema.nullable(),
+    availableImages: z
+        .array(z.string())
+        .min(1, "At least one image is required"),
+    collection: z.object({
+        onsale: CollectionSchema.optional(),
+        spring: CollectionSchema.optional(),
+        summer: CollectionSchema.optional(),
+        winter: CollectionSchema.optional(),
+    }),
 });

@@ -33,6 +33,8 @@ const useStore = create(
                     ),
                 })),
 
+            clearUploadedImageUrls: () => set({ uploadedImageUrls: [] }),
+
             addToCart: (item) =>
                 set((state) => {
                     const existingItem = state.cartItems.find(

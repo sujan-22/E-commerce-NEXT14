@@ -2,7 +2,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import useStore from "@/context/useStore";
 import { useEffect, useState } from "react";
@@ -34,78 +33,13 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import { toast } from "sonner";
-
-const COLLECTION_DATA = {
-    winter: {
-        type: "Winter",
-        title: "Winter Collection",
-        description: "Cozy, warm clothing for the chilly season.",
-    },
-    summer: {
-        type: "Summer",
-        title: "Summer Collection",
-        description: "Light and breezy clothes for sunny days.",
-    },
-    spring: {
-        type: "Spring",
-        title: "Spring Collection",
-        description: "Fresh and colorful clothing for the new season.",
-    },
-    onsale: {
-        type: "On Sale",
-        title: "Discounted Products",
-        description: "Grab these amazing deals before they're gone!",
-        newPrice: null,
-    },
-};
-
-const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
-
-const COLORS = [
-    "Aqua",
-    "Beige",
-    "Blush",
-    "Blue",
-    "Brown",
-    "Burgundy",
-    "Charcoal",
-    "Cobalt",
-    "Copper",
-    "Coral",
-    "Cream",
-    "Cyan",
-    "Gold",
-    "Gray",
-    "Green",
-    "Indigo",
-    "Ivory",
-    "Khaki",
-    "Lavender",
-    "Magenta",
-    "Mint",
-    "Mocha",
-    "Mustard",
-    "Navy",
-    "Olive",
-    "Peach",
-    "Pink",
-    "Pistachio",
-    "Purple",
-    "Red",
-    "Rose",
-    "Silver",
-    "Slate",
-    "Slate Blue",
-    "Sky Blue",
-    "Tan",
-    "Teal",
-    "Turquoise",
-    "Wine",
-    "Yellow",
-];
+import { COLLECTION_DATA, COLORS, SIZES } from "@/data/product_details";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
-    const { categories, uploadedImageUrls } = useStore();
+    const { categories, uploadedImageUrls, clearUploadedImageUrls } =
+        useStore();
+    const router = useRouter();
 
     useEffect(() => {
         setOptions((prevOptions) => ({
@@ -149,16 +83,19 @@ const Page = () => {
         try {
             const selectedCollection = COLLECTION_DATA[options.collection];
 
+            const collections = {};
+            for (const key in COLLECTION_DATA) {
+                collections[key] =
+                    key === options.collection ? selectedCollection : {};
+            }
+
             const productData = {
                 ...options,
-                collection: selectedCollection,
+                collection: collections,
             };
 
-            // Validate product data
             const validatedData = ProductSchema.parse(productData);
-            console.log("Validated Product details:", validatedData);
 
-            // Make API call to add product
             const response = await fetch("/api/addproduct", {
                 method: "POST",
                 headers: {
@@ -170,16 +107,17 @@ const Page = () => {
             const data = await response.json();
 
             if (response.ok) {
-                toast.success("Product added successfully!"); // Success toast
-                console.log("Product added successfully:", data);
+                toast.success("Product added successfully!");
+                clearUploadedImageUrls();
+                router.push("/");
             } else {
-                toast.error(data.error || "Error adding product."); // Error toast
+                toast.error(data.error || "Error adding product.");
                 console.error("Error adding product:", data.error);
             }
         } catch (e) {
             toast.error(
                 "Validation or request failed: " + (e.message || e.errors)
-            ); // Error toast
+            );
             console.error(
                 "Validation or request failed:",
                 e.message || e.errors
@@ -323,7 +261,7 @@ const Page = () => {
 
                     {/* Available Colors */}
                     <div>
-                        <Accordion type="multiple" collapsible>
+                        <Accordion collapsible>
                             <AccordionItem value={"Available Colors"}>
                                 <AccordionTrigger>
                                     {"Available Colors"}
@@ -340,12 +278,12 @@ const Page = () => {
                                         <div className="flex flex-wrap gap-2">
                                             {COLORS.map((color) => (
                                                 <ToggleGroupItem
-                                                    key={color}
-                                                    value={color}
-                                                    aria-label={`Toggle ${color}`}
+                                                    key={color.color}
+                                                    value={color.color}
+                                                    aria-label={`Toggle ${color.color}`}
                                                     className="inline-block px-3 py-1 text-sm whitespace-nowrap border rounded-md"
                                                 >
-                                                    {color}
+                                                    {color.color}
                                                 </ToggleGroupItem>
                                             ))}
                                         </div>
@@ -357,10 +295,10 @@ const Page = () => {
 
                     {/* Available Sizes */}
                     <div>
-                        <Accordion type="multiple" collapsible>
-                            <AccordionItem value={"Available Colors"}>
+                        <Accordion collapsible>
+                            <AccordionItem value={"Available Sizes"}>
                                 <AccordionTrigger>
-                                    {"Available Colors"}
+                                    {"Available Sizes"}
                                 </AccordionTrigger>
                                 <AccordionContent className="p-2">
                                     <ToggleGroup
@@ -375,11 +313,11 @@ const Page = () => {
                                         <div className="flex flex-wrap gap-2">
                                             {SIZES.map((size) => (
                                                 <ToggleGroupItem
-                                                    key={size}
-                                                    value={size}
-                                                    aria-label={`Toggle ${size}`}
+                                                    key={size.size}
+                                                    value={size.size}
+                                                    aria-label={`Toggle ${size.size}`}
                                                 >
-                                                    {size}
+                                                    {size.size}
                                                 </ToggleGroupItem>
                                             ))}
                                         </div>
@@ -399,7 +337,7 @@ const Page = () => {
                             onValueChange={(value) => {
                                 setOptions((prev) => ({
                                     ...prev,
-                                    collection: value, // Store just the collection name
+                                    collection: value,
                                 }));
                             }}
                         >
@@ -438,7 +376,7 @@ const Page = () => {
                             onClick={handleContinue}
                             className="w-full mt-4"
                         >
-                            Continue <ArrowRight className="h-4 w-4 ml-1.5" />
+                            Continue &rarr;
                         </Button>
                     </div>
                 </div>
