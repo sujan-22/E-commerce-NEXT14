@@ -13,7 +13,6 @@ import Link from "next/link";
 import ProductList from "@/components/product/ProductList";
 import SubscribeToNewsletter from "@/components/SubscribeToNewsletter";
 import useStore from "@/context/useStore";
-import { useEffect, useState } from "react";
 
 const perks = [
     {
