@@ -1,36 +1,104 @@
 import useStore from "@/context/useStore";
-import { formatPrice } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
 import { MinusIcon, PlusIcon, XIcon } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 
-const CartItem = ({ product, quantity, selectedSize, selectedColor }) => {
+const CartItem = ({
+  product,
+  quantity,
+  selectedSize,
+  selectedColor,
+  fetchCartData,
+}) => {
+  const { data: session } = useSession();
   const removeFromCart = useStore((state) => state.removeFromCart);
   const increaseQuantity = useStore((state) => state.increaseQuantity);
   const decreaseQuantity = useStore((state) => state.decreaseQuantity);
 
-  const handleRemove = () => {
-    removeFromCart({
-      productId: product.id,
-      selectedColor: selectedColor,
-      selectedSize: selectedSize,
-    });
+  const handleRemove = async () => {
+    if (session) {
+      // If user is logged in, make an API call to remove from cart
+      await fetch("/api/cart", {
+        method: "POST",
+        body: JSON.stringify({
+          action: "remove",
+          userId: session.user.id,
+          productId: product.id,
+          selectedColor,
+          selectedSize,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      fetchCartData();
+    } else {
+      // Otherwise, remove from store (for guest users)
+      removeFromCart({
+        productId: product.id,
+        selectedColor: selectedColor,
+        selectedSize: selectedSize,
+      });
+    }
   };
 
-  const handleIncrease = () => {
-    increaseQuantity({
-      productId: product.id,
-      selectedColor: selectedColor,
-      selectedSize: selectedSize,
-    });
+  // Handle increase item quantity
+  const handleIncrease = async () => {
+    if (session) {
+      await fetch("/api/cart", {
+        method: "POST",
+        body: JSON.stringify({
+          action: "update",
+          userId: session.user.id,
+          productId: product.id,
+          quantity: quantity + 1,
+          selectedColor,
+          selectedSize,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      fetchCartData();
+    } else {
+      // Otherwise, increase quantity in store (for guest users)
+      increaseQuantity({
+        productId: product.id,
+        selectedColor: selectedColor,
+        selectedSize: selectedSize,
+      });
+    }
   };
 
-  const handleDecrease = () => {
-    decreaseQuantity({
-      productId: product.id,
-      selectedColor: selectedColor,
-      selectedSize: selectedSize,
-    });
+  // Handle decrease item quantity
+  const handleDecrease = async () => {
+    if (session) {
+      // If user is logged in, make an API call to update cart quantity
+      await fetch("/api/cart", {
+        method: "POST",
+        body: JSON.stringify({
+          action: "update",
+          userId: session.user.id,
+          productId: product.id,
+          quantity: quantity - 1,
+          selectedColor,
+          selectedSize,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      fetchCartData();
+    } else {
+      // Otherwise, decrease quantity in store (for guest users)
+      decreaseQuantity({
+        productId: product.id,
+        selectedColor: selectedColor,
+        selectedSize: selectedSize,
+      });
+    }
   };
 
   return (
@@ -86,7 +154,12 @@ const CartItem = ({ product, quantity, selectedSize, selectedColor }) => {
           </p>
 
           <div className="ml-auto flex h-8 flex-row items-center rounded-full border border-neutral-200 dark:border-neutral-700 px-2">
-            <MinusIcon className="w-5 h-5" onClick={handleDecrease} />
+            <MinusIcon
+              className={cn("w-5 h-5", {
+                "text-gray-400 cursor-not-allowed": quantity === 1,
+              })}
+              onClick={quantity > 1 ? handleDecrease : undefined}
+            />
             <p className="w-6 text-center">
               <span className="w-full text-sm hover:cursor-pointer">
                 {quantity}

@@ -39,7 +39,6 @@ export default function SignIn() {
       } else {
         toast.success("Signed in successfully!");
         router.replace("/");
-        console.log(result);
 
         setUserData(result);
       }

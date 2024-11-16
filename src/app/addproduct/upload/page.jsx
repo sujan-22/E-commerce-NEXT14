@@ -102,7 +102,6 @@ const Page = () => {
 
             if (response.ok) {
                 toast.success("Image removed successfully!");
-                console.log("Image removed from S3:", data.message);
             } else {
                 toast.error(data.error || "Failed to remove image.");
                 console.error(
