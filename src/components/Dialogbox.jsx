@@ -37,7 +37,6 @@ import useStore from "@/context/useStore";
 export default function Dialogbox() {
   const router = useRouter();
   const cartItems = useStore((state) => state.cartItems);
-  const cartTotal = useStore((state) => state.cartTotal);
   const clearCart = useStore((state) => state.clearCart);
 
   // Dialog state
@@ -121,7 +120,6 @@ export default function Dialogbox() {
             email: data.email,
             password: data.password,
             cartItems: cartItems,
-            cartTotal: cartTotal,
           }),
         });
 

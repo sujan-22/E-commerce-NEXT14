@@ -1,5 +1,3 @@
-// app/api/cart/route.js
-
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
@@ -12,6 +10,7 @@ const cartActionSchema = z.object({
   quantity: z.number().optional(),
   selectedColor: z.string().optional(),
   selectedSize: z.string().optional(),
+  price: z.number().optional(),
 });
 
 export async function POST(req) {
@@ -19,8 +18,15 @@ export async function POST(req) {
     const body = await req.json();
     const parsedData = cartActionSchema.parse(body);
 
-    const { action, userId, productId, quantity, selectedColor, selectedSize } =
-      parsedData;
+    const {
+      action,
+      userId,
+      productId,
+      quantity,
+      selectedColor,
+      selectedSize,
+      price,
+    } = parsedData;
 
     // Connect to the MongoDB client
     const client = await clientPromise;
@@ -49,6 +55,7 @@ export async function POST(req) {
           quantity: quantity || 1,
           selectedColor,
           selectedSize,
+          price, // Ensure price is added here
         };
 
         updatedCart = {
@@ -58,14 +65,17 @@ export async function POST(req) {
         break;
 
       case "update":
-        // Update the quantity of a product in the cart
         updatedCart = {
           ...cart,
           cartItems: cart.cartItems.map((item) =>
             item.productId === productId &&
             item.selectedColor === selectedColor &&
             item.selectedSize === selectedSize
-              ? { ...item, quantity }
+              ? {
+                  ...item,
+                  quantity, // Update quantity
+                  price: price !== undefined ? price : item.price, // Only update price if provided
+                }
               : item
           ),
         };
@@ -88,21 +98,18 @@ export async function POST(req) {
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
 
-    // Update the cart data in the database
+    // Update the cart data in the database with the new total
     await db.collection("carts").updateOne(
-      { userId },
+      { userId: new ObjectId(userId) },
       {
         $set: {
           cartItems: updatedCart.cartItems,
-          cartTotal: updatedCart.cartItems.reduce(
-            (total, item) => total + item.quantity * item.price, // You'd need to get the price from the product data
-            0
-          ),
           updatedAt: new Date(),
         },
       }
     );
 
+    // Return the updated cart
     return NextResponse.json(updatedCart);
   } catch (error) {
     console.error("Error managing cart:", error);

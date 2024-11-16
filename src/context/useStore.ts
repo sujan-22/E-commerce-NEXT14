@@ -6,7 +6,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 export type Product = z.infer<typeof ProductSchema>;
 
 // Interface for cart item
-interface CartItem {
+export interface CartItem {
   productId: number;
   selectedColor: string;
   selectedSize: string;
@@ -14,9 +14,21 @@ interface CartItem {
   price: number;
 }
 
+interface IUser {
+  id: string;
+  email: string;
+  name: string;
+  seller?: boolean;
+}
+
+interface IUserData {
+  user: IUser;
+  expires: string;
+}
+
 // Interface for the store's state
 interface StoreState {
-  userData: null | any;
+  userData: IUser | null;
   loading: boolean;
   allProducts: Product[];
   categories: string[];
@@ -206,9 +218,9 @@ const useStore = create<StoreState>()(
       name: "store",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
+        userData: state.userData,
         cartItems: state.cartItems,
         uploadedImageUrls: state.uploadedImageUrls,
-        cartTotal: state.cartTotal,
       }),
     }
   )

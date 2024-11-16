@@ -14,36 +14,62 @@ import { buttonVariants } from "../ui/button";
 import { formatPrice } from "@/lib/utils";
 import CartItem from "./CartItem";
 import useStore from "@/context/useStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { calculateCartTotal } from "./utils/calculateTotal";
+import { useSession } from "next-auth/react";
 
 const Cart = () => {
-  const cartItems = useStore((state) => state.cartItems);
-  const allProducts = useStore((state) => state.allProducts);
-  const cartTotal = useStore((state) => state.cartTotal);
-  const calculateCartTotal = useStore((state) => state.calculateCartTotal);
+  const { userData, allProducts } = useStore();
+  const { data: session } = useSession();
+  const cartItemsFromStore = useStore((state) => state.cartItems);
+  const cartTotalFromStore = useStore((state) => state.cartTotal);
+  const [cartItems, setCartItems] = useState(cartItemsFromStore);
+  const [cartTotal, setCartTotal] = useState(cartTotalFromStore);
+  const [itemCount, setItemCount] = useState(0);
 
-  const itemCount = cartItems.reduce((count, item) => count + item.quantity, 0);
-
-  useEffect(() => {
-    calculateCartTotal();
-  }, [cartItems, calculateCartTotal]);
-
-  const handleAddProducts = async () => {
+  // Define the fetchCartData function
+  const fetchCartData = async () => {
     try {
-      const response = await fetch("/api", {
+      const res = await fetch("/api/cart", {
         method: "POST",
+        body: JSON.stringify({
+          action: "get",
+          userId: session.user.id,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
-      const data = await response.json();
-      if (response.ok) {
-        alert(data.message);
-      } else {
-        alert(data.error);
+      const data = await res.json();
+
+      if (data.cartItems) {
+        setCartItems(data.cartItems);
+        setCartTotal(data.cartTotal);
+        setItemCount(
+          data.cartItems.reduce((count, item) => count + item.quantity, 0)
+        );
       }
     } catch (error) {
-      console.error("Error adding products:", error);
-      alert("An error occurred while adding products.");
+      console.error("Failed to fetch cart data:", error);
     }
   };
+
+  useEffect(() => {
+    setCartTotal(calculateCartTotal(cartItems));
+    setItemCount(cartItems.reduce((count, item) => count + item.quantity, 0));
+  }, [cartItems]);
+
+  useEffect(() => {
+    if (session) {
+      fetchCartData();
+    } else {
+      setCartItems(cartItemsFromStore);
+      setCartTotal(cartTotalFromStore);
+      setItemCount(
+        cartItemsFromStore.reduce((count, item) => count + item.quantity, 0)
+      );
+    }
+  }, [session, cartItemsFromStore, cartTotalFromStore]);
 
   return (
     <Sheet>
@@ -76,7 +102,8 @@ const Cart = () => {
                         quantity={item.quantity}
                         selectedSize={item.selectedSize}
                         selectedColor={item.selectedColor}
-                        key={item.productId}
+                        key={i}
+                        fetchCartData={fetchCartData}
                       />
                     ) : null;
                   })}
@@ -120,8 +147,7 @@ const Cart = () => {
             <SheetFooter>
               <SheetTrigger asChild>
                 <Link
-                  href="/cart"
-                  onClick={handleAddProducts}
+                  href="/"
                   className={buttonVariants({
                     className: "w-full",
                   })}

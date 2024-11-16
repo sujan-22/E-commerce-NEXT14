@@ -14,10 +14,10 @@ const userSchema = z.object({
         quantity: z.number(),
         selectedColor: z.string().optional(),
         selectedSize: z.string().optional(),
+        price: z.number(),
       })
     )
     .optional(),
-  cartTotal: z.number().optional(),
 });
 
 export async function POST(req) {
@@ -50,11 +50,10 @@ export async function POST(req) {
       password: hashedPassword,
     });
 
-    if (cartItems && cartTotal) {
+    if (cartItems) {
       await db.collection("carts").insertOne({
         userId: newUser.insertedId,
         cartItems: cartItems,
-        cartTotal: cartTotal,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
