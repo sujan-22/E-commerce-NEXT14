@@ -96,7 +96,7 @@ export async function POST(req) {
           cartItems: updatedCart.cartItems,
           cartTotal: updatedCart.cartItems.reduce(
             (total, item) => total + item.quantity * item.price, // You'd need to get the price from the product data
-            0c
+            0
           ),
           updatedAt: new Date(),
         },
