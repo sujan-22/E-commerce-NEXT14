@@ -5,30 +5,32 @@ import { AuthError } from "next-auth";
 import useStore from "@/context/useStore";
 
 export async function handleCredentialsSignIn({
-    email,
-    password,
+  email,
+  password,
 }: {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 }) {
-    try {
-        await signIn("credentials", { email, password, redirectTo: "/" });
-    } catch (error) {
-        if (error instanceof AuthError) {
-            // Check for specific error messages
-            if (error.message) {
-                return {
-                    message: error.message.replace(/\. Read more at.*$/, ""),
-                };
-            } else {
-                return { message: "Something went wrong during sign-in." };
-            }
-        }
-        throw error;
+  try {
+    const response = await signIn("credentials", {
+      email,
+      password,
+      redirect: false, // Disable automatic redirection
+    });
+
+    if (response?.error) {
+      return { message: response.error };
     }
+    return {}; // Success, no errors
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return { message: error.message.replace(/\. Read more at.*$/, "") };
+    }
+    throw error;
+  }
 }
 
 export async function handleSignOut() {
-    useStore.getState().logoutUser(); // Clear user data from the store
-    await signOut(); // Perform the sign-out operation
+  useStore.getState().logoutUser(); // Clear user data from the store
+  await signOut(); // Perform the sign-out operation
 }
