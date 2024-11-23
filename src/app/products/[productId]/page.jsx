@@ -19,13 +19,11 @@ const Page = ({ params }) => {
     const addToCart = useStore((state) => state.addToCart);
     const syncCartWithServer = useStore((state) => state.syncCartWithServer);
     const userData = useStore((state) => state.userData);
+    const [selectedColor, setSelectedColor] = useState("");
+    const [selectedSize, setSelectedSize] = useState("");
 
     const id = params.productId;
     const product = products.find((prod) => prod.id === parseInt(id));
-
-    // Initialize selectedColor and selectedSize with safe default values
-    const [selectedColor, setSelectedColor] = useState("");
-    const [selectedSize, setSelectedSize] = useState("");
 
     // Update the selected color and size when the product becomes available
     useEffect(() => {
@@ -34,40 +32,6 @@ const Page = ({ params }) => {
             setSelectedSize(product.availableSizes?.[0] || "");
         }
     }, [product]);
-
-    const handleAddToCart = async () => {
-        const productConfig = {
-            productId: product.id,
-            quantity: 1,
-            selectedColor,
-            selectedSize,
-        };
-        if (userData) {
-            try {
-                const response = await fetch("/api/cart", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        action: "add",
-                        userId: userData.id,
-                        ...productConfig,
-                    }),
-                });
-
-                if (response.ok) {
-                    syncCartWithServer();
-                } else {
-                    console.error("Failed to add item to cart in the database");
-                }
-            } catch (error) {
-                console.error("Error adding item to cart:", error);
-            }
-        } else {
-            addToCart(productConfig);
-        }
-    };
 
     if (!products) {
         return (
@@ -109,6 +73,41 @@ const Page = ({ params }) => {
             </MaxWidthWrapper>
         );
     }
+
+    const handleAddToCart = async () => {
+        const productConfig = {
+            productId: product.id,
+            quantity: 1,
+            selectedColor,
+            selectedSize,
+        };
+        if (userData) {
+            try {
+                const response = await fetch("/api/cart", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        action: "add",
+                        userId: userData.id,
+                        ...productConfig,
+                    }),
+                });
+
+                if (response.ok) {
+                    syncCartWithServer();
+                } else {
+                    console.error("Failed to add item to cart in the database");
+                }
+            } catch (error) {
+                console.error("Error adding item to cart:", error);
+            }
+        } else {
+            addToCart(productConfig);
+        }
+    };
+
     return (
         <MaxWidthWrapper>
             <div

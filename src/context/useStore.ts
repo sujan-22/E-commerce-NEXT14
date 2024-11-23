@@ -109,7 +109,6 @@ const useStore = create<StoreState>()(
                     if (data.cartItems) {
                         set({
                             cartItems: data.cartItems,
-                            cartTotal: data.cartTotal,
                         });
                     }
                 } catch (error) {

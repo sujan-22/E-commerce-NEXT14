@@ -7,6 +7,9 @@ interface ProductInfoProps {
 }
 
 const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
+    if (!product) {
+        return;
+    }
     const collectionTitle = Object.values(product.collection)?.find(
         (collection) => collection.title
     )?.title;
