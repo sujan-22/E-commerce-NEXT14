@@ -1,7 +1,6 @@
 import useStore, { Product } from "@/context/useStore";
 import { cn, formatPrice } from "@/lib/utils";
 import { MinusIcon, PlusIcon, XIcon } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -10,7 +9,6 @@ interface CartLineProps {
     quantity: number;
     selectedSize: string;
     selectedColor: string;
-    fetchCartData: () => void;
 }
 
 const CartLine: React.FC<CartLineProps> = ({
@@ -18,22 +16,21 @@ const CartLine: React.FC<CartLineProps> = ({
     quantity,
     selectedSize,
     selectedColor,
-    fetchCartData,
 }) => {
-    const { data: session } = useSession();
     const removeFromCart = useStore((state) => state.removeFromCart);
     const increaseQuantity = useStore((state) => state.increaseQuantity);
     const decreaseQuantity = useStore((state) => state.decreaseQuantity);
+    const syncCartWithServer = useStore((state) => state.syncCartWithServer);
+    const userData = useStore((state) => state.userData);
 
     // Handle remove item from cart
     const handleRemove = async (): Promise<void> => {
-        if (session) {
-            // If user is logged in, make an API call to remove from cart
+        if (userData) {
             await fetch("/api/cart", {
                 method: "POST",
                 body: JSON.stringify({
                     action: "remove",
-                    userId: session.user?.id,
+                    userId: userData.id,
                     productId: product.id,
                     selectedColor,
                     selectedSize,
@@ -42,9 +39,8 @@ const CartLine: React.FC<CartLineProps> = ({
                     "Content-Type": "application/json",
                 },
             });
-            fetchCartData();
+            syncCartWithServer();
         } else {
-            // Otherwise, remove from store (for guest users)
             removeFromCart({
                 productId: product.id!,
                 selectedColor,
@@ -53,14 +49,13 @@ const CartLine: React.FC<CartLineProps> = ({
         }
     };
 
-    // Handle increase item quantity
     const handleIncrease = async (): Promise<void> => {
-        if (session) {
+        if (userData) {
             await fetch("/api/cart", {
                 method: "POST",
                 body: JSON.stringify({
                     action: "update",
-                    userId: session.user?.id,
+                    userId: userData.id,
                     productId: product.id,
                     quantity: quantity + 1,
                     selectedColor,
@@ -70,9 +65,8 @@ const CartLine: React.FC<CartLineProps> = ({
                     "Content-Type": "application/json",
                 },
             });
-            fetchCartData();
+            syncCartWithServer();
         } else {
-            // Otherwise, increase quantity in store (for guest users)
             increaseQuantity({
                 productId: product.id!,
                 selectedColor,
@@ -81,15 +75,13 @@ const CartLine: React.FC<CartLineProps> = ({
         }
     };
 
-    // Handle decrease item quantity
     const handleDecrease = async (): Promise<void> => {
-        if (session) {
-            // If user is logged in, make an API call to update cart quantity
+        if (userData) {
             await fetch("/api/cart", {
                 method: "POST",
                 body: JSON.stringify({
                     action: "update",
-                    userId: session.user?.id,
+                    userId: userData.id,
                     productId: product.id,
                     quantity: quantity - 1,
                     selectedColor,
@@ -99,9 +91,8 @@ const CartLine: React.FC<CartLineProps> = ({
                     "Content-Type": "application/json",
                 },
             });
-            fetchCartData();
+            syncCartWithServer();
         } else {
-            // Otherwise, decrease quantity in store (for guest users)
             decreaseQuantity({
                 productId: product.id!,
                 selectedColor,

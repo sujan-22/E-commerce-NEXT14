@@ -55,7 +55,7 @@ const ProductList = ({
                             size={size}
                             isFeatured={true}
                         /> */}
-                        <div className="flex justify-between mt-4 px-2">
+                        <div className="flex justify-between mt-4 px-2 items-start">
                             <p className="text-md" data-testid="product-title">
                                 {product.name}
                             </p>

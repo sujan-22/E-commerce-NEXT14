@@ -159,8 +159,8 @@ export default function Dialogbox() {
             <DialogTrigger asChild>
                 <Button variant="default">Sign in</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-                <Tabs defaultValue="sign-in" className="w-[400px]">
+            <DialogContent className="sm:max-w-md sm:px-6 sm:py-8 p-4">
+                <Tabs defaultValue="sign-in" className="w-full">
                     <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="sign-in">Sign In</TabsTrigger>
                         <TabsTrigger value="sign-up">Sign Up</TabsTrigger>
@@ -326,6 +326,7 @@ export default function Dialogbox() {
                                                     )}
                                                 />
                                             </div>
+
                                             <div className="items-top flex space-x-2">
                                                 <FormField
                                                     name="seller"
@@ -336,22 +337,22 @@ export default function Dialogbox() {
                                                                     id="seller"
                                                                     checked={
                                                                         field.value
-                                                                    } // Bind the value of the checkbox to the form state
+                                                                    }
                                                                     onCheckedChange={(
                                                                         checked
                                                                     ) =>
                                                                         field.onChange(
                                                                             checked
                                                                         )
-                                                                    } // Update form state on change
-                                                                    className="h-4 w-4" // Optional: adjust size of the checkbox
+                                                                    }
+                                                                    className="h-4 w-4"
                                                                 />
                                                             </FormControl>
                                                             <FormLabel>
                                                                 <div className="grid gap-1.5 leading-none">
                                                                     <label
                                                                         htmlFor="seller"
-                                                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                                                        className="text-sm font-medium leading-none"
                                                                     >
                                                                         Continue
                                                                         as
@@ -366,7 +367,7 @@ export default function Dialogbox() {
                                                                         will be
                                                                         reviewed
                                                                         before
-                                                                        you&apos;re
+                                                                        you're
                                                                         able to
                                                                         upload
                                                                         products.
