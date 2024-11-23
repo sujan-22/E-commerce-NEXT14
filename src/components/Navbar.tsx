@@ -50,14 +50,6 @@ const Navbar = () => {
         }
     };
 
-    console.log(session);
-
-    // useEffect(() => {
-    //     if (session) {
-    //         setUserData(session);
-    //     }
-    // }, [session, setUserData]);
-
     useEffect(() => {
         fetchUniqueCategories();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -195,12 +187,7 @@ const Navbar = () => {
                                         Logout
                                     </Button>
                                 ) : (
-                                    <a
-                                        href="/auth/signin"
-                                        className="-m-2 block p-2 font-medium text-gray-900"
-                                    >
-                                        Sign in
-                                    </a>
+                                    <Dialogbox />
                                 )}
                             </div>
                         </div>

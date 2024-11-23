@@ -48,11 +48,12 @@ interface StoreState {
     calculateCartTotal: () => void;
     clearCart: () => void;
     logoutUser: () => void;
+    syncCartWithServer: () => void;
 }
 
 const useStore = create<StoreState>()(
     persist(
-        (set) => ({
+        (set, get) => ({
             userData: null,
             loading: true,
             allProducts: [],
@@ -85,6 +86,36 @@ const useStore = create<StoreState>()(
                 })),
 
             clearUploadedImageUrls: () => set({ uploadedImageUrls: [] }),
+
+            syncCartWithServer: async () => {
+                const userData = get().userData;
+                if (!userData?.id) return;
+
+                try {
+                    const res = await fetch("/api/cart", {
+                        method: "POST",
+                        body: JSON.stringify({
+                            action: "get",
+                            userId: userData.id,
+                        }),
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    });
+
+                    const data: { cartItems: CartItem[]; cartTotal: number } =
+                        await res.json();
+
+                    if (data.cartItems) {
+                        set({
+                            cartItems: data.cartItems,
+                            cartTotal: data.cartTotal,
+                        });
+                    }
+                } catch (error) {
+                    console.error("Failed to sync cart with server:", error);
+                }
+            },
 
             addToCart: (item) =>
                 set((state) => {
