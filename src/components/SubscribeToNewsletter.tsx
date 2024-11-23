@@ -20,9 +20,6 @@ const SubscribeToNewsletter = () => {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(
-            `Subscribing ${name} with email ${email} to the newsletter!`
-        );
         setName("");
         setEmail("");
     };

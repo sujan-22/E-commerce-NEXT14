@@ -14,66 +14,37 @@ import { buttonVariants } from "../ui/button";
 import { formatPrice } from "@/lib/utils";
 import useStore, { CartItem } from "@/context/useStore";
 import { useEffect, useState } from "react";
-import { calculateCartTotal } from "./utils/calculateTotal";
-import { useSession } from "next-auth/react";
+// import { calculateCartTotal } from "./utils/calculateTotal";
 import CartLine from "./CartLine";
+import { useRouter } from "next/compat/router";
 
 const Cart: React.FC = () => {
   const { allProducts } = useStore();
-  const { data: session } = useSession();
+  const userData = useStore((state) => state.userData);
   const cartItemsFromStore = useStore((state) => state.cartItems) as CartItem[];
   const cartTotalFromStore = useStore((state) => state.cartTotal) as number;
-  const [cartItems, setCartItems] = useState<CartItem[]>(cartItemsFromStore);
-  const [cartTotal, setCartTotal] = useState<number>(cartTotalFromStore);
+  const syncCartWithServer = useStore((state) => state.syncCartWithServer);
+  const router = useRouter();
+
+  // State to hold the cart total and item count
   const [itemCount, setItemCount] = useState<number>(0);
 
-  // Fetch cart data function with type annotations
-  const fetchCartData = async (): Promise<void> => {
-    if (!session?.user?.id) return;
-
-    try {
-      const res = await fetch("/api/cart", {
-        method: "POST",
-        body: JSON.stringify({
-          action: "get",
-          userId: session.user.id,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data: { cartItems: CartItem[]; cartTotal: number } =
-        await res.json();
-
-      if (data.cartItems) {
-        setCartItems(data.cartItems);
-        setCartTotal(data.cartTotal);
-        setItemCount(
-          data.cartItems.reduce((count, item) => count + item.quantity!, 0)
-        );
-      }
-    } catch (error) {
-      console.error("Failed to fetch cart data:", error);
-    }
-  };
+  // Update the cart total based on the cart items
+  // const cartTotal = calculateCartTotal(cartItemsFromStore);
 
   useEffect(() => {
-    setCartTotal(calculateCartTotal(cartItems));
-    setItemCount(cartItems.reduce((count, item) => count + item.quantity!, 0));
-  }, [cartItems]);
+    // Update the item count whenever cart items change
+    setItemCount(
+      cartItemsFromStore.reduce((count, item) => count + item.quantity!, 0)
+    );
+  }, [cartItemsFromStore]);
 
   useEffect(() => {
-    if (session) {
-      fetchCartData();
-    } else {
-      setCartItems(cartItemsFromStore);
-      setCartTotal(cartTotalFromStore);
-      setItemCount(
-        cartItemsFromStore.reduce((count, item) => count + item.quantity!, 0)
-      );
+    if (userData) {
+      // Sync the cart with the server when the user is logged in
+      syncCartWithServer();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session, cartItemsFromStore, cartTotalFromStore]);
+  }, [router?.asPath, syncCartWithServer, userData]);
 
   return (
     <Sheet>
@@ -92,7 +63,7 @@ const Cart: React.FC = () => {
             <>
               <div className="flex h-full flex-col justify-between overflow-hidden p-1">
                 <ul className="flex-grow overflow-auto py-4">
-                  {cartItems.map((item, i) => {
+                  {cartItemsFromStore.map((item, i) => {
                     const product = allProducts.find(
                       (p) => p.id === item.productId
                     );
@@ -104,7 +75,6 @@ const Cart: React.FC = () => {
                         selectedSize={item.selectedSize}
                         selectedColor={item.selectedColor}
                         key={i}
-                        fetchCartData={fetchCartData}
                       />
                     ) : null;
                   })}
@@ -113,7 +83,7 @@ const Cart: React.FC = () => {
                   <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 pt-1">
                     <p>Total</p>
                     <p className="flex justify-end space-y-2 text-right text-sm">
-                      {formatPrice(cartTotal)}
+                      {formatPrice(cartTotalFromStore)}
                     </p>
                   </div>
                 </div>

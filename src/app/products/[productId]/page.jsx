@@ -2,7 +2,7 @@
 
 "use client";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import Link from "next/link";
+// import Link from "next/link";
 import ProductInfo from "@/components/product/ProductInfo";
 import ProductTabs from "@/components/product/ProductTabs";
 import ImageGallery from "@/components/ImageGallery";
@@ -17,6 +17,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 const Page = ({ params }) => {
   const products = useStore((state) => state.allProducts);
   const addToCart = useStore((state) => state.addToCart);
+  const syncCartWithServer = useStore((state) => state.syncCartWithServer);
+  const userData = useStore((state) => state.userData);
 
   const id = params.productId;
   const product = products.find((prod) => prod.id === parseInt(id));
@@ -33,18 +35,41 @@ const Page = ({ params }) => {
     }
   }, [product]);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     const productConfig = {
       productId: product.id,
       quantity: 1,
       selectedColor,
       selectedSize,
     };
-    addToCart(productConfig);
+    if (userData) {
+      try {
+        const response = await fetch("/api/cart", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            action: "add",
+            userId: userData.id,
+            ...productConfig,
+          }),
+        });
+
+        if (response.ok) {
+          syncCartWithServer();
+        } else {
+          console.error("Failed to add item to cart in the database");
+        }
+      } catch (error) {
+        console.error("Error adding item to cart:", error);
+      }
+    } else {
+      addToCart(productConfig);
+    }
   };
 
-  if (!product) {
-    // Render skeleton loader while product is being fetched
+  if (!products) {
     return (
       <MaxWidthWrapper>
         <div className="max-w-[1440px] w-full mx-auto flex flex-col lg:flex-row lg:items-start py-6 relative">
