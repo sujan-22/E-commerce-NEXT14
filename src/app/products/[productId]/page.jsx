@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { formatPrice } from "@/lib/utils";
 import useStore from "@/context/useStore";
 import { Skeleton } from "@/components/ui/skeleton";
+import ProductList from "@/components/product/ProductList";
 
 const Page = ({ params }) => {
     const products = useStore((state) => state.allProducts);
@@ -31,6 +32,10 @@ const Page = ({ params }) => {
             setSelectedSize(product.availableSizes?.[0] || "");
         }
     }, [product]);
+
+    const relatedProducts = products.filter(
+        (p) => p.category === product.category && p.id !== product.id
+    );
 
     if (!products) {
         return (
@@ -138,12 +143,22 @@ const Page = ({ params }) => {
                     <Button onClick={handleAddToCart}>Add to cart</Button>
                 </div>
             </div>
-            <div
-                className="content-container my-16 sm:my-32"
-                data-testid="related-products-container"
-            >
-                {/* TODO: RELATED PRODUCTS */}
-            </div>
+            {relatedProducts.length > 0 && (
+                <div
+                    className="content-container my-16 sm:my-32"
+                    data-testid="related-products-container"
+                >
+                    <ProductList
+                        products={relatedProducts}
+                        size="full"
+                        headerTitle="Related Products"
+                        headerLink={`/products/category/${product.category}`}
+                        linkTitle="View more"
+                        isRelated
+                    />
+                    {/* TODO: RELATED PRODUCTS */}
+                </div>
+            )}
         </MaxWidthWrapper>
     );
 };

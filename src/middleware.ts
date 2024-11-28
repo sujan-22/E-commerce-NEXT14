@@ -5,47 +5,47 @@
 //     DEFAULT_LOGIN_REDIRECT,
 //     apiAuthPrefix,
 // } from "../routes";
-// import { NextRequest } from "next/server";
-// import { getToken } from "next-auth/jwt";
+// import { NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import {
+    apiAuthPrefix,
+    authRoutes,
+    DEFAULT_LOGIN_REDIRECT,
+    publicRoutes,
+} from "routes";
 
-// export async function middleware(req: NextRequest) {
-//     const { nextUrl } = req;
-//     const user = await getToken({
-//         req: req,
-//         secret: process.env.AUTH_SECRET,
-//     });
+export async function middleware(request: NextRequest) {
+    const user = await getToken({
+        req: request,
+        secret: process.env.AUTH_SECRET,
+    });
+    const path = request.nextUrl.pathname;
 
-//     const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-//     const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
-//     const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+    const isApiAuthRoute = path.startsWith(apiAuthPrefix);
+    const isPublicRoute = publicRoutes.includes(path);
+    const isAuthRoute = authRoutes.includes(path);
 
-//     if (isApiAuthRoute) {
-//         return null;
-//     }
+    if (isApiAuthRoute) {
+        return null;
+    }
 
-//     if (isAuthRoute) {
-//         if (user) {
-//             return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
-//         }
-//         return {
-//             redirect: DEFAULT_LOGIN_REDIRECT,
-//         };
-//     }
+    if (isAuthRoute) {
+        if (user) {
+            return Response.redirect(
+                new URL(DEFAULT_LOGIN_REDIRECT, request.url)
+            );
+        }
+        return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, request.url));
+    }
 
-//     if (!user && !isPublicRoute) {
-//         return Response.redirect(new URL("/auth/signin", nextUrl));
-//     }
-
-//     return null;
-// }
-
-// // Optionally, don't invoke Middleware on some paths
-// export const config = {
-//     matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
-// };
-
-export default function middleware() {
-    return NextResponse.next();
+    // if (!user && !isPublicRoute) {
+    //     return Response.redirect(new URL("/unauthorized", request.url));
+    // }
 }
+
+// Optionally, don't invoke Middleware on some paths
+export const config = {
+    matcher: ["/((?!.*\\..*|_next|api/|trpc/).*)", "/", "/"],
+};
