@@ -49,12 +49,13 @@ export async function handleCredentialsSignIn({
         if (error instanceof AuthError) {
             return { message: error.message.replace(/\. Read more at.*$/, "") };
         }
-        throw error;
     }
 }
 
-export async function handleSignOut() {
-    useStore.getState().logoutUser();
-    useStore.getState().clearCart();
+export async function HandleSignOut() {
+    // const logoutUser = useStore((state) => state.logoutUser);
+    // useStore.getState().logoutUser();
+    // logoutUser();
+    // useStore.getState().clearCart();
     await signOut();
 }

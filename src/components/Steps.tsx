@@ -97,7 +97,7 @@ const Steps = () => {
                             {i !== 0 ? (
                                 <div className="absolute inset-0 hidden w-3 lg:block">
                                     <svg
-                                        className="h-full w-full text-gray-300"
+                                        className="h-full w-full text-muted-foreground"
                                         viewBox="0 0 12 82"
                                         fill="none"
                                         preserveAspectRatio="none"

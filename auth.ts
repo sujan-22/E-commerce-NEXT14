@@ -3,6 +3,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import clientPromise from "@/lib/mongodb";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
+import { signInSchema } from "@/lib/validationSchema";
+import { getUserByEmailAndPassword } from "@/lib/user/getUserByEmailAndPassword";
 
 interface Credentials {
     email: string;
@@ -22,6 +24,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 credentials: Partial<Record<"email" | "password", unknown>>,
                 request
             ) {
+                const validateFields = signInSchema.safeParse(credentials);
                 if (
                     !credentials ||
                     !credentials.email ||
@@ -29,43 +32,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 ) {
                     throw new AuthError("Email and password are required.");
                 }
-
-                // Cast credentials to `Credentials` type
-                const { email, password } = credentials as Credentials;
-
-                const client = await clientPromise;
-                const db = client.db();
-
-                let user = await db.collection("users").findOne({ email });
-
-                let isSeller = false;
-
-                if (!user) {
-                    user = await db.collection("sellers").findOne({ email });
-
-                    if (user) {
-                        isSeller = true;
-                    }
-                }
-
-                if (!user) {
-                    throw new AuthError(
-                        "No user found with the entered email."
+                if (validateFields.success) {
+                    const { email, password } = validateFields.data;
+                    const user = await getUserByEmailAndPassword(
+                        email,
+                        password
                     );
+
+                    if (!user) {
+                        return null;
+                    }
+
+                    return user;
                 }
 
-                const isValid = await compare(password, user.password);
-                if (!isValid) {
-                    throw new AuthError("Password is incorrect.");
-                }
-
-                return {
-                    id: user._id.toString(),
-                    name: user.name,
-                    email: user.email,
-                    password: user.password,
-                    isSeller,
-                };
+                return null;
             },
         }),
     ],
@@ -76,13 +57,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         async jwt({ token, user }) {
             if (user) {
                 token.id = user.id;
-                token.seller = user.isSeller || false;
+                token.is_seller = user.is_seller || false;
             }
             return token;
         },
         async session({ session, token }) {
             session.user.id = token.id as string;
-            session.user.seller = token.seller || false;
+            session.user.is_seller = token.is_seller || false;
             return session;
         },
     },

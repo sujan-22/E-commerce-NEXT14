@@ -20,85 +20,30 @@ const CartLine: React.FC<CartLineProps> = ({
     const removeFromCart = useStore((state) => state.removeFromCart);
     const increaseQuantity = useStore((state) => state.increaseQuantity);
     const decreaseQuantity = useStore((state) => state.decreaseQuantity);
-    const syncCartWithServer = useStore((state) => state.syncCartWithServer);
-    const userData = useStore((state) => state.userData);
-
-    // Handle remove item from cart
-    const handleRemove = async (): Promise<void> => {
-        if (userData) {
-            await fetch("/api/cart", {
-                method: "POST",
-                body: JSON.stringify({
-                    action: "remove",
-                    userId: userData.id,
-                    productId: product.id,
-                    selectedColor,
-                    selectedSize,
-                }),
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            syncCartWithServer();
-        } else {
-            removeFromCart({
-                productId: product.id!,
-                selectedColor,
-                selectedSize,
-            });
-        }
+    const handleRemove = () => {
+        removeFromCart({
+            productId: product.id!,
+            selectedColor,
+            selectedSize,
+        });
     };
 
-    const handleIncrease = async (): Promise<void> => {
-        if (userData) {
-            await fetch("/api/cart", {
-                method: "POST",
-                body: JSON.stringify({
-                    action: "update",
-                    userId: userData.id,
-                    productId: product.id,
-                    quantity: quantity + 1,
-                    selectedColor,
-                    selectedSize,
-                }),
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            syncCartWithServer();
-        } else {
-            increaseQuantity({
-                productId: product.id!,
-                selectedColor,
-                selectedSize,
-            });
-        }
+    const handleIncrease = () => {
+        increaseQuantity({
+            productId: product.id!,
+            selectedColor,
+            selectedSize,
+            quantity,
+        });
     };
 
-    const handleDecrease = async (): Promise<void> => {
-        if (userData) {
-            await fetch("/api/cart", {
-                method: "POST",
-                body: JSON.stringify({
-                    action: "update",
-                    userId: userData.id,
-                    productId: product.id,
-                    quantity: quantity - 1,
-                    selectedColor,
-                    selectedSize,
-                }),
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            syncCartWithServer();
-        } else {
-            decreaseQuantity({
-                productId: product.id!,
-                selectedColor,
-                selectedSize,
-            });
-        }
+    const handleDecrease = () => {
+        decreaseQuantity({
+            productId: product.id!,
+            selectedColor,
+            selectedSize,
+            quantity,
+        });
     };
 
     return (
@@ -127,7 +72,7 @@ const CartLine: React.FC<CartLineProps> = ({
                                 src={product.availableImages[0]}
                             />
                         </div>
-                        <div className="flex flex-1 flex-col justify-between text-base">
+                        <div className="flex flex-1 flex-col justify-between text-md">
                             <span className="leading-tight">
                                 {product.name}
                             </span>
@@ -145,7 +90,7 @@ const CartLine: React.FC<CartLineProps> = ({
                 </div>
 
                 <div className="flex flex-1 flex-col justify-between">
-                    <p className="flex justify-end space-y-2 text-right text-base">
+                    <p className="flex justify-end space-y-2 text-right text-md">
                         {product.collection.onsale?.newPrice ? (
                             <>
                                 <span>
@@ -162,7 +107,7 @@ const CartLine: React.FC<CartLineProps> = ({
                     <div className="ml-auto flex h-8 flex-row items-center rounded-full border border-neutral-200 dark:border-neutral-700 px-2">
                         <MinusIcon
                             className={cn("w-5 h-5", {
-                                "text-gray-400 cursor-not-allowed":
+                                "text-muted-foreground cursor-not-allowed":
                                     quantity === 1,
                             })}
                             onClick={quantity > 1 ? handleDecrease : undefined}

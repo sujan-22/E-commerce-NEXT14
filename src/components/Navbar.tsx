@@ -23,12 +23,15 @@ import Cart from "./cart/Cart";
 import useStore from "@/context/useStore";
 import { useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { Button } from "./ui/button";
 import Dialogbox from "./Dialogbox";
+import Image from "next/image";
 
 const Navbar = () => {
     const { data: session } = useSession();
+    console.log(session);
+
     const [open, setOpen] = useState<boolean>(false);
     const { categories } = useStore();
     const [uniqueCategories, setUniqueCategories] = useState<
@@ -112,7 +115,7 @@ const Navbar = () => {
                             <button
                                 type="button"
                                 onClick={() => setOpen(false)}
-                                className="relative -m-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400"
+                                className="relative -m-2 inline-flex items-center justify-center rounded-md p-2 text-muted-foreground"
                             >
                                 <span className="absolute -inset-0.5" />
                                 <span className="sr-only">Close menu</span>
@@ -127,7 +130,7 @@ const Navbar = () => {
                                     {navigation.categories.map(() => (
                                         <Tab
                                             key={"category.sections[0].name"}
-                                            className="flex-1 whitespace-nowrap border-b-2 border-transparent px-1 py-4 text-base font-medium text-gray-900 data-[selected]:border-primary data-[selected]:text-primary"
+                                            className="flex-1 whitespace-nowrap border-b-2 border-transparent px-1 py-4 text-md font-medium text-muted-foreground data-[selected]:border-primary data-[selected]:text-primary"
                                         >
                                             {"category.sections[0].name"}
                                         </Tab>
@@ -146,7 +149,7 @@ const Navbar = () => {
                                                     <li
                                                         key={item.name}
                                                         className={
-                                                            "font-medium text-gray-900 cursor-pointer "
+                                                            "font-medium text-muted-foreground cursor-pointer "
                                                         }
                                                         onClick={() =>
                                                             handleCategoryChange(
@@ -172,7 +175,7 @@ const Navbar = () => {
                                 <div key={page.name} className="flow-root">
                                     <a
                                         href={page.href}
-                                        className="-m-2 block p-2 font-medium text-gray-900"
+                                        className="-m-2 block p-2 font-medium text-muted-foreground"
                                     >
                                         {page.name}
                                     </a>
@@ -199,7 +202,7 @@ const Navbar = () => {
                                     src="https://tailwindui.com/plus/img/flags/flag-canada.svg"
                                     className="block h-auto w-5 flex-shrink-0"
                                 />
-                                <span className="ml-3 block text-base font-medium text-gray-900">
+                                <span className="ml-3 block text-md font-medium text-muted-foreground">
                                     CAD
                                 </span>
                                 <span className="sr-only">
@@ -224,7 +227,7 @@ const Navbar = () => {
                             <button
                                 type="button"
                                 onClick={() => setOpen(true)}
-                                className="relative rounded-md bg-white p-2 text-gray-400 lg:hidden"
+                                className="relative rounded-md bg-white p-2 text-muted-foreground lg:hidden"
                             >
                                 <span className="absolute -inset-0.5" />
                                 <span className="sr-only">Open menu</span>
@@ -237,9 +240,12 @@ const Navbar = () => {
                             {/* Logo */}
                             <div className="ml-4 flex lg:ml-0">
                                 <Link href="/">
-                                    <h1 className=" text-primary text-3xl font-extralight ">
-                                        DIGI
-                                    </h1>
+                                    <Image
+                                        src={"/assets/light-logo.png"}
+                                        alt="logo"
+                                        width={60}
+                                        height={50}
+                                    />
                                 </Link>
                             </div>
 
@@ -252,7 +258,7 @@ const Navbar = () => {
                                             key={"category.sections[0].name"}
                                         >
                                             <div className="relative flex">
-                                                <PopoverButton className="relative z-50 -mb-px flex items-center border-b-2 border-transparent pt-px text-sm font-medium text-gray-700 transition-colors duration-200 ease-out hover:text-gray-800 data-[open]:border-transparent data-[open]:text-primary">
+                                                <PopoverButton className="relative z-50 -mb-px flex items-center border-b-2 border-transparent pt-px text-sm font-medium text-muted-foreground transition-colors duration-200 ease-out hover:text-muted-foreground data-[open]:border-transparent data-[open]:text-primary">
                                                     Categories
                                                 </PopoverButton>
                                             </div>
@@ -277,7 +283,7 @@ const Navbar = () => {
                                                                             key={
                                                                                 item.name
                                                                             }
-                                                                            className="group relative text-base sm:text-sm"
+                                                                            className="group relative text-md sm:text-sm"
                                                                         >
                                                                             <div className="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg bg-gray-100 group-hover:opacity-75">
                                                                                 <img
@@ -294,7 +300,7 @@ const Navbar = () => {
                                                                                 href={
                                                                                     item.href
                                                                                 }
-                                                                                className="mt-6 block font-medium text-gray-900"
+                                                                                className="mt-6 block font-medium text-muted-foreground"
                                                                             >
                                                                                 <span
                                                                                     aria-hidden="true"
@@ -327,7 +333,7 @@ const Navbar = () => {
                                                                                         item.name
                                                                                     }
                                                                                     className={
-                                                                                        "font-medium text-gray-900 cursor-pointer "
+                                                                                        "font-medium text-muted-foreground cursor-pointer "
                                                                                     }
                                                                                     onClick={() =>
                                                                                         handleCategoryChange(
@@ -360,7 +366,7 @@ const Navbar = () => {
                                         <a
                                             key={page.name}
                                             href={page.href}
-                                            className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800"
+                                            className="flex items-center text-sm font-medium text-muted-foreground hover:text-muted-foreground"
                                         >
                                             {page.name}
                                         </a>
@@ -374,7 +380,7 @@ const Navbar = () => {
                                         <Button
                                             onClick={() => signOut()}
                                             variant="default"
-                                            className="text-sm font-mediu"
+                                            className="text-sm font-medium"
                                         >
                                             Logout
                                         </Button>
@@ -386,7 +392,7 @@ const Navbar = () => {
                                 <div className="hidden lg:ml-8 lg:flex">
                                     <a
                                         href="#"
-                                        className="flex items-center text-gray-700 hover:text-gray-800"
+                                        className="flex items-center text-muted-foreground hover:text-muted-foreground"
                                     >
                                         <img
                                             alt=""
@@ -406,7 +412,7 @@ const Navbar = () => {
                                 <div className="flex lg:ml-6">
                                     <a
                                         href="#"
-                                        className="p-2 text-gray-400 hover:text-muted-foreground"
+                                        className="p-2 text-muted-foreground hover:text-muted-foreground"
                                     >
                                         <span className="sr-only">Search</span>
                                         <SearchIcon
@@ -425,9 +431,9 @@ const Navbar = () => {
                                     >
                                         <ShoppingBag
                                             aria-hidden="true"
-                                            className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-muted-foreground"
+                                            className="h-6 w-6 flex-shrink-0 text-muted-foreground group-hover:text-muted-foreground"
                                         />
-                                        <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
+                                        <span className="ml-2 text-sm font-medium text-muted-foreground group-hover:text-muted-foreground">
                                             0
                                         </span>
                                         <span className="sr-only">

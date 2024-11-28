@@ -12,47 +12,14 @@ import {
 import Link from "next/link";
 import { buttonVariants } from "../ui/button";
 import { formatPrice } from "@/lib/utils";
-import useStore, { CartItem } from "@/context/useStore";
-import { useEffect, useState } from "react";
-import { calculateCartTotal } from "./utils/calculateTotal";
+import useStore from "@/context/useStore";
 import CartLine from "./CartLine";
-import { useRouter } from "next/compat/router";
 
 const Cart: React.FC = () => {
     const { allProducts } = useStore();
-    const userData = useStore((state) => state.userData);
-    const cartItemsFromStore = useStore(
-        (state) => state.cartItems
-    ) as CartItem[];
-    const syncCartWithServer = useStore((state) => state.syncCartWithServer);
-    const router = useRouter();
-    const [itemCount, setItemCount] = useState<number>(0);
-    const [cartTotal, setCartTotal] = useState<number>(0);
-
-    // const cartTotal = calculateCartTotal(cartItemsFromStore);
-
-    useEffect(() => {
-        setItemCount(
-            cartItemsFromStore.reduce(
-                (count, item) => count + item.quantity!,
-                0
-            )
-        );
-        setCartTotal(calculateCartTotal(cartItemsFromStore, allProducts));
-    }, [cartItemsFromStore, calculateCartTotal, allProducts]);
-
-    useEffect(() => {
-        if (userData) {
-            syncCartWithServer();
-            setCartTotal(calculateCartTotal(cartItemsFromStore, allProducts));
-        }
-    }, [
-        router?.asPath,
-        syncCartWithServer,
-        userData,
-        cartItemsFromStore,
-        allProducts,
-    ]);
+    const cartTotal = useStore((state) => state.cartTotal);
+    const cartItemsFromStore = useStore((state) => state.cartItems);
+    const itemCount = useStore((state) => state.cartItemsCount);
 
     return (
         <Sheet>
@@ -61,7 +28,7 @@ const Cart: React.FC = () => {
                     aria-hidden="true"
                     className="h-6 w-6 flex-shrink-0 text-primary group-hover:text-muted-foreground z-[1000000]"
                 />
-                <span className=" ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
+                <span className=" ml-2 text-sm font-medium text-muted-foreground group-hover:text-muted-foreground">
                     {itemCount}
                 </span>
             </SheetTrigger>

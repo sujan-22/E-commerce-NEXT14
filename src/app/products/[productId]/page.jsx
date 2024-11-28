@@ -17,15 +17,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 const Page = ({ params }) => {
     const products = useStore((state) => state.allProducts);
     const addToCart = useStore((state) => state.addToCart);
-    const syncCartWithServer = useStore((state) => state.syncCartWithServer);
-    const userData = useStore((state) => state.userData);
+    // const syncCartWithServer = useStore((state) => state.syncCartWithServer);
+    // const userData = useStore((state) => state.userData);
     const [selectedColor, setSelectedColor] = useState("");
     const [selectedSize, setSelectedSize] = useState("");
 
     const id = params.productId;
     const product = products.find((prod) => prod.id === parseInt(id));
 
-    // Update the selected color and size when the product becomes available
     useEffect(() => {
         if (product) {
             setSelectedColor(product.availableColors?.[0] || "");
@@ -74,38 +73,14 @@ const Page = ({ params }) => {
         );
     }
 
-    const handleAddToCart = async () => {
+    const handleAddToCart = () => {
         const productConfig = {
             productId: product.id,
             quantity: 1,
             selectedColor,
             selectedSize,
         };
-        if (userData) {
-            try {
-                const response = await fetch("/api/cart", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        action: "add",
-                        userId: userData.id,
-                        ...productConfig,
-                    }),
-                });
-
-                if (response.ok) {
-                    syncCartWithServer();
-                } else {
-                    console.error("Failed to add item to cart in the database");
-                }
-            } catch (error) {
-                console.error("Error adding item to cart:", error);
-            }
-        } else {
-            addToCart(productConfig);
-        }
+        addToCart(productConfig);
     };
 
     return (
