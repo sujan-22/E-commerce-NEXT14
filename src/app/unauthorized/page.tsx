@@ -8,7 +8,7 @@ const Page = () => {
     const router = useRouter();
 
     const handleGoHome = () => {
-        router.push("/"); // Redirects to the home page
+        router.push("/");
     };
 
     return (
