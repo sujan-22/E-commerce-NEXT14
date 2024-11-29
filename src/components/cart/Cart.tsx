@@ -101,7 +101,7 @@ const Cart: React.FC = () => {
                         <SheetFooter>
                             <SheetTrigger asChild>
                                 <Link
-                                    href="/"
+                                    href="/cart"
                                     className={buttonVariants({
                                         className: "w-full",
                                     })}
