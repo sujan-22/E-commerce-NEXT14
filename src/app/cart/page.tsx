@@ -8,21 +8,51 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { useSession } from "next-auth/react";
 import useStore, { CartItem } from "@/context/useStore";
 import Image from "next/image";
 import { cn } from "@nextui-org/react";
-import { Delete, DeleteIcon, MinusIcon, PlusIcon } from "lucide-react";
-import { Tab } from "@headlessui/react";
+import { MinusIcon, PlusIcon } from "lucide-react";
+import { MdDeleteOutline } from "react-icons/md";
 
 const CartPage = () => {
   const { allProducts } = useStore();
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
   const cartItemsFromStore = useStore((state) => state.cartItems) as CartItem[];
   const userData = useStore((state) => state.userData);
+  const removeFromCart = useStore((state) => state.removeFromCart);
   const increaseQuantity = useStore((state) => state.increaseQuantity);
   const decreaseQuantity = useStore((state) => state.decreaseQuantity);
   const syncCartWithServer = useStore((state) => state.syncCartWithServer);
+
+  const handleCheckout = () => {
+    window.location.href = "/checkout";
+  };
+
+  // Handle remove item from cart
+  const handleRemove = async (item: CartItem): Promise<void> => {
+    if (userData) {
+      await fetch("/api/cart", {
+        method: "POST",
+        body: JSON.stringify({
+          action: "remove",
+          userId: userData.id,
+          productId: item.productId,
+          selectedColor: item.selectedColor,
+          selectedSize: item.selectedSize,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      syncCartWithServer();
+    } else {
+      removeFromCart({
+        productId: item.productId!,
+        selectedColor: item.selectedColor,
+        selectedSize: item.selectedSize,
+      });
+    }
+  };
 
   const handleIncrease = async (item: CartItem): Promise<void> => {
     const product = allProducts.find((p) => p.id === item.productId);
@@ -79,8 +109,6 @@ const CartPage = () => {
     }
   };
 
-  const calculateSubtotal = () => {};
-
   return (
     <MaxWidthWrapper>
       <div className="flex flex-col lg:flex-row gap-10 mt-10">
@@ -128,7 +156,7 @@ const CartPage = () => {
                         )}
                       </TableCell>
                       <TableCell>
-                        <div className="ml-auto flex h-8 flex-row items-center rounded-full border border-neutral-200 dark:border-neutral-700 px-2">
+                        <div className="flex h-8 flex-row items-center rounded-full px-2">
                           <MinusIcon
                             className={cn("w-5 h-5", {
                               "text-gray-400 cursor-not-allowed":
@@ -152,7 +180,12 @@ const CartPage = () => {
                         </div>
                       </TableCell>
                       <TableCell>${product.price}</TableCell>
-                      <TableCell>remove icon</TableCell>
+                      <TableCell>
+                        <MdDeleteOutline
+                          size={24}
+                          onClick={() => handleRemove(item)}
+                        />
+                      </TableCell>
                     </TableRow>
                   );
                 }
@@ -189,7 +222,9 @@ const CartPage = () => {
               <p>${"total"}</p>
             </div>
           </div>
-          <Button className="w-full mt-6">Go to Checkout</Button>
+          <Button className="w-full mt-6" onClick={handleCheckout}>
+            Go to Checkout
+          </Button>
         </div>
       </div>
     </MaxWidthWrapper>
