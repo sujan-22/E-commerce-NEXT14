@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 const SessionHandler = () => {
     const { data: session } = useSession();
     const setUserData = useStore((state) => state.setUserData);
+    const syncCartWithServer = useStore((state) => state.syncCartWithServer);
 
     useEffect(() => {
         if (session?.user) {
@@ -16,8 +17,9 @@ const SessionHandler = () => {
                 name: session.user.name!,
                 seller: session.user.seller || false,
             });
+            syncCartWithServer();
         }
-    }, [session, setUserData]);
+    }, [session, syncCartWithServer, setUserData]);
 
     return null;
 };

@@ -13,21 +13,20 @@ import { Separator } from "@/components/ui/separator";
 import { formatPrice } from "@/lib/utils";
 import useStore from "@/context/useStore";
 import { Skeleton } from "@/components/ui/skeleton";
+import ProductList from "@/components/product/ProductList";
+import { toast } from "sonner";
 
 const Page = ({ params }) => {
   const products = useStore((state) => state.allProducts);
   const addToCart = useStore((state) => state.addToCart);
-  const syncCartWithServer = useStore((state) => state.syncCartWithServer);
-  const userData = useStore((state) => state.userData);
+  // const syncCartWithServer = useStore((state) => state.syncCartWithServer);
+  // const userData = useStore((state) => state.userData);
+  const [selectedColor, setSelectedColor] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
 
   const id = params.productId;
   const product = products.find((prod) => prod.id === parseInt(id));
 
-  // Initialize selectedColor and selectedSize with safe default values
-  const [selectedColor, setSelectedColor] = useState("");
-  const [selectedSize, setSelectedSize] = useState("");
-
-  // Update the selected color and size when the product becomes available
   useEffect(() => {
     if (product) {
       setSelectedColor(product.availableColors?.[0] || "");
@@ -35,39 +34,9 @@ const Page = ({ params }) => {
     }
   }, [product]);
 
-  const handleAddToCart = async () => {
-    const productConfig = {
-      productId: product.id,
-      quantity: 1,
-      selectedColor,
-      selectedSize,
-    };
-    if (userData) {
-      try {
-        const response = await fetch("/api/cart", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            action: "add",
-            userId: userData.id,
-            ...productConfig,
-          }),
-        });
-
-        if (response.ok) {
-          syncCartWithServer();
-        } else {
-          console.error("Failed to add item to cart in the database");
-        }
-      } catch (error) {
-        console.error("Error adding item to cart:", error);
-      }
-    } else {
-      addToCart(productConfig);
-    }
-  };
+  const relatedProducts = products.filter(
+    (p) => p.category === product.category && p.id !== product.id
+  );
 
   if (!products) {
     return (
@@ -108,6 +77,18 @@ const Page = ({ params }) => {
       </MaxWidthWrapper>
     );
   }
+
+  const handleAddToCart = () => {
+    const productConfig = {
+      productId: product.id,
+      quantity: 1,
+      selectedColor,
+      selectedSize,
+    };
+    toast.success(`${product.name} added to cart`);
+    addToCart(productConfig);
+  };
+
   return (
     <MaxWidthWrapper>
       <div
@@ -161,12 +142,22 @@ const Page = ({ params }) => {
           <Button onClick={handleAddToCart}>Add to cart</Button>
         </div>
       </div>
-      <div
-        className="content-container my-16 sm:my-32"
-        data-testid="related-products-container"
-      >
-        {/* TODO: RELATED PRODUCTS */}
-      </div>
+      {relatedProducts.length > 0 && (
+        <div
+          className="content-container my-16 sm:my-32"
+          data-testid="related-products-container"
+        >
+          <ProductList
+            products={relatedProducts}
+            size="full"
+            headerTitle="Related Products"
+            headerLink={`/products/category/${product.category}`}
+            linkTitle="View more"
+            isRelated
+          />
+          {/* TODO: RELATED PRODUCTS */}
+        </div>
+      )}
     </MaxWidthWrapper>
   );
 };

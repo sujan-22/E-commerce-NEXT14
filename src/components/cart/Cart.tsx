@@ -12,39 +12,14 @@ import {
 import Link from "next/link";
 import { buttonVariants } from "../ui/button";
 import { formatPrice } from "@/lib/utils";
-import useStore, { CartItem } from "@/context/useStore";
-import { useEffect, useState } from "react";
-// import { calculateCartTotal } from "./utils/calculateTotal";
+import useStore from "@/context/useStore";
 import CartLine from "./CartLine";
-import { useRouter } from "next/compat/router";
 
 const Cart: React.FC = () => {
   const { allProducts } = useStore();
-  const userData = useStore((state) => state.userData);
-  const cartItemsFromStore = useStore((state) => state.cartItems) as CartItem[];
-  const cartTotalFromStore = useStore((state) => state.cartTotal) as number;
-  const syncCartWithServer = useStore((state) => state.syncCartWithServer);
-  const router = useRouter();
-
-  // State to hold the cart total and item count
-  const [itemCount, setItemCount] = useState<number>(0);
-
-  // Update the cart total based on the cart items
-  // const cartTotal = calculateCartTotal(cartItemsFromStore);
-
-  useEffect(() => {
-    // Update the item count whenever cart items change
-    setItemCount(
-      cartItemsFromStore.reduce((count, item) => count + item.quantity!, 0)
-    );
-  }, [cartItemsFromStore]);
-
-  useEffect(() => {
-    if (userData) {
-      // Sync the cart with the server when the user is logged in
-      syncCartWithServer();
-    }
-  }, [router?.asPath, syncCartWithServer, userData]);
+  const cartTotal = useStore((state) => state.cartTotal);
+  const cartItemsFromStore = useStore((state) => state.cartItems);
+  const itemCount = useStore((state) => state.cartItemsCount);
 
   return (
     <Sheet>
@@ -53,7 +28,7 @@ const Cart: React.FC = () => {
           aria-hidden="true"
           className="h-6 w-6 flex-shrink-0 text-primary group-hover:text-muted-foreground z-[1000000]"
         />
-        <span className=" ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
+        <span className=" ml-2 text-sm font-medium text-muted-foreground group-hover:text-muted-foreground">
           {itemCount}
         </span>
       </SheetTrigger>
@@ -83,7 +58,7 @@ const Cart: React.FC = () => {
                   <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 pt-1">
                     <p>Total</p>
                     <p className="flex justify-end space-y-2 text-right text-sm">
-                      {formatPrice(cartTotalFromStore)}
+                      {formatPrice(cartTotal)}
                     </p>
                   </div>
                 </div>

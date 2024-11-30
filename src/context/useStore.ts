@@ -1,3 +1,4 @@
+import { calculateCartTotal } from "@/components/cart/utils/calculateTotal";
 import { ProductSchema } from "@/lib/validationSchema";
 import { z } from "zod";
 import { create } from "zustand";
@@ -22,6 +23,7 @@ export interface IUser {
 
 interface StoreState {
   userData: IUser | null;
+  cartItemsCount: number;
   loading: boolean;
   allProducts: Product[];
   categories: string[];
@@ -44,7 +46,6 @@ interface StoreState {
   decreaseQuantity: (item: CartItem) => void;
   increaseQuantity: (item: CartItem) => void;
   removeFromCart: (item: CartItem) => void;
-  calculateCartTotal: () => void;
   clearCart: () => void;
   logoutUser: () => void;
   syncCartWithServer: () => void;
@@ -62,6 +63,7 @@ const useStore = create<StoreState>()(
 
       cartItems: [],
       cartTotal: 0,
+      cartItemsCount: 0,
 
       uploadedImageUrls: [],
 
@@ -102,13 +104,19 @@ const useStore = create<StoreState>()(
             },
           });
 
-          const data: { cartItems: CartItem[]; cartTotal: number } =
-            await res.json();
+          const data: { cartItems: CartItem[] } = await res.json();
 
           if (data.cartItems) {
+            const allProducts = get().allProducts;
+            const cartTotal = calculateCartTotal(data.cartItems, allProducts);
+            const cartItemsCount = data.cartItems.reduce(
+              (count, item) => count + (item.quantity || 1),
+              0
+            );
             set({
+              cartTotal: cartTotal,
               cartItems: data.cartItems,
-              cartTotal: data.cartTotal,
+              cartItemsCount,
             });
           }
         } catch (error) {
@@ -116,126 +124,216 @@ const useStore = create<StoreState>()(
         }
       },
 
-      addToCart: (item) =>
-        set((state) => {
-          const { productId, selectedColor, selectedSize } = item;
+      addToCart: async (item) => {
+        const { userData } = get();
+        const productConfig = {
+          productId: item.productId,
+          quantity: 1,
+          selectedColor: item.selectedColor,
+          selectedSize: item.selectedSize,
+        };
 
-          // Normalize null values by replacing them with empty strings for comparison
-          const normalizedColor = selectedColor || "";
-          const normalizedSize = selectedSize || "";
+        if (userData) {
+          try {
+            const response = await fetch("/api/cart", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                action: "add",
+                userId: userData.id,
+                ...productConfig,
+              }),
+            });
 
-          // Find the product price
-          const product = state.allProducts.find((p) => p.id === productId);
-          const price =
-            product?.collection?.onsale?.newPrice ?? product?.price ?? 0;
+            if (response.ok) {
+              get().syncCartWithServer();
+            } else {
+              console.error("Failed to add item to cart in the database");
+            }
+          } catch (error) {
+            console.error("Error adding item to cart:", error);
+          }
+        } else {
+          set((state) => {
+            const { productId, selectedColor, selectedSize } = item;
 
-          // Find an existing item with the same productId, color, and size
-          const existingItem = state.cartItems.find(
-            (cartItem) =>
+            // Normalize null values by replacing them with empty strings for comparison
+            const normalizedColor = selectedColor || "";
+            const normalizedSize = selectedSize || "";
+
+            const existingItem = state.cartItems.find(
+              (cartItem) =>
+                cartItem.productId === productId &&
+                (cartItem.selectedColor || "") === normalizedColor &&
+                (cartItem.selectedSize || "") === normalizedSize
+            );
+
+            let updatedCart;
+
+            if (existingItem) {
+              // If the item exists, update the quantity
+              updatedCart = state.cartItems.map((cartItem) =>
+                cartItem.productId === productId &&
+                (cartItem.selectedColor || "") === normalizedColor &&
+                (cartItem.selectedSize || "") === normalizedSize
+                  ? {
+                      ...cartItem,
+                      quantity: cartItem.quantity! + 1,
+                    }
+                  : cartItem
+              );
+            } else {
+              // If it's a new item, add it to the cart with price
+              updatedCart = [
+                ...state.cartItems,
+                {
+                  ...item,
+                  quantity: 1, // Set initial quantity to 1
+                  selectedColor: normalizedColor,
+                  selectedSize: normalizedSize,
+                },
+              ];
+            }
+
+            return { cartItems: updatedCart };
+          });
+        }
+      },
+      decreaseQuantity: async (item) => {
+        const { userData } = get();
+        if (userData) {
+          try {
+            await fetch("/api/cart", {
+              method: "POST",
+              body: JSON.stringify({
+                action: "update",
+                userId: userData.id,
+                productId: item.productId,
+                quantity: item.quantity! - 1,
+                selectedColor: item.selectedColor,
+                selectedSize: item.selectedSize,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+            get().syncCartWithServer();
+          } catch (error) {
+            console.error("Failed to decrease quantity in server cart:", error);
+          }
+        } else {
+          set((state) => {
+            const { productId, selectedColor, selectedSize } = item;
+            const updatedCart = state.cartItems.map((cartItem) =>
               cartItem.productId === productId &&
-              (cartItem.selectedColor || "") === normalizedColor &&
-              (cartItem.selectedSize || "") === normalizedSize
-          );
+              (cartItem.selectedColor || "") === (selectedColor || "") &&
+              (cartItem.selectedSize || "") === (selectedSize || "")
+                ? {
+                    ...cartItem,
+                    quantity:
+                      cartItem.quantity! > 1
+                        ? cartItem.quantity! - 1
+                        : cartItem.quantity,
+                  }
+                : cartItem
+            );
+            return { cartItems: updatedCart };
+          });
+        }
+      },
 
-          let updatedCart;
-
-          if (existingItem) {
-            // If the item exists, update the quantity
-            updatedCart = state.cartItems.map((cartItem) =>
+      // Increase item quantity
+      increaseQuantity: async (item) => {
+        const { userData } = get();
+        if (userData) {
+          try {
+            await fetch("/api/cart", {
+              method: "POST",
+              body: JSON.stringify({
+                action: "update",
+                userId: userData.id,
+                productId: item.productId,
+                quantity: item.quantity! + 1,
+                selectedColor: item.selectedColor,
+                selectedSize: item.selectedSize,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+            get().syncCartWithServer();
+          } catch (error) {
+            console.error("Failed to increase quantity in server cart:", error);
+          }
+        } else {
+          set((state) => {
+            const { productId, selectedColor, selectedSize } = item;
+            const updatedCart = state.cartItems.map((cartItem) =>
               cartItem.productId === productId &&
-              (cartItem.selectedColor || "") === normalizedColor &&
-              (cartItem.selectedSize || "") === normalizedSize
+              (cartItem.selectedColor || "") === (selectedColor || "") &&
+              (cartItem.selectedSize || "") === (selectedSize || "")
                 ? {
                     ...cartItem,
                     quantity: cartItem.quantity! + 1,
                   }
                 : cartItem
             );
-          } else {
-            // If it's a new item, add it to the cart with price
-            updatedCart = [
-              ...state.cartItems,
-              {
-                ...item,
-                quantity: 1, // Set initial quantity to 1
-                selectedColor: normalizedColor,
-                selectedSize: normalizedSize,
-                price: price, // Add the price to the cart item
-              },
-            ];
-          }
-
-          return { cartItems: updatedCart };
-        }),
-
-      decreaseQuantity: (item) =>
-        set((state) => {
-          const { productId, selectedColor, selectedSize } = item;
-          const updatedCart = state.cartItems.map((cartItem) =>
-            cartItem.productId === productId &&
-            (cartItem.selectedColor || "") === (selectedColor || "") &&
-            (cartItem.selectedSize || "") === (selectedSize || "")
-              ? {
-                  ...cartItem,
-                  quantity:
-                    cartItem.quantity! > 1
-                      ? cartItem.quantity! - 1
-                      : cartItem.quantity,
-                }
-              : cartItem
-          );
-          return { cartItems: updatedCart };
-        }),
-
-      // Increase item quantity
-      increaseQuantity: (item) =>
-        set((state) => {
-          const { productId, selectedColor, selectedSize } = item;
-          const updatedCart = state.cartItems.map((cartItem) =>
-            cartItem.productId === productId &&
-            (cartItem.selectedColor || "") === (selectedColor || "") &&
-            (cartItem.selectedSize || "") === (selectedSize || "")
-              ? {
-                  ...cartItem,
-                  quantity: cartItem.quantity! + 1,
-                }
-              : cartItem
-          );
-          return { cartItems: updatedCart };
-        }),
+            return { cartItems: updatedCart };
+          });
+        }
+      },
 
       // Remove item from cart
-      removeFromCart: (item) =>
-        set((state) => {
-          const { productId, selectedColor, selectedSize } = item;
+      removeFromCart: async (item) => {
+        const { userData } = get();
+        if (userData) {
+          try {
+            await fetch("/api/cart", {
+              method: "POST",
+              body: JSON.stringify({
+                action: "remove",
+                userId: userData.id,
+                productId: item.productId,
+                selectedColor: item.selectedColor,
+                selectedSize: item.selectedSize,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+            get().syncCartWithServer();
+          } catch (error) {
+            console.error("Failed to remove item from server cart:", error);
+          }
+        } else {
+          set((state) => {
+            const { productId, selectedColor, selectedSize } = item;
+            const updatedCart = state.cartItems.filter(
+              (cartItem) =>
+                !(
+                  cartItem.productId === productId &&
+                  cartItem.selectedColor === selectedColor &&
+                  cartItem.selectedSize === selectedSize
+                )
+            );
 
-          // Filter out the item with matching productId, selectedColor, and selectedSize
-          const updatedCart = state.cartItems.filter(
-            (cartItem) =>
-              !(
-                cartItem.productId === productId &&
-                cartItem.selectedColor === selectedColor &&
-                cartItem.selectedSize === selectedSize
-              )
-          );
-
-          return { cartItems: updatedCart };
-        }),
-
-      calculateCartTotal: () => {
-        return set((state) => {
-          const cartTotal = state.cartItems.reduce((total, item) => {
-            return total + item.price! * item.quantity!;
-          }, 0);
-          return { cartTotal };
-        });
+            return { cartItems: updatedCart };
+          });
+        }
       },
 
       // Clear the cart
       clearCart: () => set({ cartItems: [], cartTotal: 0 }),
 
       logoutUser: () => {
-        set({ userData: null, cartItems: [] });
+        set({
+          userData: null,
+          cartItems: [],
+          cartTotal: 0,
+          cartItemsCount: 0,
+        });
       },
     }),
     {

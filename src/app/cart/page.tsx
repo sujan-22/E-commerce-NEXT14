@@ -13,100 +13,47 @@ import Image from "next/image";
 import { cn } from "@nextui-org/react";
 import { MinusIcon, PlusIcon } from "lucide-react";
 import { MdDeleteOutline } from "react-icons/md";
+import { formatPrice } from "@/lib/utils";
 
 const CartPage = () => {
   const { allProducts } = useStore();
   // const { data: session } = useSession();
   const cartItemsFromStore = useStore((state) => state.cartItems) as CartItem[];
-  const userData = useStore((state) => state.userData);
   const removeFromCart = useStore((state) => state.removeFromCart);
   const increaseQuantity = useStore((state) => state.increaseQuantity);
   const decreaseQuantity = useStore((state) => state.decreaseQuantity);
-  const syncCartWithServer = useStore((state) => state.syncCartWithServer);
+  const cartTotal = useStore((state) => state.cartTotal);
 
   const handleCheckout = () => {
     window.location.href = "/checkout";
   };
 
   // Handle remove item from cart
-  const handleRemove = async (item: CartItem): Promise<void> => {
-    if (userData) {
-      await fetch("/api/cart", {
-        method: "POST",
-        body: JSON.stringify({
-          action: "remove",
-          userId: userData.id,
-          productId: item.productId,
-          selectedColor: item.selectedColor,
-          selectedSize: item.selectedSize,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      syncCartWithServer();
-    } else {
-      removeFromCart({
-        productId: item.productId!,
-        selectedColor: item.selectedColor,
-        selectedSize: item.selectedSize,
-      });
-    }
+  const handleRemove = async (item: CartItem) => {
+    removeFromCart({
+      quantity: item.quantity,
+      productId: item.productId!,
+      selectedColor: item.selectedColor,
+      selectedSize: item.selectedSize,
+    });
   };
 
-  const handleIncrease = async (item: CartItem): Promise<void> => {
-    const product = allProducts.find((p) => p.id === item.productId);
-    if (!product) return;
-
-    if (userData) {
-      await fetch("/api/cart", {
-        method: "POST",
-        body: JSON.stringify({
-          action: "update",
-          userId: userData.id,
-          productId: item.productId,
-          quantity: item.quantity! + 1,
-          selectedSize: item.selectedSize,
-          selectedColor: item.selectedColor,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      syncCartWithServer();
-    } else {
-      increaseQuantity({
-        productId: item.productId,
-        selectedSize: item.selectedSize,
-        selectedColor: item.selectedColor,
-      });
-    }
+  const handleIncrease = async (item: CartItem) => {
+    increaseQuantity({
+      quantity: item.quantity,
+      productId: item.productId,
+      selectedSize: item.selectedSize,
+      selectedColor: item.selectedColor,
+    });
   };
 
-  const handleDecrease = async (item: CartItem): Promise<void> => {
-    if (userData) {
-      await fetch("/api/cart", {
-        method: "POST",
-        body: JSON.stringify({
-          action: "update",
-          userId: userData.id,
-          productId: item.productId,
-          quantity: item.quantity! - 1,
-          selectedSize: item.selectedSize,
-          selectedColor: item.selectedColor,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      syncCartWithServer();
-    } else {
-      decreaseQuantity({
-        productId: item.productId,
-        selectedSize: item.selectedSize,
-        selectedColor: item.selectedColor,
-      });
-    }
+  const handleDecrease = async (item: CartItem) => {
+    decreaseQuantity({
+      quantity: item.quantity,
+      productId: item.productId,
+      selectedSize: item.selectedSize,
+      selectedColor: item.selectedColor,
+    });
   };
 
   return (
@@ -116,7 +63,7 @@ const CartPage = () => {
         <div className="flex-1">
           <h2 className="text-xl font-semibold mb-4">Cart</h2>
           <Table>
-            <TableHeader>
+            <TableHeader className="text-md font-semibold">
               <TableRow>
                 <TableCell>Item</TableCell>
                 <TableCell></TableCell>
@@ -179,10 +126,21 @@ const CartPage = () => {
                           />
                         </div>
                       </TableCell>
-                      <TableCell>${product.price}</TableCell>
+                      <TableCell>
+                        {product.collection.onsale?.newPrice ? (
+                          <>
+                            <span>
+                              {formatPrice(product.collection.onsale.newPrice)}
+                            </span>
+                          </>
+                        ) : (
+                          <span>{formatPrice(product.price)}</span>
+                        )}
+                      </TableCell>
                       <TableCell>
                         <MdDeleteOutline
-                          size={24}
+                          size={20}
+                          className="cursor-pointer"
                           onClick={() => handleRemove(item)}
                         />
                       </TableCell>
@@ -191,23 +149,17 @@ const CartPage = () => {
                 }
                 return null; // Skip rows without matching products
               })}
-              <TableRow>
-                <TableCell className="text-lg">Subtotal</TableCell>
-                <TableCell></TableCell>
-                <TableCell></TableCell>
-                <TableCell>$Subtotal</TableCell>
-              </TableRow>
             </TableBody>
           </Table>
         </div>
 
         {/* Summary Section */}
         <div className="w-full lg:w-1/3 rounded-lg">
-          <h2 className="text-lg font-bold mb-4">Summary</h2>
+          <h2 className="text-xl font-semibold mb-4">Summary</h2>
           <div className="space-y-4">
             <div className="flex justify-between">
               <p>Subtotal</p>
-              <p>$</p>
+              <p>{formatPrice(cartTotal)}</p>
             </div>
             <div className="flex justify-between">
               <p>Shipping</p>
@@ -215,11 +167,11 @@ const CartPage = () => {
             </div>
             <div className="flex justify-between">
               <p>Taxes</p>
-              <p>${"taxes"}</p>
+              <p>To be calculated</p>
             </div>
             <div className="border-t pt-4 flex justify-between font-semibold">
               <p>Total</p>
-              <p>${"total"}</p>
+              <p>{formatPrice(cartTotal)}</p>
             </div>
           </div>
           <Button className="w-full mt-6" onClick={handleCheckout}>
