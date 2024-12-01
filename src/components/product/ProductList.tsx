@@ -1,11 +1,11 @@
 "use client";
 
 import Product from "./Product";
-import Link from "next/link";
 import { buttonVariants } from "../ui/button";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { formatPrice } from "@/lib/utils";
 import { Product as ProductType } from "@/context/useStore";
+import LocalizedClientLink from "@/lib/LocalizedClientLink";
 
 interface ProductListProps {
     products: ProductType[];
@@ -31,7 +31,7 @@ const ProductList = ({
                     <>
                         <h2 className="text-xl font-bold">{headerTitle}</h2>
                         {products.length > 2 && (
-                            <Link
+                            <LocalizedClientLink
                                 href={headerLink}
                                 className={`flex items-center ${buttonVariants({
                                     size: "sm",
@@ -43,7 +43,7 @@ const ProductList = ({
                                     "View Collection "
                                 )}
                                 <ArrowTopRightIcon className="ml-1 w-4 h-4" />
-                            </Link>
+                            </LocalizedClientLink>
                         )}
                     </>
                 )}
@@ -52,14 +52,16 @@ const ProductList = ({
                 {(isRelated ? products.slice(0, 3) : products).map(
                     (product) => (
                         <div key={product.id} className="flex flex-col">
-                            <Link href={`/products/${product.id}`}>
+                            <LocalizedClientLink
+                                href={`/products/${product.id}`}
+                            >
                                 <Product
                                     initialImage={product.availableImages[0]}
                                     className="mx-auto"
                                     size={size}
                                     isFeatured={true}
                                 />
-                            </Link>
+                            </LocalizedClientLink>
                             {/* <Product
                             initialImage={product.availableColors[0].images[0]}
                             className="mx-auto"

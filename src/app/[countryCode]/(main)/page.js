@@ -9,10 +9,10 @@ import {
     RotateCcw,
     PhoneCall,
 } from "lucide-react";
-import Link from "next/link";
 import ProductList from "@/components/product/ProductList";
 import SubscribeToNewsletter from "@/components/SubscribeToNewsletter";
 import useStore from "@/context/useStore";
+import LocalizedClientLink from "@/lib/LocalizedClientLink";
 
 const perks = [
     {
@@ -83,12 +83,12 @@ export default function Home() {
                         style.
                     </p>
                     <div className=" flex flex-col sm:flex-row gap-4 mt-6">
-                        <Link
+                        <LocalizedClientLink
                             href="/products/category/all"
                             className={buttonVariants()}
                         >
                             Shop the Latest Collection
-                        </Link>
+                        </LocalizedClientLink>
                         <Button variant="ghost">
                             Learn About Our Craftsmanship &rarr;
                         </Button>
