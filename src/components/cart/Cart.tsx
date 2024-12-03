@@ -1,15 +1,23 @@
 "use client";
 
 import { ShoppingBag, ShoppingCart } from "lucide-react";
-import { Sheet, SheetContent, SheetFooter, SheetTrigger } from "../ui/sheet";
-import Link from "next/link";
+import {
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../ui/sheet";
 import { buttonVariants } from "../ui/button";
-import { formatPrice } from "@/lib/utils";
 import useStore from "@/context/useStore";
 import CartLine from "./CartLine";
+import LocalizedClientLink from "@/lib/LocalizedClientLink";
+import { useFormatPrice } from "@/lib/utils";
 
 const Cart: React.FC = () => {
   const { allProducts } = useStore();
+  const { formatPrice } = useFormatPrice();
   const cartTotal = useStore((state) => state.cartTotal);
   const cartItemsFromStore = useStore((state) => state.cartItems);
   const itemCount = useStore((state) => state.cartItemsCount);
@@ -67,7 +75,7 @@ const Cart: React.FC = () => {
               </div>
               <div className="text-xl font-semibold">Your cart is empty</div>
               <SheetTrigger asChild>
-                <Link
+                <LocalizedClientLink
                   href="/products"
                   className={buttonVariants({
                     variant: "link",
@@ -76,7 +84,7 @@ const Cart: React.FC = () => {
                   })}
                 >
                   Add items to your cart to checkout
-                </Link>
+                </LocalizedClientLink>
               </SheetTrigger>
             </div>
           )}
@@ -85,14 +93,14 @@ const Cart: React.FC = () => {
           <div className=" pr-6">
             <SheetFooter>
               <SheetTrigger asChild>
-                <Link
+                <LocalizedClientLink
                   href="/cart"
                   className={buttonVariants({
                     className: "w-full",
                   })}
                 >
-                  View Cart ({itemCount})
-                </Link>
+                  Checkout
+                </LocalizedClientLink>
               </SheetTrigger>
             </SheetFooter>
           </div>

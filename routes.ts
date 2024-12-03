@@ -4,7 +4,7 @@
  * @type {string[]}
  */
 export const publicRoutes = [
-    "/",
+    "/ca",
     "/about",
     "/contact",
     "/products",
@@ -31,4 +31,4 @@ export const apiAuthPrefix = "/api/auth";
  * The default redirect path when a user logs in successfully
  * @type {string}
  */
-export const DEFAULT_LOGIN_REDIRECT = "/";
+export const DEFAULT_LOGIN_REDIRECT = "/ca";

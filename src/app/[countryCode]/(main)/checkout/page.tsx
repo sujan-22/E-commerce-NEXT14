@@ -2,6 +2,7 @@ import React from "react";
 import { Input } from "@/components/ui/input"; // Shadcn Input component
 import { Checkbox } from "@/components/ui/checkbox"; // Shadcn Checkbox component
 import { Button } from "@/components/ui/button"; // Shadcn Button component
+import Image from "next/image";
 
 const CheckoutPage = () => {
   return (
@@ -56,7 +57,9 @@ const CheckoutPage = () => {
           </div>
 
           <div className="flex items-center gap-4 border-t pt-4">
-            <img
+            <Image
+              width={64}
+              height={64}
               src="/path-to-image.jpg"
               alt="Product Image"
               className="w-16 h-16 object-cover rounded-md"
