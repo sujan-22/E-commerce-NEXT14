@@ -1,14 +1,7 @@
 "use client";
 
 import { ShoppingBag, ShoppingCart } from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "../ui/sheet";
+import { Sheet, SheetContent, SheetFooter, SheetTrigger } from "../ui/sheet";
 import Link from "next/link";
 import { buttonVariants } from "../ui/button";
 import { formatPrice } from "@/lib/utils";
