@@ -40,7 +40,7 @@ const Cart: React.FC = () => {
                 <div className="flex-grow flex flex-col pr-6 overflow-y-auto">
                     {itemCount > 0 ? (
                         <>
-                            <div className="flex h-full flex-col justify-between overflow-hidden p-1">
+                            <div className="flex h-full flex-col justify-between overflow-hidden scrollbar-hide p-1">
                                 <ul className="flex-grow overflow-auto py-4">
                                     {cartItemsFromStore.map((item, i) => {
                                         const product = allProducts.find(

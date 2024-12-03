@@ -23,7 +23,7 @@ export default function RootLayout({ children }) {
                     <ReactQueryProvider>
                         <SessionHandler />
                         <Navbar />
-                        <main className="flex flex-col min-h-[calc(100vh-2.5rem-1px)] pt-[104.8px]">
+                        <main className="flex flex-col min-h-[calc(100vh-2.5rem-1px)]">
                             <div className="flex flex-1 flex-col h-full">
                                 <Transition>{children}</Transition>
                             </div>
