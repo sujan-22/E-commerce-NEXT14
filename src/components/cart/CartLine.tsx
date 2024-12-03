@@ -1,8 +1,8 @@
 import useStore, { Product } from "@/context/useStore";
-import { cn, formatPrice } from "@/lib/utils";
+import LocalizedClientLink from "@/lib/LocalizedClientLink";
+import { cn, useFormatPrice } from "@/lib/utils";
 import { MinusIcon, PlusIcon, XIcon } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 
 interface CartLineProps {
     product: Product;
@@ -20,6 +20,7 @@ const CartLine: React.FC<CartLineProps> = ({
     const removeFromCart = useStore((state) => state.removeFromCart);
     const increaseQuantity = useStore((state) => state.increaseQuantity);
     const decreaseQuantity = useStore((state) => state.decreaseQuantity);
+    const { formatPrice } = useFormatPrice();
     const handleRemove = () => {
         removeFromCart({
             productId: product.id!,
@@ -59,7 +60,7 @@ const CartLine: React.FC<CartLineProps> = ({
                     </button>
                 </div>
                 <div className="flex flex-row">
-                    <Link
+                    <LocalizedClientLink
                         href={`products/${product.id}`}
                         className="z-30 ml-2 flex flex-1 flex-row space-x-4"
                     >
@@ -86,7 +87,7 @@ const CartLine: React.FC<CartLineProps> = ({
                                 </p>
                             )}
                         </div>
-                    </Link>
+                    </LocalizedClientLink>
                 </div>
 
                 <div className="flex flex-1 flex-col justify-between">

@@ -3,14 +3,12 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import React from "react";
+import { motion } from "framer-motion";
 
-/**
- * Use this component to create a Next.js `<Link />` that persists the current country code in the url,
- * without having to explicitly pass it as a prop.
- */
 const LocalizedClientLink = ({
     children,
     href,
+    className,
     ...props
 }: {
     children?: React.ReactNode;
@@ -22,9 +20,19 @@ const LocalizedClientLink = ({
     const { countryCode } = useParams();
 
     return (
-        <Link href={`/${countryCode}${href}`} {...props}>
-            {children}
-        </Link>
+        <motion.div
+            initial={{ x: 0, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ ease: "easeInOut", duration: 0.75 }}
+        >
+            <Link
+                href={`/${countryCode}${href}`}
+                className={className}
+                {...props}
+            >
+                {children}
+            </Link>
+        </motion.div>
     );
 };
 

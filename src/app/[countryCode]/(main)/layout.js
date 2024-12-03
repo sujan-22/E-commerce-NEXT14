@@ -1,4 +1,4 @@
-import "./globals.css";
+import "../../globals.css";
 import Navbar from "@/components/Navbar";
 import Category from "@/hooks/useCategory";
 import Footer from "@/components/Footer";
@@ -7,6 +7,7 @@ import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "sonner";
 import SessionHandler from "@/hooks/SessionHandler";
+import Transition from "@/components/Transition";
 
 export const metadata = {
     title: "Fashion E-commerce",
@@ -24,7 +25,7 @@ export default function RootLayout({ children }) {
                         <Navbar />
                         <main className="flex flex-col min-h-[calc(100vh-2.5rem-1px)] pt-[104.8px]">
                             <div className="flex flex-1 flex-col h-full">
-                                {children}
+                                <Transition>{children}</Transition>
                             </div>
                             <Footer />
                         </main>

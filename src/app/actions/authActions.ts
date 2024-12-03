@@ -1,8 +1,8 @@
 "use server";
 
+import useStore from "@/context/useStore";
 import { signOut, signIn } from "../../../auth";
 import { AuthError } from "next-auth";
-import useStore from "@/context/useStore";
 
 export async function handleCredentialsSignIn({
     email,
@@ -52,10 +52,6 @@ export async function handleCredentialsSignIn({
     }
 }
 
-export async function HandleSignOut() {
-    // const logoutUser = useStore((state) => state.logoutUser);
-    // useStore.getState().logoutUser();
-    // logoutUser();
-    // useStore.getState().clearCart();
-    await signOut();
+export async function handleSignOut() {
+    await signOut({ redirect: false });
 }

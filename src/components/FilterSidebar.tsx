@@ -50,7 +50,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ mobileView }) => {
             params.set("sort", currentSort);
         }
 
-        router.push(`/products/category/${value}?${params.toString()}`);
+        router.push(`/ca/products/category/${value}?${params.toString()}`);
     };
 
     return mobileView ? (

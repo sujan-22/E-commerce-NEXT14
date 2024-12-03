@@ -10,10 +10,10 @@ import ProductActions from "@/components/product/ProductActions";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
+import { useFormatPrice } from "@/lib/utils";
 import useStore from "@/context/useStore";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProductList from "@/components/product/ProductList";
-import { useFormatPrice } from "@/lib/utils";
 
 const Page = ({ params }) => {
     const { formatPrice } = useFormatPrice();
