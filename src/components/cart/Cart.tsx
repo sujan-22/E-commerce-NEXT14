@@ -91,15 +91,15 @@ const Cart: React.FC = () => {
         </div>
         {itemCount > 0 && (
           <div className=" pr-6">
-            <SheetFooter>
+            <SheetFooter className="w-full">
               <SheetTrigger asChild>
                 <LocalizedClientLink
                   href="/cart"
                   className={buttonVariants({
-                    className: "w-full",
+                    variant: "default",
                   })}
                 >
-                  Checkout
+                  View Cart
                 </LocalizedClientLink>
               </SheetTrigger>
             </SheetFooter>

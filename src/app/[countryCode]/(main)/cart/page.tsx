@@ -14,6 +14,7 @@ import { cn } from "@nextui-org/react";
 import { MinusIcon, PlusIcon } from "lucide-react";
 import { MdDeleteOutline } from "react-icons/md";
 import { useFormatPrice } from "@/lib/utils";
+import LocalizedClientLink from "@/lib/LocalizedClientLink";
 
 const CartPage = () => {
   const { allProducts } = useStore();
@@ -24,10 +25,6 @@ const CartPage = () => {
   const increaseQuantity = useStore((state) => state.increaseQuantity);
   const decreaseQuantity = useStore((state) => state.decreaseQuantity);
   const cartTotal = useStore((state) => state.cartTotal);
-
-  const handleCheckout = () => {
-    window.location.href = "/checkout";
-  };
 
   // Handle remove item from cart
   const handleRemove = async (item: CartItem) => {
@@ -175,9 +172,9 @@ const CartPage = () => {
               <p>{formatPrice(cartTotal)}</p>
             </div>
           </div>
-          <Button className="w-full mt-6" onClick={handleCheckout}>
-            Go to Checkout
-          </Button>
+          <LocalizedClientLink href="/checkout">
+            <Button className="w-full mt-6">Go to Checkout</Button>
+          </LocalizedClientLink>
         </div>
       </div>
     </MaxWidthWrapper>
