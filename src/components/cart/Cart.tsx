@@ -34,13 +34,10 @@ const Cart: React.FC = () => {
                 </span>
             </SheetTrigger>
             <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg z-[1000000] h-full">
-                <SheetHeader className="space-y-2.5 pr-6">
-                    <SheetTitle>Cart ({itemCount})</SheetTitle>
-                </SheetHeader>
                 <div className="flex-grow flex flex-col pr-6 overflow-y-auto">
                     {itemCount > 0 ? (
                         <>
-                            <div className="flex h-full flex-col justify-between overflow-hidden scrollbar-hide p-1">
+                            <div className="flex h-full flex-col justify-between overflow-hidden p-1">
                                 <ul className="flex-grow overflow-auto py-4">
                                     {cartItemsFromStore.map((item, i) => {
                                         const product = allProducts.find(
@@ -99,15 +96,15 @@ const Cart: React.FC = () => {
                 </div>
                 {itemCount > 0 && (
                     <div className=" pr-6">
-                        <SheetFooter>
+                        <SheetFooter className="w-full">
                             <SheetTrigger asChild>
                                 <LocalizedClientLink
                                     href="/cart"
                                     className={buttonVariants({
-                                        className: "w-full",
+                                        variant: "default",
                                     })}
                                 >
-                                    Checkout
+                                    View Cart
                                 </LocalizedClientLink>
                             </SheetTrigger>
                         </SheetFooter>
