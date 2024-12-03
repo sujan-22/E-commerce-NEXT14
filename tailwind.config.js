@@ -51,6 +51,18 @@ module.exports = {
                     5: "hsl(var(--chart-5))",
                 },
             },
+            fontFamily: {
+                sans: [
+                    "Inter",
+                    "-apple-system",
+                    "BlinkMacSystemFont",
+                    "Segoe UI",
+                    "Roboto",
+                    "Helvetica Neue",
+                    "Ubuntu",
+                    "sans-serif",
+                ],
+            },
             borderRadius: {
                 lg: "var(--radius)",
                 md: "calc(var(--radius) - 2px)",

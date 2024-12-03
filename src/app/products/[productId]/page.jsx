@@ -10,12 +10,13 @@ import ProductActions from "@/components/product/ProductActions";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
-import { formatPrice } from "@/lib/utils";
+import { useFormatPrice } from "@/lib/utils";
 import useStore from "@/context/useStore";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProductList from "@/components/product/ProductList";
 
 const Page = ({ params }) => {
+    const { formatPrice } = useFormatPrice();
     const products = useStore((state) => state.allProducts);
     const addToCart = useStore((state) => state.addToCart);
     // const syncCartWithServer = useStore((state) => state.syncCartWithServer);

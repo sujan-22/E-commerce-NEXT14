@@ -13,19 +13,18 @@ import Image from "next/image";
 import { cn } from "@nextui-org/react";
 import { MinusIcon, PlusIcon } from "lucide-react";
 import { MdDeleteOutline } from "react-icons/md";
+import LocalizedClientLink from "@/lib/LocalizedClientLink";
+import { useFormatPrice } from "@/lib/utils";
 
 const CartPage = () => {
     const { allProducts } = useStore();
+    const { formatPrice } = useFormatPrice();
     const cartItemsFromStore = useStore(
         (state) => state.cartItems
     ) as CartItem[];
     const removeFromCart = useStore((state) => state.removeFromCart);
     const increaseQuantity = useStore((state) => state.increaseQuantity);
     const decreaseQuantity = useStore((state) => state.decreaseQuantity);
-
-    const handleCheckout = () => {
-        window.location.href = "/checkout";
-    };
 
     // Handle remove item from cart
     const handleRemove = async (item: CartItem) => {
@@ -141,9 +140,19 @@ const CartPage = () => {
                                                     />
                                                 </div>
                                             </TableCell>
-                                            <TableCell>
-                                                ${product.price}
-                                            </TableCell>
+                                            {product.collection.onsale
+                                                ?.newPrice ? (
+                                                <TableCell>
+                                                    {formatPrice(
+                                                        product.collection
+                                                            .onsale.newPrice
+                                                    )}
+                                                </TableCell>
+                                            ) : (
+                                                <TableCell>
+                                                    {formatPrice(product.price)}
+                                                </TableCell>
+                                            )}
                                             <TableCell>
                                                 <MdDeleteOutline
                                                     size={24}
@@ -190,9 +199,9 @@ const CartPage = () => {
                             <p>${"total"}</p>
                         </div>
                     </div>
-                    <Button className="w-full mt-6" onClick={handleCheckout}>
-                        Go to Checkout
-                    </Button>
+                    <LocalizedClientLink href="/checkout">
+                        <Button variant={"default"}>Go to Checkout</Button>
+                    </LocalizedClientLink>
                 </div>
             </div>
         </MaxWidthWrapper>

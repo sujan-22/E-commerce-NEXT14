@@ -1,6 +1,6 @@
 import useStore, { Product } from "@/context/useStore";
 import LocalizedClientLink from "@/lib/LocalizedClientLink";
-import { cn, formatPrice } from "@/lib/utils";
+import { cn, useFormatPrice } from "@/lib/utils";
 import { MinusIcon, PlusIcon, XIcon } from "lucide-react";
 import Image from "next/image";
 
@@ -20,6 +20,7 @@ const CartLine: React.FC<CartLineProps> = ({
     const removeFromCart = useStore((state) => state.removeFromCart);
     const increaseQuantity = useStore((state) => state.increaseQuantity);
     const decreaseQuantity = useStore((state) => state.decreaseQuantity);
+    const { formatPrice } = useFormatPrice();
     const handleRemove = () => {
         removeFromCart({
             productId: product.id!,

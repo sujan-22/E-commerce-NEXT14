@@ -25,6 +25,7 @@ interface StoreState {
     userData: IUser | null;
     cartItemsCount: number;
     loading: boolean;
+    country: string;
     allProducts: Product[];
     categories: string[];
     searchQuery: string;
@@ -34,6 +35,7 @@ interface StoreState {
     uploadedImageUrls: string[];
 
     setUserData: (data: IUser) => void;
+    setCountry: (data: string) => void;
     setLoading: (loading: boolean) => void;
     setAllProducts: (products: Product[]) => void;
     setCategories: (categories: string[]) => void;
@@ -60,6 +62,7 @@ const useStore = create<StoreState>()(
             categories: [],
             searchQuery: "",
             searchResults: [],
+            country: "ca",
 
             cartItems: [],
             cartTotal: 0,
@@ -67,6 +70,7 @@ const useStore = create<StoreState>()(
 
             uploadedImageUrls: [],
 
+            setCountry: (data) => set({ country: data }),
             setUserData: (data) => set({ userData: data }),
             setLoading: (loading) => set({ loading }),
             setAllProducts: (products) => set({ allProducts: products }),
@@ -361,6 +365,7 @@ const useStore = create<StoreState>()(
             storage: createJSONStorage(() => localStorage),
             partialize: (state) => ({
                 userData: state.userData,
+                country: state.country,
                 cartItems: state.cartItems,
                 uploadedImageUrls: state.uploadedImageUrls,
             }),

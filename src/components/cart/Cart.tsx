@@ -10,13 +10,14 @@ import {
     SheetTrigger,
 } from "../ui/sheet";
 import { buttonVariants } from "../ui/button";
-import { formatPrice } from "@/lib/utils";
 import useStore from "@/context/useStore";
 import CartLine from "./CartLine";
 import LocalizedClientLink from "@/lib/LocalizedClientLink";
+import { useFormatPrice } from "@/lib/utils";
 
 const Cart: React.FC = () => {
     const { allProducts } = useStore();
+    const { formatPrice } = useFormatPrice();
     const cartTotal = useStore((state) => state.cartTotal);
     const cartItemsFromStore = useStore((state) => state.cartItems);
     const itemCount = useStore((state) => state.cartItemsCount);

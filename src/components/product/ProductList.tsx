@@ -3,9 +3,9 @@
 import Product from "./Product";
 import { buttonVariants } from "../ui/button";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
-import { formatPrice } from "@/lib/utils";
 import { Product as ProductType } from "@/context/useStore";
 import LocalizedClientLink from "@/lib/LocalizedClientLink";
+import { useFormatPrice } from "@/lib/utils";
 
 interface ProductListProps {
     products: ProductType[];
@@ -24,6 +24,7 @@ const ProductList = ({
     linkTitle,
     isRelated,
 }: ProductListProps) => {
+    const { formatPrice } = useFormatPrice();
     return (
         <div className=" py-20">
             <div className="flex justify-between mb-2">
