@@ -6,15 +6,23 @@ import {
   TableCell,
   TableBody,
 } from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 import { Button } from "@/components/ui/button";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import useStore, { CartItem } from "@/context/useStore";
 import Image from "next/image";
-import { cn } from "@nextui-org/react";
-import { MinusIcon, PlusIcon } from "lucide-react";
+import { cn, user } from "@nextui-org/react";
+import { MinusIcon, PlusIcon, Info } from "lucide-react";
 import { MdDeleteOutline } from "react-icons/md";
 import { useFormatPrice } from "@/lib/utils";
 import LocalizedClientLink from "@/lib/LocalizedClientLink";
+import { Separator } from "@/components/ui/separator";
 
 const CartPage = () => {
   const { allProducts } = useStore();
@@ -25,6 +33,7 @@ const CartPage = () => {
   const increaseQuantity = useStore((state) => state.increaseQuantity);
   const decreaseQuantity = useStore((state) => state.decreaseQuantity);
   const cartTotal = useStore((state) => state.cartTotal);
+  const userData = useStore((state) => state.userData);
 
   // Handle remove item from cart
   const handleRemove = async (item: CartItem) => {
@@ -56,12 +65,20 @@ const CartPage = () => {
 
   return (
     <MaxWidthWrapper>
-      <div className="flex flex-col lg:flex-row gap-10 mt-10">
+      <div className="flex flex-col lg:flex-row gap-14 mt-10">
         {/* Cart Items Section */}
         <div className="flex-1">
+          {!userData && (
+            <div className="items-center mb-6">
+              <h3 className="text-muted-foreground mb-6">
+                Sign in to proceed to checkout{" "}
+              </h3>
+              <Separator />
+            </div>
+          )}
           <h2 className="text-xl font-semibold mb-4">Cart</h2>
           <Table>
-            <TableHeader className="text-md font-semibold">
+            <TableHeader className="text-md font-semibold text-center">
               <TableRow>
                 <TableCell>Item</TableCell>
                 <TableCell></TableCell>
@@ -100,8 +117,8 @@ const CartPage = () => {
                           </p>
                         )}
                       </TableCell>
-                      <TableCell>
-                        <div className="flex h-8 flex-row items-center rounded-full px-2">
+                      <TableCell className="text-center">
+                        <div className="flex h-8 flex-row items-center justify-center rounded-full px-2">
                           <MinusIcon
                             className={cn("w-5 h-5", {
                               "text-gray-400 cursor-not-allowed":
@@ -124,7 +141,7 @@ const CartPage = () => {
                           />
                         </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-center">
                         {product.collection.onsale?.newPrice ? (
                           <>
                             <span>
@@ -135,7 +152,7 @@ const CartPage = () => {
                           <span>{formatPrice(product.price)}</span>
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-center">
                         <MdDeleteOutline
                           size={20}
                           className="cursor-pointer"
@@ -156,7 +173,22 @@ const CartPage = () => {
           <h2 className="text-xl font-semibold mb-4">Summary</h2>
           <div className="space-y-4">
             <div className="flex justify-between">
-              <p>Subtotal</p>
+              <>
+                <div className="flex items-center space-x-2">
+                  <p>Subtotal</p>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info size={16} />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Cart total excluding shipping and taxes.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </>
+
               <p>{formatPrice(cartTotal)}</p>
             </div>
             <div className="flex justify-between">

@@ -3,25 +3,61 @@
 import LocalizedClientLink from "@/lib/LocalizedClientLink";
 import { Popover, Transition } from "@headlessui/react";
 import { ArrowRight, X } from "lucide-react";
-import { Fragment, useState } from "react";
+import { Dispatch, Fragment, SetStateAction, useState } from "react";
 import CountrySelect from "./CountrySelect";
 import { cn } from "@/lib/utils";
+import { handleSignOut } from "@/app/actions/authActions";
+import useStore, { IUser } from "@/context/useStore";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
-const SideMenuItems = {
-  Home: "/",
-  Store: "/store",
-  Search: "/search",
-  Account: "/account",
-  Cart: "/cart",
-};
+interface SideMenuProps {
+  isDialogOpen: boolean;
+  setDialogOpen: Dispatch<SetStateAction<boolean>>; // Type for a function that sets state
+}
 
-const SideMenu = () => {
+const SideMenu = ({ isDialogOpen, setDialogOpen }: SideMenuProps) => {
   const [isCountrySelectOpen, setIsCountrySelectOpen] = useState(false);
+  const logoutUser = useStore((state) => state.logoutUser); // Access logoutUser function from Zustand store
+  const isMobile = useIsMobile();
+  const userData = useStore((state) => state.userData);
+
+  const getGreeting = (userData?: IUser) => {
+    console.log("🚀 ~ getGreeting ~ userData:", userData);
+    const currentHour = new Date().getHours();
+    const userName = userData?.name || ""; // Use an empty string if userData or name is not provided
+
+    let greeting = "";
+
+    if (currentHour >= 5 && currentHour < 12) {
+      greeting = "Good Morning";
+    } else if (currentHour >= 12 && currentHour < 17) {
+      greeting = "Good Afternoon";
+    } else if (currentHour >= 17) {
+      greeting = "Good Evening";
+    }
+
+    return userName ? `${greeting}, ${userName}!` : `${greeting}!`; // If userName exists, append it; otherwise, just the greeting
+  };
+
+  const handleLogout = () => {
+    logoutUser(); // Clear the state from Zustand
+    handleSignOut(); // Call the signOut method from NextAuth
+  };
 
   const toggleState = {
     state: isCountrySelectOpen,
     open: () => setIsCountrySelectOpen(true),
     close: () => setIsCountrySelectOpen(false),
+  };
+
+  const SideMenuItems = {
+    Home: "/",
+    Store: "/store",
+    Search: "/search",
+    Account: "/account",
+    Cart: "/cart",
+    ...(!userData ? {} : { "Sign out": () => handleLogout() }),
+    ...(isMobile && !userData ? { "Sign In": () => setDialogOpen(true) } : {}),
   };
 
   return (
@@ -49,7 +85,7 @@ const SideMenu = () => {
                 leaveFrom="opacity-100 backdrop-blur-2xl"
                 leaveTo="opacity-0"
               >
-                <Popover.Panel className="flex flex-col absolute w-full pr-4 sm:pr-0 sm:w-1/3 2xl:w-1/4 sm:min-w-min h-[calc(100vh-1rem)] z-30 inset-x-0 text-sm text-secondary m-2 backdrop-blur-2xl">
+                <Popover.Panel className="flex flex-col absolute w-full pr-4 sm:pr-0 sm:w-1/3 2xl:w-1/4 sm:min-w-min h-[calc(100vh-1rem)] z-[51] inset-x-0 text-sm text-secondary m-2 backdrop-blur-2xl">
                   <div
                     data-testid="nav-menu-popup"
                     className="flex flex-col h-full bg-[rgba(3,7,18,0.5)] rounded-md justify-between p-6"
@@ -59,27 +95,49 @@ const SideMenu = () => {
                         <X />
                       </button>
                     </div>
+                    <h2 className="text-3xl">{getGreeting(userData)}</h2>
                     <ul className="flex flex-col gap-6 items-start justify-start">
-                      {Object.entries(SideMenuItems).map(([name, href]) => {
-                        return (
-                          <li key={name}>
-                            <LocalizedClientLink
-                              href={href}
-                              className="text-3xl leading-10 hover:text-muted-foreground"
-                              onClick={close}
-                              data-testid={`${name.toLowerCase()}-link`}
-                            >
-                              {name}
-                            </LocalizedClientLink>
-                          </li>
-                        );
-                      })}
+                      {Object.entries(SideMenuItems).map(
+                        ([name, actionOrHref]) => {
+                          const isFunction = typeof actionOrHref === "function";
+
+                          return (
+                            <li key={name}>
+                              {isFunction ? (
+                                <button
+                                  className="text-2xl leading-10 hover:text-muted-foreground"
+                                  onClick={() => {
+                                    actionOrHref(); // Call the function
+                                    close(); // Close the menu
+                                  }}
+                                  data-testid={`${name.toLowerCase()}-button`}
+                                >
+                                  {name}
+                                </button>
+                              ) : (
+                                <LocalizedClientLink
+                                  href={actionOrHref as string}
+                                  className="text-2xl leading-10 hover:text-muted-foreground"
+                                  onClick={close}
+                                  data-testid={`${name.toLowerCase()}-link`}
+                                >
+                                  {name}
+                                </LocalizedClientLink>
+                              )}
+                            </li>
+                          );
+                        }
+                      )}
                     </ul>
+
                     <div className="flex flex-col gap-y-6">
                       <div
                         className="flex justify-between"
-                        onMouseEnter={toggleState.open}
-                        onMouseLeave={toggleState.close}
+                        onClick={() =>
+                          toggleState.state
+                            ? toggleState.close()
+                            : toggleState.open()
+                        }
                       >
                         <CountrySelect toggleState={toggleState} />
                         <ArrowRight
