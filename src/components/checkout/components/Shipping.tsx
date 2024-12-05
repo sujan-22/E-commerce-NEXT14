@@ -43,9 +43,13 @@ const Shipping = () => {
     return (
         <div className="bg-white">
             <div className="flex flex-row items-center justify-between mb-6">
-                <h2 className="text-3xl font-bold">Delivery</h2>
+                <h2 className="text-xl font-bold">Delivery</h2>
                 {!isOpen && (
-                    <Button variant={"link"} onClick={handleEdit}>
+                    <Button
+                        variant={"link"}
+                        className="text-blue-600"
+                        onClick={handleEdit}
+                    >
                         Edit
                     </Button>
                 )}
@@ -62,7 +66,6 @@ const Shipping = () => {
                                         : "border-muted"
                                 }`}
                                 onClick={() => handleOptionChange(option.id)}
-                                data-testid="delivery-option"
                             >
                                 <div className="flex items-center gap-x-4">
                                     <input
@@ -73,7 +76,7 @@ const Shipping = () => {
                                         onChange={() =>
                                             handleOptionChange(option.id)
                                         }
-                                        className="w-4 h-4 cursor-pointer"
+                                        className="w-4 h-4 cursor-pointer text-primary"
                                     />
                                     <Label
                                         htmlFor={option.id}

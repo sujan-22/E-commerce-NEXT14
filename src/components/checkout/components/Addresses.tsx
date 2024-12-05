@@ -1,31 +1,76 @@
-"use client";
-
 import { Separator } from "@/components/ui/separator";
-import { Spinner } from "@nextui-org/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChangeEvent, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import AddressForm from "@/components/modules/AddressForm";
+import { useAddressStore } from "@/context/useAddressStore";
+import useStore from "@/context/useStore";
+import RenderAddress from "@/components/modules/RenderAddress";
+import { SyncLoader } from "react-spinners";
+import { IoCheckmarkCircle } from "react-icons/io5";
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Minus, Plus } from "lucide-react";
+import { IAddress } from "@/data/types/address";
 
 const Addresses = () => {
     const searchParams = useSearchParams();
+    const {
+        addresses,
+        fetchAddresses,
+        setSelectedAddress,
+        selectedAddress,
+        removeSelectedAddress,
+    } = useAddressStore();
+    const { userData } = useStore();
     const router = useRouter();
     const pathname = usePathname();
+
+    const [open, setIsOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [isError, setIsError] = useState(false);
+    const [hasFetchedAddresses, setHasFetchedAddresses] = useState(false);
+
+    useEffect(() => {
+        const loadAddresses = async () => {
+            if (userData?.id) {
+                try {
+                    await fetchAddresses(userData.id);
+                    setHasFetchedAddresses(true); // Mark as fetched
+                } catch (error) {
+                    setIsError(true);
+                } finally {
+                    setLoading(false); // Stop loading once it's finished
+                }
+            } else {
+                setLoading(false); // No userData.id, no need to fetch
+            }
+        };
+
+        loadAddresses();
+    }, [fetchAddresses, userData?.id]);
 
     const isOpen = searchParams.get("step") === "address";
 
     const handleEdit = () => {
+        removeSelectedAddress();
         router.push(pathname + "?step=address");
     };
 
     const handleContinue = () => {
-        // Update the URL with the new step
         router.push(pathname + "?step=delivery");
     };
 
+    const handleAddressSelect = (address: IAddress) => {
+        setSelectedAddress(address); // Save selected address
+    };
+
     const [sameAsBilling, setSameAsBilling] = useState(true);
-    const [shippingAddress, setShippingAddress] = useState({
+    const [shippingAddress, setShippingAddress] = useState<IAddress>({
         firstName: "",
         lastName: "",
         address: "",
@@ -33,31 +78,90 @@ const Addresses = () => {
         city: "",
         country: "",
         phone: "",
-        company: "",
         province: "",
-        email: "",
+        addressName: "",
     });
-
-    const handleAddressChange = (
-        e: ChangeEvent<HTMLInputElement>,
-        addressType: "shipping" | "billing"
-    ) => {
-        const { name, value } = e.target;
-        if (addressType === "shipping") {
-            setShippingAddress((prev) => ({ ...prev, [name]: value }));
-        }
-    };
 
     const toggleSameAsBilling = () => {
         setSameAsBilling((prev) => !prev);
     };
 
+    const renderAddressForm = (addressType: "billing" | "shipping") => (
+        <AddressForm
+            addressType={addressType}
+            address={shippingAddress}
+            setShippingAddress={setShippingAddress}
+        />
+    );
+
+    const renderContinueAndBillingAndCheckbox = () => (
+        <div className="pb-8">
+            <div className="col-span-2 my-4 flex items-center gap-2">
+                <Checkbox
+                    onClick={toggleSameAsBilling}
+                    checked={sameAsBilling}
+                    id="billing-checkbox"
+                />
+                <label htmlFor="billing-checkbox" className="text-sm">
+                    Billing address same as shipping address
+                </label>
+            </div>
+
+            {!sameAsBilling && (
+                <div className="mb-4">
+                    <AddressForm
+                        addressType="billing"
+                        address={shippingAddress}
+                        setShippingAddress={setShippingAddress}
+                    />
+                </div>
+            )}
+            <Button onClick={handleContinue} type="submit">
+                Continue to delivery
+            </Button>
+        </div>
+    );
+
+    const renderCollapsibleSection = () => (
+        <Collapsible
+            open={open}
+            onOpenChange={setIsOpen}
+            className="w-full space-y-2"
+        >
+            <div className="flex items-center justify-between">
+                <h4 className="text-sm font-semibold underline">
+                    Add new address?
+                </h4>
+                <CollapsibleTrigger asChild>
+                    <Button variant="outline" size="sm">
+                        {!open ? (
+                            <Plus className="h-4 w-4" />
+                        ) : (
+                            <Minus className="h-4 w-4" />
+                        )}
+                        <span className="sr-only">Toggle</span>
+                    </Button>
+                </CollapsibleTrigger>
+            </div>
+            <CollapsibleContent className="space-y-2">
+                {renderAddressForm("shipping")}
+            </CollapsibleContent>
+        </Collapsible>
+    );
+
     return (
         <div className="bg-white">
             <div className="flex flex-row items-center justify-between mb-6">
-                <h2 className="text-xl font-bold">Shipping Address</h2>
+                <h2 className="text-xl font-bold flex items-center">
+                    Shipping Address
+                    {selectedAddress && <IoCheckmarkCircle className="ml-2" />}
+                </h2>
                 {!isOpen && (
-                    <Button variant={"link"} onClick={handleEdit}>
+                    <Button
+                        variant={"link"}
+                        className="text-blue-600"
+                        onClick={handleEdit}
+                    >
                         Edit
                     </Button>
                 )}
@@ -65,67 +169,49 @@ const Addresses = () => {
 
             {isOpen ? (
                 <div>
-                    <div className="pb-8">
-                        <AddressForm
-                            addressType="shipping"
-                            address={shippingAddress}
-                            handleAddressChange={handleAddressChange}
-                        />
-                        <div className="col-span-2 my-4 flex items-center gap-2">
-                            <Checkbox
-                                onClick={toggleSameAsBilling}
-                                checked={sameAsBilling}
-                                id="billing-checkbox"
-                            />
-                            <label
-                                htmlFor="billing-checkbox"
-                                className="text-sm"
-                            >
-                                Billing address same as shipping address
-                            </label>
+                    {loading ? (
+                        // Show loader if still fetching
+                        <SyncLoader size={10} margin={2} />
+                    ) : isError ? (
+                        <div>
+                            Error fetching addresses. Please try again later.
                         </div>
-
-                        {!sameAsBilling && (
-                            <div className="mb-4">
-                                <AddressForm
-                                    addressType="billing"
-                                    address={shippingAddress}
-                                    handleAddressChange={handleAddressChange}
-                                />
+                    ) : !hasFetchedAddresses ? (
+                        // Show loader until addresses have been fetched
+                        <SyncLoader size={10} margin={2} />
+                    ) : addresses.length === 0 ? (
+                        // Show AddressForm if no addresses are available
+                        <>
+                            <AddressForm
+                                addressType="shipping"
+                                address={shippingAddress}
+                                setShippingAddress={setShippingAddress}
+                            />
+                            {renderContinueAndBillingAndCheckbox()}
+                        </>
+                    ) : (
+                        <>
+                            <RenderAddress
+                                addresses={addresses}
+                                onSelectAddress={handleAddressSelect}
+                            />
+                            <div className=" mt-2">
+                                {renderCollapsibleSection()}
                             </div>
-                        )}
-                        <Button onClick={handleContinue} type="submit">
-                            Continue to delivery
-                        </Button>
-                    </div>
+                            {renderContinueAndBillingAndCheckbox()}
+                        </>
+                    )}
                 </div>
             ) : (
                 <div>
-                    {shippingAddress.firstName ? (
-                        <div>
-                            <p>
-                                {shippingAddress.firstName}{" "}
-                                {shippingAddress.lastName}
-                            </p>
-                            <p>
-                                {shippingAddress.company &&
-                                    `${shippingAddress.company}, `}
-                                {shippingAddress.address}
-                            </p>
-                            <p>
-                                {shippingAddress.city},{" "}
-                                {shippingAddress.province}{" "}
-                                {shippingAddress.postalCode}
-                            </p>
-                            <p>{shippingAddress.country}</p>
-                            <p>{shippingAddress.phone}</p>
-                            <p>{shippingAddress.email}</p>
-                        </div>
-                    ) : (
-                        <Spinner />
-                    )}
+                    <RenderAddress
+                        addresses={addresses}
+                        selectedAddress={selectedAddress}
+                        onSelectAddress={handleAddressSelect}
+                    />
                 </div>
             )}
+
             <Separator className="mt-8" />
         </div>
     );
