@@ -12,14 +12,9 @@ export const Countries = [
         label: "Canada",
         route: "ca",
     },
-    {
-        label: "India",
-        route: "in",
-    },
 ];
 
 export enum Currency {
     "us" = "USD",
     "ca" = "CAD",
-    "in" = "INR",
 }
