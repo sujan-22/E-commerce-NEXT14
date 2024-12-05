@@ -1,39 +1,39 @@
-import Image from "next/image";
+"use client";
+import { Separator } from "@/components/ui/separator";
+import { useDeliveryStore } from "@/context/useDeliveryStore";
+import useStore from "@/context/useStore";
+import { useFormatPrice } from "@/lib/utils";
 import React from "react";
 
 const CheckoutSummary = () => {
+    const { cartTotal } = useStore();
+    const { formatPrice } = useFormatPrice();
+    const { deliveyOption } = useDeliveryStore();
+    const deliveryPrice = deliveyOption?.charge ?? 0.0;
+    const totalPrice = cartTotal + deliveryPrice;
     return (
         <div>
-            <h2 className="text-xl font-bold mb-4">In your Cart</h2>
+            <h2 className="text-lg font-bold mb-4">In your Cart</h2>
             <div className="p-4 rounded-md space-y-4">
                 {/* Subtotal, Shipping, Taxes */}
-                <div className="flex justify-between">
+                <div className="text-md flex justify-between">
                     <span>Subtotal</span>
-                    <span>$199.00</span>
+                    <span>{formatPrice(cartTotal)}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex text-md justify-between">
                     <span>Shipping</span>
-                    <span>$0.00</span>
+                    <span>{formatPrice(deliveryPrice)}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex text-md justify-between">
                     <span>Taxes</span>
                     <span>$0.00</span>
                 </div>
                 <hr className="border-t" />
-                <div className="flex justify-between font-bold">
+                <div className="flex text-md justify-between font-semibold">
                     <span>Total</span>
-                    <span>$199.00</span>
+                    <span>{formatPrice(totalPrice)}</span>
                 </div>
-
-                <div className="flex items-center gap-4 border-t pt-4">
-                    <div>
-                        <h3 className="font-medium">
-                            Decibel Dominator Deluxe
-                        </h3>
-                        <p className="text-sm text-gray-600">Variant: Black</p>
-                        <p className="font-bold">$199.00</p>
-                    </div>
-                </div>
+                <Separator />
                 <div>
                     <a
                         href="#"

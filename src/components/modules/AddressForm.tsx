@@ -1,6 +1,4 @@
 "use client";
-
-import { useState } from "react";
 import InputField from "./InputField";
 import {
     Select,
@@ -16,7 +14,6 @@ import countries, { IAddress } from "@/data/types/address";
 const AddressForm = ({
     address,
     setShippingAddress,
-    addressType,
 }: {
     address: IAddress;
     setShippingAddress: React.Dispatch<React.SetStateAction<IAddress>>;

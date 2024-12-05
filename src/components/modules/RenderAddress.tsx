@@ -21,16 +21,20 @@ const RenderAddress = ({
     if (addresses.length === 1 || selectedAddress) {
         const address = selectedAddress ?? addresses[0];
         return (
-            <div className="p-4 border border-muted rounded-lg shadow-sm">
-                <p className="font-semibold text-lg">
+            <div className="p-4 border border-gray-400 rounded-lg shadow-sm">
+                <p className="font-semibold text-sm">
                     {address.firstName} {address.lastName}
                 </p>
-                <p className="text-sm text-gray-600">{address.address}</p>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-muted-foreground">
+                    {address.address}
+                </p>
+                <p className="text-sm text-muted-foreground">
                     {address.city}, {address.province} {address.postalCode}
                 </p>
-                <p className="text-sm text-gray-600">{address.country}</p>
-                <p className="text-sm text-gray-600">{address.phone}</p>
+                <p className="text-sm text-muted-foreground">
+                    {address.country}
+                </p>
+                <p className="text-sm text-muted-foreground">{address.phone}</p>
             </div>
         );
     }

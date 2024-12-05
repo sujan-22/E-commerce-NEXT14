@@ -2,6 +2,8 @@
 import React from "react";
 import Addresses from "../components/Addresses";
 import Shipping from "../components/Shipping";
+import Payment from "../components/Payment";
+import Review from "../components/Review";
 
 const CheckoutForm = () => {
     // const cart = useStore((state) => state.cartItems);
@@ -15,17 +17,12 @@ const CheckoutForm = () => {
                 <div>
                     <Shipping />
                 </div>
-                {/* 
                 <div>
-                    <Payment
-                        cart={cart}
-                        availablePaymentMethods={paymentMethods}
-                    />
+                    <Payment />
                 </div>
-
                 <div>
-                    <Review cart={cart} />
-                </div> */}
+                    <Review />
+                </div>
             </div>
         </div>
     );

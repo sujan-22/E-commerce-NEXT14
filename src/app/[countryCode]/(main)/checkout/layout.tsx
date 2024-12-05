@@ -1,6 +1,3 @@
-import LocalizedClientLink from "@/lib/LocalizedClientLink";
-import { ChevronDown } from "lucide-react";
-
 export default function CheckoutLayout({
     children,
 }: {

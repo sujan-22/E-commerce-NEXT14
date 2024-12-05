@@ -5,12 +5,20 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useFormatPrice } from "@/lib/utils";
+import { useDeliveryStore } from "@/context/useDeliveryStore";
+import { IoCheckmarkCircle } from "react-icons/io5";
+
+export interface IDeliveyOptions {
+    id: string;
+    name: string;
+    charge: number;
+}
 
 const Shipping = () => {
-    const [isLoading, setIsLoading] = useState(false);
+    // const [isLoading, setIsLoading] = useState(false);
+    const { deliveyOption, setDeliveryOption } = useDeliveryStore();
     const { formatPrice } = useFormatPrice();
     const [error, setError] = useState<string | null>(null);
-    const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -24,26 +32,32 @@ const Shipping = () => {
     ];
 
     const handleEdit = () => {
+        setDeliveryOption(null);
         router.push(`${pathname}?step=delivery`, { scroll: false });
     };
 
     const handleSubmit = () => {
-        if (!selectedOption) {
+        if (!deliveyOption) {
             setError("Please select a delivery option.");
             return;
         }
         router.push(`${pathname}?step=payment`, { scroll: false });
     };
 
-    const handleOptionChange = (id: string) => {
-        setSelectedOption(id);
+    const handleOptionChange = (option: IDeliveyOptions) => {
+        setDeliveryOption(option);
         setError(null);
     };
 
     return (
         <div className="bg-white">
-            <div className="flex flex-row items-center justify-between mb-6">
-                <h2 className="text-xl font-bold">Delivery</h2>
+            <div className="flex flex-row items-center justify-between mb-2">
+                <h2 className="text-lg font-bold flex items-center">
+                    Delivery
+                    {deliveyOption && (
+                        <IoCheckmarkCircle className="ml-2 w-4 h-4" />
+                    )}
+                </h2>
                 {!isOpen && (
                     <Button
                         variant={"link"}
@@ -61,20 +75,22 @@ const Shipping = () => {
                             <div
                                 key={option.id}
                                 className={`flex items-center justify-between p-4 mb-2 border rounded-lg cursor-pointer ${
-                                    selectedOption === option.id
+                                    deliveyOption?.id === option.id
                                         ? "border-primary"
                                         : "border-muted"
                                 }`}
-                                onClick={() => handleOptionChange(option.id)}
+                                onClick={() => handleOptionChange(option)}
                             >
                                 <div className="flex items-center gap-x-4">
                                     <input
                                         type="radio"
                                         id={option.id}
                                         name="delivery"
-                                        checked={selectedOption === option.id}
+                                        checked={
+                                            deliveyOption?.id === option.id
+                                        }
                                         onChange={() =>
-                                            handleOptionChange(option.id)
+                                            handleOptionChange(option)
                                         }
                                         className="w-4 h-4 cursor-pointer text-primary"
                                     />
@@ -101,31 +117,22 @@ const Shipping = () => {
                         </p>
                     )}
 
-                    <button
-                        className="mt-6 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 disabled:bg-gray-400"
-                        onClick={handleSubmit}
-                        disabled={!selectedOption || isLoading}
-                        data-testid="submit-delivery-option-button"
-                    >
-                        {isLoading ? "Loading..." : "Continue to payment"}
-                    </button>
+                    <Button onClick={handleSubmit}>Continue to payment</Button>
                 </div>
             ) : (
                 <div>
                     <div className="text-md">
-                        {selectedOption ? (
+                        {deliveyOption ? (
                             <div className="flex flex-col">
-                                <span className="font-semibold">
-                                    Selected Method:
-                                </span>
-                                <p>
-                                    {
-                                        deliveryOptions.find(
-                                            (option) =>
-                                                option.id === selectedOption
-                                        )?.name
-                                    }
-                                </p>
+                                <div className="p-4 border border-gray-400 rounded-lg shadow-sm">
+                                    <p className="text-sm font-semibold">
+                                        {deliveyOption.name}{" "}
+                                        <span className="text-muted-foreground">
+                                            ({formatPrice(deliveyOption.charge)}
+                                            )
+                                        </span>
+                                    </p>
+                                </div>
                             </div>
                         ) : (
                             <p>No delivery method selected.</p>

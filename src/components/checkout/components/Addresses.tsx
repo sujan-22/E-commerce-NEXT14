@@ -1,4 +1,3 @@
-import { Separator } from "@/components/ui/separator";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useEffect, useState } from "react";
@@ -42,6 +41,8 @@ const Addresses = () => {
                     await fetchAddresses(userData.id);
                     setHasFetchedAddresses(true); // Mark as fetched
                 } catch (error) {
+                    console.log(error);
+
                     setIsError(true);
                 } finally {
                     setLoading(false); // Stop loading once it's finished
@@ -151,10 +152,12 @@ const Addresses = () => {
 
     return (
         <div className="bg-white">
-            <div className="flex flex-row items-center justify-between mb-6">
-                <h2 className="text-xl font-bold flex items-center">
+            <div className="flex flex-row items-center justify-between mb-2">
+                <h2 className="text-lg font-bold flex items-center">
                     Shipping Address
-                    {selectedAddress && <IoCheckmarkCircle className="ml-2" />}
+                    {selectedAddress && (
+                        <IoCheckmarkCircle className="ml-2 w-4 h-4" />
+                    )}
                 </h2>
                 {!isOpen && (
                     <Button
@@ -211,8 +214,6 @@ const Addresses = () => {
                     />
                 </div>
             )}
-
-            <Separator className="mt-8" />
         </div>
     );
 };
