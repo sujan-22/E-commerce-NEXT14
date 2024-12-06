@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import Cart from "./cart/Cart";
@@ -8,6 +7,7 @@ import MaxWidthWrapper from "./MaxWidthWrapper";
 import Dialogbox from "./Dialogbox";
 import useStore from "@/context/useStore";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { usePathname } from "next/navigation"; // Import the hook
 import { useState } from "react";
 import { Button } from "./ui/button";
 
@@ -16,8 +16,12 @@ const Navbar = () => {
   const [isDialogOpen, setDialogOpen] = useState(false);
 
   const isMobile = useIsMobile();
+  const pathname = usePathname(); // Get the current path
+
+  const hideCartIcon = /\/(cart|checkout)/.test(pathname);
+
   return (
-    <div className="sticky top-0 inset-x-0 z-50">
+    <div className="sticky top-0 inset-x-0 z-40">
       <div className="bg-black">
         <header className="relative h-16 mx-auto border-b duration-200 bg-white">
           <MaxWidthWrapper>
@@ -37,7 +41,7 @@ const Navbar = () => {
                   className="txt-compact-xlarge-plus hover:text-ui-fg-base uppercase"
                   data-testid="nav-store-link"
                 >
-                  Medusa Store
+                  The AURA
                 </LocalizedClientLink>
               </div>
 
@@ -62,13 +66,11 @@ const Navbar = () => {
                   </LocalizedClientLink>
                 </div>
 
-                <Cart />
+                {/* Conditionally render the Cart icon */}
+                {!hideCartIcon && <Cart />}
+
                 {!userData && !isMobile && (
                   <div className="ml-5">
-                    <Dialogbox
-                      isDialogOpen={isDialogOpen}
-                      setDialogOpen={setDialogOpen}
-                    />
                     <Button
                       variant="outline"
                       onClick={() => setDialogOpen(true)}
@@ -77,6 +79,10 @@ const Navbar = () => {
                     </Button>
                   </div>
                 )}
+                <Dialogbox
+                  isDialogOpen={isDialogOpen}
+                  setDialogOpen={setDialogOpen}
+                />
               </div>
             </nav>
           </MaxWidthWrapper>

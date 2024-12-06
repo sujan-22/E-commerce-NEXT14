@@ -50,3 +50,15 @@ export const ProductSchema = z.object({
     winter: CollectionSchema.optional(),
   }),
 });
+
+export const AddressSchema = z.object({
+  addressName: z.string().min(1, "Address name is required"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  address: z.string().min(1, "Address is required"),
+  postalCode: z.string().min(1, "Postal code is required"),
+  city: z.string().min(1, "City is required"),
+  country: z.string().min(1, "Country is required"),
+  province: z.string().min(1, "Province is required"),
+  phone: z.string().optional(),
+});
