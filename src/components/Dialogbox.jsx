@@ -1,11 +1,6 @@
 import React from "react";
 import { Button } from "./ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  DialogClose,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
 import {
@@ -155,7 +150,7 @@ export default function Dialogbox({ isDialogOpen, setDialogOpen }) {
       {/* <DialogTrigger asChild>
         <Button variant="outline">Sign in</Button>
       </DialogTrigger> */}
-      <DialogContent className="sm:max-w-md sm:px-6 sm:py-8 p-4">
+      <DialogContent className="w-[85%] sm:max-w-md sm:px-6 sm:py-8 p-4">
         <Tabs defaultValue="sign-in" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="sign-in">Sign In</TabsTrigger>
