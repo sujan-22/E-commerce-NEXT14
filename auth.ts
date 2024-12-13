@@ -1,72 +1,47 @@
-import NextAuth, { AuthError } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from "bcryptjs";
-import clientPromise from "@/lib/mongodb";
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import { signInSchema } from "@/lib/validationSchema";
-import { getUserByEmailAndPassword } from "@/lib/user/getUserByEmailAndPassword";
+import { betterAuth, BetterAuthOptions } from "better-auth";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+import prisma from "@/lib/prisma";
+import { openAPI } from "better-auth/plugins";
+import { admin } from "better-auth/plugins";
 
-interface Credentials {
-    email: string;
-    password: string;
-}
-
-export const { handlers, signIn, signOut, auth } = NextAuth({
-    adapter: MongoDBAdapter(clientPromise),
-    providers: [
-        CredentialsProvider({
-            name: "Credentials",
-            credentials: {
-                email: { label: "Email", type: "email" },
-                password: { label: "Password", type: "password" },
+export const auth = betterAuth({
+    database: prismaAdapter(prisma, {
+        provider: "mongodb",
+    }),
+    session: {
+        expiresIn: 60 * 60 * 24 * 7, // 7 days
+        updateAge: 60 * 60 * 24, // 1 day (every 1 day the session expiration is updated)
+        cookieCache: {
+            enabled: true,
+            maxAge: 5 * 60, // Cache duration in seconds
+        },
+    },
+    user: {
+        additionalFields: {
+            premium: {
+                type: "boolean",
+                required: false,
             },
-            async authorize(
-                credentials: Partial<Record<"email" | "password", unknown>>,
-                request
-            ) {
-                const validateFields = signInSchema.safeParse(credentials);
-                if (
-                    !credentials ||
-                    !credentials.email ||
-                    !credentials.password
-                ) {
-                    throw new AuthError("Email and password are required.");
-                }
-                if (validateFields.success) {
-                    const { email, password } = validateFields.data;
-                    const user = await getUserByEmailAndPassword(
-                        email,
-                        password
-                    );
-
-                    if (!user) {
-                        return null;
-                    }
-
-                    return user;
-                }
-
-                return null;
-            },
+        },
+        changeEmail: {
+            enabled: true,
+        },
+    },
+    socialProviders: {
+        github: {
+            clientId: process.env.GITHUB_CLIENT_ID as string,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+        },
+    },
+    plugins: [
+        openAPI(),
+        admin({
+            impersonationSessionDuration: 60 * 60 * 24 * 7, // 7 days
         }),
     ],
-    session: {
-        strategy: "jwt",
+    emailAndPassword: {
+        enabled: true,
     },
-    callbacks: {
-        async jwt({ token, user }) {
-            if (user) {
-                token.id = user.id;
-                token.is_seller = user.is_seller || false;
-            }
-            return token;
-        },
-        async session({ session, token }) {
-            session.user.id = token.id as string;
-            session.user.is_seller = token.is_seller || false;
-            return session;
-        },
-    },
+} satisfies BetterAuthOptions);
 
-    secret: process.env.AUTH_SECRET,
-});
+export type Session = typeof auth.$Infer.Session;

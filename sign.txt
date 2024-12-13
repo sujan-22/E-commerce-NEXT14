@@ -1,0 +1,149 @@
+const signinMethods = useForm({
+        resolver: zodResolver(signInSchema),
+    });
+
+    const onSigninSubmit = async (data) => {
+        try {
+            const result = await handleCredentialsSignIn(data);
+            if (result.message) {
+                toast.error(result.message);
+            } else {
+                setDialogOpen(false);
+                router.push("/ca");
+                toast.success("Signed in successfully!");
+                router.refresh();
+            }
+        } catch (error) {
+            console.error("Unexpected error during sign-in:", error);
+            signinMethods.setError("root", {
+                type: "manual",
+                message:
+                    "An unexpected error occurred. Please try again later.",
+            });
+        }
+    };
+
+    // Sign Up Form Methods
+    const signupMethods = useForm({
+        resolver: zodResolver(signUpSchema),
+    });
+
+    const onSignupSubmit = async (data) => {
+        try {
+            // Check if the "Continue as Seller" checkbox is checked
+            if (data.seller) {
+                // If so, we send the request to the seller-specific API
+                const sellerResponse = await fetch("/api/sign-up/seller", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        name: data.name,
+                        email: data.email,
+                        password: data.password,
+                    }),
+                });
+
+                const sellerResult = await sellerResponse.json();
+
+                if (!sellerResponse.ok) {
+                    toast.error(
+                        sellerResult.error || "Failed to create seller account."
+                    );
+                    signupMethods.setError("root", {
+                        message: sellerResult.error,
+                    });
+                    return;
+                }
+
+                const signinResult = await handleCredentialsSignIn({
+                    email: data.email,
+                    password: data.password,
+                });
+
+                if (signinResult.message) {
+                    toast.error(signinResult.message);
+                } else {
+                    toast.success(
+                        "Seller account created successfully! Awaiting approval."
+                    );
+                    setDialogOpen(false);
+                    router.push("/ca");
+                    window.location.reload();
+                }
+            } else {
+                // Normal user sign-up if not a seller
+                const response = await fetch("/api/sign-up", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        name: data.name,
+                        email: data.email,
+                        password: data.password,
+                        cartItems: cartItems,
+                    }),
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    toast.error(result.error || "Failed to register.");
+                    signupMethods.setError("root", { message: result.error });
+                } else {
+                    const signinResult = await handleCredentialsSignIn({
+                        email: data.email,
+                        password: data.password,
+                    });
+
+                    if (signinResult.message) {
+                        toast.error(signinResult.message);
+                    } else {
+                        setDialogOpen(false);
+                        router.push("/ca");
+                        router.refresh();
+                        clearCart();
+                    }
+                }
+            }
+        } catch (error) {
+            console.error("Error during registration:", error);
+            toast.error("An unexpected error occurred. Please try again.");
+        }
+    };
+
+
+<FormField
+                                    name="seller"
+                                    render={({ field }) => (
+                                        <>
+                                            <FormControl>
+                                                <Checkbox
+                                                    id="seller"
+                                                    checked={field.value}
+                                                    onCheckedChange={(
+                                                        checked
+                                                    ) =>
+                                                        field.onChange(checked)
+                                                    }
+                                                    className="h-4 w-4"
+                                                />
+                                            </FormControl>
+                                            <FormLabel>
+                                                <div className="grid gap-1.5 leading-none">
+                                                    <label
+                                                        htmlFor="seller"
+                                                        className="text-sm font-medium leading-none"
+                                                    >
+                                                        Continue as Seller
+                                                    </label>
+                                                    <p className="text-sm text-muted-foreground font-normal">
+                                                        Your request to become a
+                                                        seller will be reviewed
+                                                        before you&apos;re able
+                                                        to upload products.
+                                                    </p>
+                                                </div>
+                                            </FormLabel>
+                                            <FormMessage />
+                                        </>
+                                    )}
+                                />
