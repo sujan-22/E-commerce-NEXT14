@@ -4,7 +4,7 @@ import Product from "./Product";
 import { buttonVariants } from "../ui/button";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { Product as ProductType } from "@/context/useStore";
-import LocalizedClientLink from "@/lib/LocalizedClientLink";
+import Link from "next/link";
 import { useFormatPrice } from "@/lib/utils";
 
 interface ProductListProps {
@@ -32,7 +32,7 @@ const ProductList = ({
                     <>
                         <h2 className="text-xl font-bold">{headerTitle}</h2>
                         {products.length > 2 && (
-                            <LocalizedClientLink
+                            <Link
                                 href={headerLink}
                                 className={`flex items-center ${buttonVariants({
                                     size: "sm",
@@ -44,7 +44,7 @@ const ProductList = ({
                                     "View Collection "
                                 )}
                                 <ArrowTopRightIcon className="ml-1 w-4 h-4" />
-                            </LocalizedClientLink>
+                            </Link>
                         )}
                     </>
                 )}
@@ -53,16 +53,14 @@ const ProductList = ({
                 {(isRelated ? products.slice(0, 3) : products).map(
                     (product) => (
                         <div key={product.id} className="flex flex-col">
-                            <LocalizedClientLink
-                                href={`/products/${product.id}`}
-                            >
+                            <Link href={`/products/${product.id}`}>
                                 <Product
                                     initialImage={product.availableImages[0]}
                                     className="mx-auto"
                                     size={size}
                                     isFeatured={true}
                                 />
-                            </LocalizedClientLink>
+                            </Link>
                             {/* <Product
                             initialImage={product.availableColors[0].images[0]}
                             className="mx-auto"

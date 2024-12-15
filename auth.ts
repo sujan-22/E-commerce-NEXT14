@@ -9,11 +9,11 @@ export const auth = betterAuth({
         provider: "mongodb",
     }),
     session: {
-        expiresIn: 60 * 60 * 24 * 7, // 7 days
-        updateAge: 60 * 60 * 24, // 1 day (every 1 day the session expiration is updated)
+        expiresIn: 60 * 60 * 24 * 7,
+        updateAge: 60 * 60 * 24,
         cookieCache: {
             enabled: true,
-            maxAge: 5 * 60, // Cache duration in seconds
+            maxAge: 5 * 60,
         },
     },
     user: {
@@ -27,16 +27,10 @@ export const auth = betterAuth({
             enabled: true,
         },
     },
-    socialProviders: {
-        github: {
-            clientId: process.env.GITHUB_CLIENT_ID as string,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
-        },
-    },
     plugins: [
         openAPI(),
         admin({
-            impersonationSessionDuration: 60 * 60 * 24 * 7, // 7 days
+            impersonationSessionDuration: 60 * 60 * 24 * 7,
         }),
     ],
     emailAndPassword: {

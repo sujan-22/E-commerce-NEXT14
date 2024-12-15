@@ -62,10 +62,9 @@ const SignUpTab = ({
                 onSuccess: () => {
                     toast({
                         title: "Account created",
-                        description:
-                            "Your account has been created. Check your email for a verification link.",
+                        description: "Your account has been created",
                     });
-                    router.push("/ca");
+                    router.push("/");
                     setDialogOpen(false);
                 },
                 onError: (ctx) => {

@@ -9,7 +9,7 @@ const signinMethods = useForm({
                 toast.error(result.message);
             } else {
                 setDialogOpen(false);
-                router.push("/ca");
+                router.push("/");
                 toast.success("Signed in successfully!");
                 router.refresh();
             }
@@ -67,7 +67,7 @@ const signinMethods = useForm({
                         "Seller account created successfully! Awaiting approval."
                     );
                     setDialogOpen(false);
-                    router.push("/ca");
+                    router.push("/");
                     window.location.reload();
                 }
             } else {
@@ -98,7 +98,7 @@ const signinMethods = useForm({
                         toast.error(signinResult.message);
                     } else {
                         setDialogOpen(false);
-                        router.push("/ca");
+                        router.push("/");
                         router.refresh();
                         clearCart();
                     }

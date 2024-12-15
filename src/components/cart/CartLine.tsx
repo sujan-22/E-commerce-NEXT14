@@ -1,8 +1,10 @@
 import useStore, { Product } from "@/context/useStore";
-import LocalizedClientLink from "@/lib/LocalizedClientLink";
+import Link from "next/link";
 import { cn, useFormatPrice } from "@/lib/utils";
 import { MinusIcon, PlusIcon, XIcon } from "lucide-react";
 import Image from "next/image";
+import useCartStore from "@/context/useCartStore";
+import useUserStore from "@/context/useUserStore";
 
 interface CartLineProps {
     product: Product;
@@ -17,34 +19,48 @@ const CartLine: React.FC<CartLineProps> = ({
     selectedSize,
     selectedColor,
 }) => {
-    const removeFromCart = useStore((state) => state.removeFromCart);
-    const increaseQuantity = useStore((state) => state.increaseQuantity);
-    const decreaseQuantity = useStore((state) => state.decreaseQuantity);
+    const { removeFromCart, increaseQuantity, decreaseQuantity } =
+        useCartStore();
+    const { allProducts } = useStore();
+    const { currentUser } = useUserStore();
     const { formatPrice } = useFormatPrice();
+
     const handleRemove = () => {
-        removeFromCart({
-            productId: product.id!,
-            selectedColor,
-            selectedSize,
-        });
+        removeFromCart(
+            {
+                productId: product.id!,
+                selectedColor,
+                selectedSize,
+            },
+            currentUser,
+            allProducts
+        );
     };
 
     const handleIncrease = () => {
-        increaseQuantity({
-            productId: product.id!,
-            selectedColor,
-            selectedSize,
-            quantity,
-        });
+        increaseQuantity(
+            {
+                productId: product.id!,
+                selectedColor,
+                selectedSize,
+                quantity: quantity + 1,
+            },
+            currentUser,
+            allProducts
+        );
     };
 
     const handleDecrease = () => {
-        decreaseQuantity({
-            productId: product.id!,
-            selectedColor,
-            selectedSize,
-            quantity,
-        });
+        decreaseQuantity(
+            {
+                productId: product.id!,
+                selectedColor,
+                selectedSize,
+                quantity: quantity - 1,
+            },
+            currentUser,
+            allProducts
+        );
     };
 
     return (
@@ -60,7 +76,7 @@ const CartLine: React.FC<CartLineProps> = ({
                     </button>
                 </div>
                 <div className="flex flex-row">
-                    <LocalizedClientLink
+                    <Link
                         href={`/products/${product.id}`}
                         className="z-30 ml-2 flex flex-1 flex-row space-x-4"
                     >
@@ -87,7 +103,7 @@ const CartLine: React.FC<CartLineProps> = ({
                                 </p>
                             )}
                         </div>
-                    </LocalizedClientLink>
+                    </Link>
                 </div>
 
                 <div className="flex flex-1 flex-col justify-between">

@@ -60,7 +60,7 @@ const SignInTab = ({
                     setPendingCredentials(true);
                 },
                 onSuccess: async () => {
-                    router.push("/ca");
+                    router.push("/");
                     router.refresh();
                     setDialogOpen(false);
                 },
