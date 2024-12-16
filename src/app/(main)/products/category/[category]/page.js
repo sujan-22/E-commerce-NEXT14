@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import MaxWidthWrapper from "@/components/utility/MaxWidthWrapper";
 import ProductList from "@/components/product/ProductList";
 import useStore from "@/context/useStore";
-import FilterSidebar from "@/components/FilterSidebar";
+import FilterSidebar from "@/components/product/all-products/FilterSidebar";
 import SortSidebar from "@/components/product/all-products/SortSidebar";
 
 const Page = ({ params }) => {

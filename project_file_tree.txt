@@ -1,0 +1,85 @@
+src/app
+├── favicon.ico
+├── fonts
+│   ├── GeistMonoVF.woff
+│   └── GeistVF.woff
+├── globals.css
+├── layout.js
+├── (main)
+│   ├── account
+│   │   ├── appearance
+│   │   │   ├── appearance-form.tsx
+│   │   │   └── page.tsx
+│   │   ├── components
+│   │   │   └── sidebar-nav.tsx
+│   │   ├── display
+│   │   │   ├── display-form.tsx
+│   │   │   └── page.tsx
+│   │   ├── layout.tsx
+│   │   ├── notifications
+│   │   │   ├── notifications-form.tsx
+│   │   │   └── page.tsx
+│   │   ├── orders
+│   │   │   └── page.tsx
+│   │   ├── page.tsx
+│   │   └── profile
+│   │       ├── page.tsx
+│   │       └── profile-form.tsx
+│   ├── actions
+│   │   └── authActions.ts
+│   ├── api
+│   │   ├── add-product
+│   │   │   └── api.js
+│   │   ├── addproduct
+│   │   │   └── route.js
+│   │   ├── address
+│   │   │   └── route.ts
+│   │   ├── auth
+│   │   │   └── [...all]
+│   │   │       └── route.ts
+│   │   ├── cart
+│   │   │   ├── merge
+│   │   │   │   └── route.ts
+│   │   │   └── route.js
+│   │   ├── delete-image
+│   │   │   └── route.js
+│   │   ├── getCategory
+│   │   │   └── route.js
+│   │   ├── products
+│   │   │   └── route.js
+│   │   ├── sign-up
+│   │   │   ├── route.js
+│   │   │   └── seller
+│   │   │       └── route.js
+│   │   └── upload
+│   │       └── route.js
+│   ├── auth
+│   │   ├── signin
+│   │   │   └── page.jsx
+│   │   └── signup
+│   │       └── page.tsx
+│   ├── cart
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── checkout
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   └── products
+│       ├── category
+│       │   └── [category]
+│       │       └── page.js
+│       └── [productId]
+│           ├── loading.tsx
+│           └── page.jsx
+├── page.js
+├── (product_upload)
+│   └── addproduct
+│       ├── details
+│       │   └── page.jsx
+│       ├── layout.jsx
+│       └── upload
+│           └── page.jsx
+└── unauthorized
+    └── page.tsx
+
+39 directories, 44 files

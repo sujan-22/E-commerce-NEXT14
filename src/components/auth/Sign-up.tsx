@@ -31,8 +31,10 @@ import { useToast } from "@/hooks/use-toast";
 
 const SignUpTab = ({
     setDialogOpen,
+    redirectTo,
 }: {
     setDialogOpen: Dispatch<SetStateAction<boolean>>;
+    redirectTo?: string;
 }) => {
     const [pending, setPending] = useState(false);
     const { toast } = useToast();
@@ -64,7 +66,12 @@ const SignUpTab = ({
                         title: "Account created",
                         description: "Your account has been created",
                     });
-                    router.push("/");
+                    if (redirectTo) {
+                        router.push(redirectTo);
+                    } else {
+                        router.push("/");
+                    }
+                    router.refresh();
                     setDialogOpen(false);
                 },
                 onError: (ctx) => {

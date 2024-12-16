@@ -89,7 +89,7 @@ const CartLine: React.FC<CartLineProps> = ({
                                 src={product.availableImages[0]}
                             />
                         </div>
-                        <div className="flex flex-1 flex-col justify-between text-md">
+                        <div className="flex flex-1 flex-col justify-between text-sm">
                             <span className="leading-tight">
                                 {product.name}
                             </span>
@@ -107,7 +107,7 @@ const CartLine: React.FC<CartLineProps> = ({
                 </div>
 
                 <div className="flex flex-1 flex-col justify-between">
-                    <p className="flex justify-end space-y-2 text-right text-md">
+                    <p className="flex justify-end space-y-2 text-right text-sm">
                         {product.collection.onsale?.newPrice ? (
                             <>
                                 <span>

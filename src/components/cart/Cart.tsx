@@ -50,7 +50,7 @@ const Cart: React.FC = () => {
                                         ) : null;
                                     })}
                                 </ul>
-                                <div className="py-4 text-md text-primary">
+                                <div className="py-4 text-sm text-primary">
                                     <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 pt-1">
                                         <p>Total</p>
                                         <p className="flex justify-end space-y-2 text-right text-sm">

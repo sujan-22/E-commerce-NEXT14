@@ -2,7 +2,6 @@ import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { IAddress } from "@/data/types/address";
 
 const addressActionSchema = z.object({
     action: z.enum(["add", "update", "remove", "get"]),
@@ -10,6 +9,7 @@ const addressActionSchema = z.object({
     addressId: z.string().optional(),
     newAddress: z
         .object({
+            addressId: z.string().optional(),
             addressName: z.string(),
             firstName: z.string(),
             lastName: z.string(),
@@ -19,6 +19,7 @@ const addressActionSchema = z.object({
             postalCode: z.string(),
             country: z.string(),
             phone: z.string(),
+            email: z.string().email(),
         })
         .optional(),
 });
@@ -32,19 +33,10 @@ export async function POST(req: NextRequest) {
 
         const client = await clientPromise;
         const db = client.db();
+        const addressesCollection = db.collection("Addresses");
 
-        const user = await db
-            .collection("users")
-            .findOne({ _id: new ObjectId(userId) });
-
-        if (!user) {
-            return NextResponse.json(
-                { error: "User not found" },
-                { status: 404 }
-            );
-        }
-
-        let updatedAddresses;
+        let updatedAddresses = [];
+        const userDoc = await addressesCollection.findOne({ userId });
         switch (action) {
             case "add":
                 if (!newAddress) {
@@ -56,18 +48,19 @@ export async function POST(req: NextRequest) {
 
                 const addressWithId = {
                     ...newAddress,
-                    addressId: new ObjectId(),
+                    addressId: new ObjectId().toString(),
                 };
-                updatedAddresses = [...(user.addresses || []), addressWithId];
+                updatedAddresses = [
+                    ...(userDoc?.addresses || []),
+                    addressWithId,
+                ];
+                await addressesCollection.updateOne(
+                    { userId },
+                    { $set: { addresses: updatedAddresses } },
+                    { upsert: true }
+                );
 
-                await db
-                    .collection("users")
-                    .updateOne(
-                        { _id: new ObjectId(userId) },
-                        { $set: { addresses: updatedAddresses } }
-                    );
-
-                return NextResponse.json(addressWithId);
+                return NextResponse.json(newAddress);
 
             case "update":
                 if (!addressId || !newAddress) {
@@ -79,19 +72,17 @@ export async function POST(req: NextRequest) {
                     );
                 }
 
-                updatedAddresses = (user.addresses || []).map(
-                    (addr: IAddress) =>
-                        addr.addressId?.toString() === addressId
-                            ? { ...addr, ...newAddress }
-                            : addr
+                const updateResult = await addressesCollection.updateOne(
+                    { userId, "addresses.addressId": addressId },
+                    { $set: { "addresses.$": { ...newAddress, addressId } } }
                 );
 
-                await db
-                    .collection("users")
-                    .updateOne(
-                        { _id: new ObjectId(userId) },
-                        { $set: { addresses: updatedAddresses } }
+                if (updateResult.matchedCount === 0) {
+                    return NextResponse.json(
+                        { error: "Address not found or update failed" },
+                        { status: 404 }
                     );
+                }
 
                 return NextResponse.json({ success: true });
 
@@ -103,36 +94,72 @@ export async function POST(req: NextRequest) {
                     );
                 }
 
-                updatedAddresses = (user.addresses || []).filter(
-                    (addr: IAddress) => addr.addressId?.toString() !== addressId
-                );
-
-                await db
-                    .collection("users")
-                    .updateOne(
-                        { _id: new ObjectId(userId) },
-                        { $set: { addresses: updatedAddresses } }
-                    );
-
-                return NextResponse.json({ success: true });
-
-            case "get":
-                if (!addressId) {
-                    return NextResponse.json(user.addresses || []);
-                }
-
-                const address = (user.addresses || []).find(
-                    (addr: IAddress) => addr.addressId?.toString() === addressId
-                );
-
-                if (!address) {
+                if (!userDoc || !Array.isArray(userDoc.addresses)) {
                     return NextResponse.json(
-                        { error: "Address not found" },
+                        { error: "No addresses found for this user" },
                         { status: 404 }
                     );
                 }
 
-                return NextResponse.json(address);
+                // Filter out the address to be removed
+                updatedAddresses = userDoc.addresses.filter(
+                    (address) => address.addressId !== addressId
+                );
+
+                const deleteResult = await addressesCollection.updateOne(
+                    { userId },
+                    { $set: { addresses: updatedAddresses } }
+                );
+
+                if (deleteResult.modifiedCount === 0) {
+                    return NextResponse.json(
+                        { error: "Address removal failed" },
+                        { status: 500 }
+                    );
+                }
+
+                return NextResponse.json({ success: true });
+
+            case "get":
+                if (addressId) {
+                    // If addressId is provided, return the specific address
+                    const userAddresses = await addressesCollection.findOne(
+                        { userId, "addresses.addressId": addressId },
+                        { projection: { _id: 0, "addresses.$": 1 } }
+                    );
+
+                    if (
+                        !userAddresses ||
+                        !userAddresses.addresses ||
+                        userAddresses.addresses.length === 0
+                    ) {
+                        return NextResponse.json(
+                            { error: "Address not found" },
+                            { status: 404 }
+                        );
+                    }
+
+                    return NextResponse.json(userAddresses.addresses[0]);
+                } else {
+                    // If no addressId is provided, return all addresses
+                    const userAddresses = await addressesCollection.findOne(
+                        { userId },
+                        { projection: { _id: 0, addresses: 1 } }
+                    );
+
+                    if (
+                        !userAddresses ||
+                        !userAddresses.addresses ||
+                        userAddresses.addresses.length === 0
+                    ) {
+                        return NextResponse.json(
+                            { error: "No addresses found for this user" },
+                            { status: 404 }
+                        );
+                    }
+
+                    return NextResponse.json(userAddresses.addresses);
+                }
 
             default:
                 return NextResponse.json(

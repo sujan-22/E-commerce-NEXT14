@@ -67,14 +67,14 @@ const ProductList = ({
                             size={size}
                             isFeatured={true}
                         /> */}
-                            <div className="flex justify-between mt-4 px-2 items-start">
+                            <div className="flex justify-between mt-4 items-start">
                                 <p
-                                    className="text-md"
+                                    className="text-sm"
                                     data-testid="product-title"
                                 >
                                     {product.name}
                                 </p>
-                                <div className="flex items-center gap-x-2 text-md font-semibold">
+                                <div className="flex items-center gap-x-2 text-sm font-semibold">
                                     {product.collection.onsale?.newPrice ? (
                                         <>
                                             <span className="line-through text-muted-foreground">

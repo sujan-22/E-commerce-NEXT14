@@ -7,82 +7,86 @@ import { HiOutlineCreditCard } from "react-icons/hi2";
 import { useState } from "react";
 
 const Payment = () => {
-  const searchParams = useSearchParams();
-  const [isPaid, setIsPaid] = useState<boolean>(false);
-  const router = useRouter();
-  const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const [isPaid, setIsPaid] = useState<boolean>(false);
+    const router = useRouter();
+    const pathname = usePathname();
 
-  const isOpen = searchParams.get("step") === "payment";
+    const isOpen = searchParams.get("step") === "payment";
 
-  const handleEdit = () => {
-    router.push(`${pathname}?step=payment`, { scroll: false });
-  };
+    const handleEdit = () => {
+        router.push(`${pathname}?step=payment`, { scroll: false });
+    };
 
-  const handleSubmit = () => {
-    setIsPaid(true);
-    router.push(`${pathname}?step=payment`, { scroll: false });
-  };
+    const handleSubmit = () => {
+        setIsPaid(true);
+        router.push(`${pathname}?step=payment`, { scroll: false });
+    };
 
-  return (
-    <div className="bg-white">
-      <div className="flex flex-row items-center justify-between mb-2">
-        <h2
-          className={`text-lg font-bold flex items-center ${
-            !isOpen ? "text-muted-foreground" : ""
-          }`}
-        >
-          Payment
-          {isPaid && <IoCheckmarkCircle className="ml-2 w-4 h-4" />}
-        </h2>
-        {!isOpen && isPaid && (
-          <Button
-            variant={"link"}
-            className="text-blue-600"
-            onClick={handleEdit}
-          >
-            Edit
-          </Button>
-        )}
-      </div>
-      {isOpen ? (
-        <div data-testid="delivery-options-container">
-          <div className="pb-8">
-            <div
-              className={
-                "flex items-center justify-between p-4 mb-2 border rounded-lg cursor-pointer border-primary"
-              }
-            >
-              <div className="flex items-center gap-x-4">
-                <input
-                  type="radio"
-                  name="delivery"
-                  checked={true}
-                  className="w-4 h-4 cursor-pointer text-primary"
-                />
-                <Label className="cursor-pointer text-md">Test Payment</Label>
-              </div>
-              <span className="text-md font-medium">
-                <HiOutlineCreditCard />
-              </span>
+    return (
+        <div className="bg-white">
+            <div className="flex flex-row items-center justify-between mb-2">
+                <h2
+                    className={`text-lg font-semibold flex items-center ${
+                        !isOpen ? "text-muted-foreground" : ""
+                    }`}
+                >
+                    Payment
+                    {isPaid && <IoCheckmarkCircle className="ml-2 w-4 h-4" />}
+                </h2>
+                {!isOpen && isPaid && (
+                    <Button
+                        variant={"link"}
+                        className="text-blue-600"
+                        onClick={handleEdit}
+                    >
+                        Edit
+                    </Button>
+                )}
             </div>
-          </div>
-          <Button onClick={handleSubmit}>Place an Order</Button>
-        </div>
-      ) : (
-        isPaid && (
-          <div>
-            <div className="text-md">
-              <div className="flex flex-col">
-                <div className="p-4 border border-gray-400 rounded-lg shadow-sm">
-                  <p className="text-sm font-semibold">Test Payment</p>
+            {isOpen ? (
+                <div data-testid="delivery-options-container">
+                    <div className="pb-8">
+                        <div
+                            className={
+                                "flex items-center justify-between p-4 mb-2 border rounded-lg cursor-pointer border-primary"
+                            }
+                        >
+                            <div className="flex items-center gap-x-4">
+                                <input
+                                    type="radio"
+                                    name="delivery"
+                                    checked={true}
+                                    className="w-4 h-4 cursor-pointer text-primary"
+                                />
+                                <Label className="cursor-pointer text-md">
+                                    Test Payment
+                                </Label>
+                            </div>
+                            <span className="text-md font-medium">
+                                <HiOutlineCreditCard />
+                            </span>
+                        </div>
+                    </div>
+                    <Button onClick={handleSubmit}>Place an Order</Button>
                 </div>
-              </div>
-            </div>
-          </div>
-        )
-      )}
-    </div>
-  );
+            ) : (
+                isPaid && (
+                    <div>
+                        <div className="text-md">
+                            <div className="flex flex-col">
+                                <div className="p-4 border border-gray-400 rounded-lg shadow-sm">
+                                    <p className="text-sm font-semibold">
+                                        Test Payment
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            )}
+        </div>
+    );
 };
 
 export default Payment;

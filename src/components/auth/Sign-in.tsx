@@ -31,8 +31,10 @@ import { ErrorContext } from "@better-fetch/fetch";
 
 const SignInTab = ({
     setDialogOpen,
+    redirectTo,
 }: {
     setDialogOpen: Dispatch<SetStateAction<boolean>>;
+    redirectTo?: string;
 }) => {
     const router = useRouter();
     const { toast } = useToast();
@@ -60,7 +62,11 @@ const SignInTab = ({
                     setPendingCredentials(true);
                 },
                 onSuccess: async () => {
-                    router.push("/");
+                    if (redirectTo) {
+                        router.push(redirectTo);
+                    } else {
+                        router.push("/");
+                    }
                     router.refresh();
                     setDialogOpen(false);
                 },

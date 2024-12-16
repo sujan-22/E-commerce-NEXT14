@@ -133,7 +133,7 @@ const Page = ({ params }) => {
                         )}
 
                     <Separator />
-                    <div className="flex items-center gap-x-2 text-md font-semibold">
+                    <div className="flex items-center gap-x-2 text-sm font-semibold">
                         {product?.collection.onsale.newPrice ? (
                             <>
                                 <span>

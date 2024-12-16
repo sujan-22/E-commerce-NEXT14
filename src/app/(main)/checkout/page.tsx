@@ -14,7 +14,7 @@ export default function Checkout() {
                     </div>
                 </ScrollArea>
                 <div className="w-full lg:w-1/3">
-                    <CheckoutSummary />
+                    <CheckoutSummary shouldDisplayTaxText />
                 </div>
             </div>
         </MaxWidthWrapper>

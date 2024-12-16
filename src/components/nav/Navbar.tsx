@@ -45,6 +45,7 @@ const Navbar = ({
     const pathname = usePathname(); // Get the current path
 
     const hideCartIcon = /\/(cart|checkout)/.test(pathname);
+    const renderSignInTag = !user && !isMobile && !pathname.includes("cart");
 
     return (
         <div className="sticky top-0 inset-x-0 z-40">
@@ -92,7 +93,7 @@ const Navbar = ({
                                         Account
                                     </Link>
                                 </div>
-                                {!user && !isMobile && (
+                                {renderSignInTag && (
                                     <div>
                                         <p
                                             // variant="ghost"
