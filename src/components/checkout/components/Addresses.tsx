@@ -20,12 +20,13 @@ import RenderUserSelectedAddress from "@/components/modules/RenderUserSelectedAd
 const Addresses = () => {
     const searchParams = useSearchParams();
     const { currentUser } = useUserStore();
-    const fName = currentUser!.name.split(" ")[0];
-    const lName = currentUser!.name.split(" ")[1];
-    const email = currentUser?.email;
+
+    const fName = currentUser && currentUser!.name.split(" ")[0];
+    const lName = currentUser && currentUser!.name.split(" ")[1];
+    const email = currentUser && currentUser?.email;
 
     const [shippingAddress, setShippingAddress] = useState<IAddress>({
-        firstName: fName,
+        firstName: fName || "",
         email: email || "",
         lastName: lName || "",
         address: "",
@@ -98,7 +99,7 @@ const Addresses = () => {
                 await addAddress(shippingAddress, currentUser!.id);
                 setIsOpen(false);
                 setShippingAddress({
-                    firstName: fName,
+                    firstName: fName || "",
                     email: email || "",
                     lastName: lName || "",
                     address: "",

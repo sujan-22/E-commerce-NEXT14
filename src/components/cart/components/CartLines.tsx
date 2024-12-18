@@ -7,13 +7,13 @@ import {
     TableBody,
 } from "@/components/ui/table";
 import useStore from "@/context/useStore";
-import Image from "next/image";
 import { cn } from "@nextui-org/react";
 import { MinusIcon, PlusIcon } from "lucide-react";
 import { MdDeleteOutline } from "react-icons/md";
 import { useFormatPrice } from "@/lib/utils";
 import useCartStore, { CartItem } from "@/context/useCartStore";
 import useUserStore from "@/context/useUserStore";
+import CartLineImage from "./CartLineImage";
 
 const CartLines = () => {
     const { allProducts } = useStore();
@@ -84,12 +84,11 @@ const CartLines = () => {
                             return (
                                 <TableRow key={item.productId}>
                                     <TableCell className="relative w-28 h-28 rounded-md bg-gray-200">
-                                        <Image
-                                            className="object-contain"
-                                            quality={100}
-                                            alt={product.name}
-                                            src={product.availableImages[0]}
-                                            fill
+                                        <CartLineImage
+                                            altText={String(product.id)}
+                                            imageUrl={
+                                                product.availableImages[0]
+                                            }
                                         />
                                     </TableCell>
 

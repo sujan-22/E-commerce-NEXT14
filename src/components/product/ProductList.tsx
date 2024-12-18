@@ -30,7 +30,7 @@ const ProductList = ({
             <div className="flex justify-between mb-2">
                 {headerLink !== "" && (
                     <>
-                        <h2 className="text-xl font-bold">{headerTitle}</h2>
+                        <h2 className="text-xl font-semibold">{headerTitle}</h2>
                         {products.length > 2 && (
                             <Link
                                 href={headerLink}

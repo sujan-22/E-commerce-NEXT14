@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { IoCheckmarkCircle } from "react-icons/io5";
 import { HiOutlineCreditCard } from "react-icons/hi2";
 import { useState } from "react";
+import PaymentComponent from "@/components/payment";
 
 const Payment = () => {
     const searchParams = useSearchParams();
@@ -58,10 +59,12 @@ const Payment = () => {
                                     name="delivery"
                                     checked={true}
                                     className="w-4 h-4 cursor-pointer text-primary"
+                                    readOnly
                                 />
                                 <Label className="cursor-pointer text-md">
                                     Test Payment
                                 </Label>
+                                <PaymentComponent />
                             </div>
                             <span className="text-md font-medium">
                                 <HiOutlineCreditCard />

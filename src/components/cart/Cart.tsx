@@ -1,6 +1,6 @@
 "use client";
 
-import { ShoppingBag, ShoppingCart } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import { Sheet, SheetContent, SheetFooter, SheetTrigger } from "../ui/sheet";
 import { buttonVariants } from "../ui/button";
 import useStore from "@/context/useStore";
@@ -17,10 +17,6 @@ const Cart: React.FC = () => {
     return (
         <Sheet>
             <SheetTrigger className="group flex items-center hover:text-muted-foreground ">
-                {/* <ShoppingCart
-                    aria-hidden="true"
-                    className="h-6 w-6 flex-shrink-0 text-primary group-hover:text-muted-foreground z-50"
-                /> */}
                 <p className="text-sm">Cart</p>
                 <span className=" ml-1 text-sm font-medium">
                     ({cartItemsCount})
