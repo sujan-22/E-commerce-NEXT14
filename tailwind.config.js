@@ -62,6 +62,7 @@ module.exports = {
                     "Ubuntu",
                     "sans-serif",
                 ],
+                mono: ['"Courier New"', "Courier", "monospace"],
             },
             borderRadius: {
                 lg: "var(--radius)",
@@ -92,6 +93,8 @@ module.exports = {
             },
             fontSize: {
                 md: "15px",
+                sm: "14px",
+                xs: "12px",
             },
         },
     },

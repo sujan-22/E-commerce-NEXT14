@@ -355,3 +355,60 @@ const products = {
 };
 
 export default products;
+
+export const addresses = {
+    userId: "user123",
+    addresses: [
+        {
+            addressId: "64fd123456abcdef",
+            addressName: "Home",
+            firstName: "John",
+            lastName: "Doe",
+            address: "123 Main St",
+            city: "Hamilton",
+            province: "Ontario",
+            postalCode: "L8P1A1",
+            country: "Canada",
+            phone: "123-456-7890",
+        },
+        {
+            addressId: "sldfhalsdjffa;lsd",
+            addressName: "Work",
+            firstName: "Xyz",
+            lastName: "Doe",
+            address: "1 Bills dr",
+            city: "Toronto",
+            province: "Ontario",
+            postalCode: "L8P1A1",
+            country: "Canada",
+            phone: "123-456-7890",
+        },
+    ],
+    userId: "user123",
+    addresses: [
+        {
+            addressId: "64fd123456abcdef",
+            addressName: "Home",
+            firstName: "John",
+            lastName: "Doe",
+            address: "123 Main St",
+            city: "Hamilton",
+            province: "Ontario",
+            postalCode: "L8P1A1",
+            country: "Canada",
+            phone: "123-456-7890",
+        },
+        {
+            addressId: "sldfhalsdjffa;lsd",
+            addressName: "Work",
+            firstName: "Xyz",
+            lastName: "Doe",
+            address: "1 Bills dr",
+            city: "Toronto",
+            province: "Ontario",
+            postalCode: "L8P1A1",
+            country: "Canada",
+            phone: "123-456-7890",
+        },
+    ],
+};

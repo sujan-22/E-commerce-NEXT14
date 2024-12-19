@@ -4,7 +4,7 @@ import Product from "./Product";
 import { buttonVariants } from "../ui/button";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { Product as ProductType } from "@/context/useStore";
-import LocalizedClientLink from "@/lib/LocalizedClientLink";
+import Link from "next/link";
 import { useFormatPrice } from "@/lib/utils";
 
 interface ProductListProps {
@@ -30,9 +30,9 @@ const ProductList = ({
             <div className="flex justify-between mb-2">
                 {headerLink !== "" && (
                     <>
-                        <h2 className="text-xl font-bold">{headerTitle}</h2>
+                        <h2 className="text-xl font-semibold">{headerTitle}</h2>
                         {products.length > 2 && (
-                            <LocalizedClientLink
+                            <Link
                                 href={headerLink}
                                 className={`flex items-center ${buttonVariants({
                                     size: "sm",
@@ -44,7 +44,7 @@ const ProductList = ({
                                     "View Collection "
                                 )}
                                 <ArrowTopRightIcon className="ml-1 w-4 h-4" />
-                            </LocalizedClientLink>
+                            </Link>
                         )}
                     </>
                 )}
@@ -53,30 +53,28 @@ const ProductList = ({
                 {(isRelated ? products.slice(0, 3) : products).map(
                     (product) => (
                         <div key={product.id} className="flex flex-col">
-                            <LocalizedClientLink
-                                href={`/products/${product.id}`}
-                            >
+                            <Link href={`/products/${product.id}`}>
                                 <Product
                                     initialImage={product.availableImages[0]}
                                     className="mx-auto"
                                     size={size}
                                     isFeatured={true}
                                 />
-                            </LocalizedClientLink>
+                            </Link>
                             {/* <Product
                             initialImage={product.availableColors[0].images[0]}
                             className="mx-auto"
                             size={size}
                             isFeatured={true}
                         /> */}
-                            <div className="flex justify-between mt-4 px-2 items-start">
+                            <div className="flex justify-between mt-4 items-start">
                                 <p
-                                    className="text-md"
+                                    className="text-sm"
                                     data-testid="product-title"
                                 >
                                     {product.name}
                                 </p>
-                                <div className="flex items-center gap-x-2 text-md font-semibold">
+                                <div className="flex items-center gap-x-2 text-sm font-semibold">
                                     {product.collection.onsale?.newPrice ? (
                                         <>
                                             <span className="line-through text-muted-foreground">

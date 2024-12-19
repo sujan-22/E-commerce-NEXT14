@@ -30,7 +30,7 @@
         "**/*.tsx",
         "src/middleware/imageUploadMiddleware.js",
         "src/components/cart/Cart.jsx",
-        "src/app/[countryCode]/(main)/layout.js"
+        "src/app/layout.js"
     ],
     "exclude": ["node_modules"]
 }

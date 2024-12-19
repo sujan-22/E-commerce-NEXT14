@@ -7,8 +7,9 @@ export interface IAddress {
     postalCode: string;
     city: string;
     country: string;
-    phone?: string;
+    phone: string;
     province: string;
+    email: string;
 }
 
 export interface Region {
@@ -35,64 +36,65 @@ export const countries: Country[] = [
             { label: "Prince Edward Island" },
             { label: "Quebec" },
             { label: "Saskatchewan" },
+            { label: "Nunavut" },
             { label: "Yukon" },
-        ],
-    },
-    {
-        label: "United States",
-        regions: [
-            { label: "Alabama" },
-            { label: "Alaska" },
-            { label: "Arizona" },
-            { label: "Arkansas" },
-            { label: "California" },
-            { label: "Colorado" },
-            { label: "Connecticut" },
-            { label: "Delaware" },
-            { label: "Florida" },
-            { label: "Georgia" },
-            { label: "Hawaii" },
-            { label: "Idaho" },
-            { label: "Illinois" },
-            { label: "Indiana" },
-            { label: "Iowa" },
-            { label: "Kansas" },
-            { label: "Kentucky" },
-            { label: "Louisiana" },
-            { label: "Maine" },
-            { label: "Maryland" },
-            { label: "Massachusetts" },
-            { label: "Michigan" },
-            { label: "Minnesota" },
-            { label: "Mississippi" },
-            { label: "Missouri" },
-            { label: "Montana" },
-            { label: "Nebraska" },
-            { label: "Nevada" },
-            { label: "New Hampshire" },
-            { label: "New Jersey" },
-            { label: "New Mexico" },
-            { label: "New York" },
-            { label: "North Carolina" },
-            { label: "North Dakota" },
-            { label: "Ohio" },
-            { label: "Oklahoma" },
-            { label: "Oregon" },
-            { label: "Pennsylvania" },
-            { label: "Rhode Island" },
-            { label: "South Carolina" },
-            { label: "South Dakota" },
-            { label: "Tennessee" },
-            { label: "Texas" },
-            { label: "Utah" },
-            { label: "Vermont" },
-            { label: "Virginia" },
-            { label: "Washington" },
-            { label: "West Virginia" },
-            { label: "Wisconsin" },
-            { label: "Wyoming" },
         ],
     },
 ];
 
 export default countries;
+
+export const taxes = [
+    {
+        province: "Alberta",
+        taxRate: "5%",
+    },
+    {
+        province: "British Columbia",
+        taxRate: "12%",
+    },
+    {
+        province: "Manitoba",
+        taxRate: "12%",
+    },
+    {
+        province: "New Brunswick",
+        taxRate: "15%",
+    },
+    {
+        province: "Newfoundland and Labrador",
+        taxRate: "15%",
+    },
+    {
+        province: "Nova Scotia",
+        taxRate: "15%",
+    },
+    {
+        province: "Ontario",
+        taxRate: "13%",
+    },
+    {
+        province: "Prince Edward Island",
+        taxRate: "15%",
+    },
+    {
+        province: "Quebec",
+        taxRate: "14.975%",
+    },
+    {
+        province: "Saskatchewan",
+        taxRate: "11%",
+    },
+    {
+        province: "Northwest Territories",
+        taxRate: "5%",
+    },
+    {
+        province: "Nunavut",
+        taxRate: "5%",
+    },
+    {
+        province: "Yukon",
+        taxRate: "5%",
+    },
+];

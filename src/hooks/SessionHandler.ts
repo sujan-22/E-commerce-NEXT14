@@ -1,27 +1,12 @@
-"use client";
+import { headers } from "next/headers";
+import { auth } from "auth";
 
-import { useEffect } from "react";
-import useStore from "@/context/useStore";
-import { useSession } from "next-auth/react";
-
-const SessionHandler = () => {
-    const { data: session } = useSession();
-    const setUserData = useStore((state) => state.setUserData);
-    const syncCartWithServer = useStore((state) => state.syncCartWithServer);
-
-    useEffect(() => {
-        if (session?.user) {
-            setUserData({
-                id: session.user.id!,
-                email: session.user.email!,
-                name: session.user.name!,
-                seller: session.user.seller || false,
-            });
-            syncCartWithServer();
-        }
-    }, [session, syncCartWithServer, setUserData]);
-
-    return null;
-};
-
-export default SessionHandler;
+export async function getServerSideSession() {
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+    return {
+        session: session?.session || null,
+        user: session?.user || null,
+    };
+}
