@@ -1,55 +1,99 @@
-import Image from "next/image";
+"use client";
+
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 import MaxWidthWrapper from "./utility/MaxWidthWrapper";
+import { Separator } from "./ui/separator";
 
 const Footer = () => {
+    const pathname = usePathname();
+    const pathsToMinimize = ["/verify-email", "/sign-up", "/sign-in"];
+
     return (
-        <MaxWidthWrapper>
-            <footer className="">
-                <div className="flex flex-col sm:grid grid-cols-[3fr_1fr_1fr] gap-14 my-10 mt-40 text-sm">
-                    <div>
-                        <Image
-                            src={"/assets/light-logo.png"}
-                            alt="logo"
-                            width={60}
-                            height={50}
-                        />
-                        <p className="w-full md:w-2/3 text-muted-foreground">
-                            AURA (Art of Uniqueness, Refined Aesthetics) is your
-                            go-to platform for premium products, where
-                            excellence in customer service meets world-class
-                            quality. Our diverse selection of carefully curated
-                            items ensures that you find exactly what you need.
+        <footer className="flex-grow-0 pt-8">
+            <MaxWidthWrapper>
+                <div>
+                    <Separator />
+                    {pathsToMinimize.includes(pathname) ? null : (
+                        <div className="py-8">
+                            <div className="flex justify-center">
+                                {/* <Icons.logo className="h-12 w-auto" /> */}
+                                <Link
+                                    href="/"
+                                    className="text-lg font-extrabold font-sans tracking-wider hover:text-muted-foreground uppercase transition-all duration-200 ease-in-out"
+                                >
+                                    <span className="text-primary">Aurora</span>
+                                    <span className="text-muted-foreground italic">
+                                        Store
+                                    </span>
+                                </Link>
+                            </div>
+                        </div>
+                    )}
+
+                    {pathsToMinimize.includes(pathname) ? null : (
+                        <div>
+                            <div className="relative flex items-center px-6 py-6 sm:py-8 lg:mt-0">
+                                <div className="absolute inset-0 overflow-hidden rounded-lg">
+                                    <div
+                                        aria-hidden="true"
+                                        className="absolute bg-muted inset-0 bg-gradient-to-br bg-opacity-90"
+                                    />
+                                </div>
+
+                                <div className="text-center relative mx-auto max-w-sm">
+                                    <h3 className="font-semibold text-primary">
+                                        Become a seller
+                                    </h3>
+                                    <p className="mt-2 text-sm text-muted-foreground">
+                                        If you&apos;d like to sell high-quality
+                                        products, you can do so in minutes.{" "}
+                                        <Link
+                                            href="/sign-in?as=seller"
+                                            className="whitespace-nowrap font-medium text-primary hover:text-muted-foreground"
+                                        >
+                                            Get started &rarr;
+                                        </Link>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                <div className="py-10 md:flex md:items-center md:justify-between">
+                    <div className="text-center md:text-left">
+                        <p className="text-sm text-muted-foreground">
+                            &copy; {new Date().getFullYear()} All Rights
+                            Reserved
                         </p>
                     </div>
-                    <div>
-                        <p className="text-md font-medium sm:mb-4 lg:mb-8">
-                            COMPANY
-                        </p>
-                        <ul className="flex flex-col text-muted-foreground">
-                            <li>Home</li>
-                            <li>About us</li>
-                            <li>Delivery</li>
-                            <li>Privacy policy</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <p className="text-md font-medium sm:mb-4 lg:mb-8">
-                            GET IN TOUCH
-                        </p>
-                        <ul className="flex flex-col text-muted-foreground">
-                            <li>+1-000-000-0000</li>
-                            <li>aura@gmail.com</li>
-                        </ul>
+
+                    <div className="mt-4 flex items-center justify-center md:mt-0">
+                        <div className="flex space-x-8">
+                            <Link
+                                href="#"
+                                className="text-sm text-muted-foreground hover:text-gray-600"
+                            >
+                                Terms
+                            </Link>
+                            <Link
+                                href="#"
+                                className="text-sm text-muted-foreground hover:text-gray-600"
+                            >
+                                Privacy Policy
+                            </Link>
+                            <Link
+                                href="#"
+                                className="text-sm text-muted-foreground hover:text-gray-600"
+                            >
+                                Cookie Policy
+                            </Link>
+                        </div>
                     </div>
                 </div>
-                <div className="border-t border-gray-200 mt-8 py-4 text-center">
-                    <p className="text-muted-foreground text-sm">
-                        &copy; {new Date().getFullYear()} AURA, Inc. All rights
-                        reserved.
-                    </p>
-                </div>
-            </footer>
-        </MaxWidthWrapper>
+            </MaxWidthWrapper>
+        </footer>
     );
 };
 

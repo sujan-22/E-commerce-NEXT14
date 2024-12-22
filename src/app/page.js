@@ -13,6 +13,8 @@ import ProductList from "@/components/product/ProductList";
 import SubscribeToNewsletter from "@/components/SubscribeToNewsletter";
 import useStore from "@/context/useStore";
 import Link from "next/link";
+import ProductListSkeleton from "@/components/product/skeleton/ProductListSkeleton";
+import { useRouter } from "next/navigation";
 
 const perks = [
     {
@@ -50,6 +52,7 @@ const perks = [
 export default function Home() {
     const products = useStore((state) => state.allProducts);
     const collectionsMap = {};
+    const router = useRouter();
 
     // Populate collectionsMap with collections and their products
     products.forEach((product) => {
@@ -68,6 +71,10 @@ export default function Home() {
         }
     });
 
+    const handleNavigation = () => {
+        router.push("/products/category/all");
+    };
+
     return (
         <>
             <MaxWidthWrapper>
@@ -83,12 +90,13 @@ export default function Home() {
                         style.
                     </p>
                     <div className=" flex flex-col sm:flex-row gap-4 mt-6">
-                        <Link
-                            href="/products/category/all"
-                            className={buttonVariants()}
+                        <Button
+                            // href="/products/category/all"
+                            onClick={handleNavigation}
+                            // className={buttonVariants()}
                         >
                             Shop the Latest Collection
-                        </Link>
+                        </Button>
                         <Button variant="ghost">
                             Learn About Our Craftsmanship &rarr;
                         </Button>
@@ -96,17 +104,21 @@ export default function Home() {
                 </div>
                 {/* LIST PRODUCT */}
                 {/* Dynamic Collection Rendering */}
-                {Object.entries(collectionsMap).map(
-                    ([collectionType, { title, products }]) => (
-                        <div key={collectionType} className="py-20">
-                            <ProductList
-                                products={products}
-                                headerTitle={title}
-                                headerLink={"/"}
-                                size={"full"}
-                            />
-                        </div>
+                {products && products.length > 0 ? (
+                    Object.entries(collectionsMap).map(
+                        ([collectionType, { title, products }]) => (
+                            <div key={collectionType} className="py-20">
+                                <ProductList
+                                    products={products}
+                                    headerTitle={title}
+                                    headerLink={"/"}
+                                    size={"full"}
+                                />
+                            </div>
+                        )
                     )
+                ) : (
+                    <ProductListSkeleton size="full" />
                 )}
             </MaxWidthWrapper>
             <MaxWidthWrapper className="">

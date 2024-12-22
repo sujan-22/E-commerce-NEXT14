@@ -1,11 +1,11 @@
 export default function CartLayout({
-  children,
+    children,
 }: {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }) {
-  return (
-    <div className="w-full bg-white relative small:min-h-screen">
-      <div className="relative">{children}</div>
-    </div>
-  );
+    return (
+        <div className="w-full relative small:min-h-screen">
+            <div className="relative">{children}</div>
+        </div>
+    );
 }

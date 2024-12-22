@@ -23,7 +23,7 @@ const Review = () => {
     };
 
     return (
-        <div className="bg-white">
+        <div>
             <div className="flex flex-row items-center justify-between mb-2">
                 <h2
                     className={`text-lg font-semibold flex items-center ${

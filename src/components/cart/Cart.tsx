@@ -69,7 +69,7 @@ const Cart: React.FC = () => {
                             </div>
                             <SheetTrigger asChild>
                                 <Link
-                                    href="/products"
+                                    href="/products/category/all"
                                     className={buttonVariants({
                                         variant: "link",
                                         size: "default",

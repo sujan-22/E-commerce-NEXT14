@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { authClient, IUser } from "../../../auth-client";
 import useUserStore from "@/context/useUserStore";
 import useCartStore from "@/context/useCartStore";
+import { Switch } from "../ui/switch";
 
 interface SideMenuProps {
     setDialogOpen: Dispatch<SetStateAction<boolean>>;
@@ -97,19 +98,15 @@ const SideMenu = ({ setDialogOpen, user }: SideMenuProps) => {
                                 leaveFrom="opacity-100 backdrop-blur-2xl"
                                 leaveTo="opacity-0"
                             >
-                                <Popover.Panel className="flex flex-col absolute w-full pr-4 sm:pr-0 sm:w-1/3 2xl:w-1/4 sm:min-w-min h-[calc(100vh-1rem)] z-[51] inset-x-0 text-sm text-secondary m-2 backdrop-blur-2xl">
+                                <Popover.Panel className="flex flex-col rounded-md absolute w-full pr-4 sm:pr-0 sm:w-1/3 2xl:w-1/4 sm:min-w-min h-[calc(100vh-1rem)] z-[51] inset-x-0 text-sm m-2 backdrop-blur-2xl">
                                     <div
-                                        data-testid="nav-menu-popup"
-                                        className="flex flex-col h-full bg-[rgba(3,7,18,0.5)] rounded-md justify-between p-6"
+                                        className={`bg-background dark:bg-dark-background backdrop-blur-md transition-colors duration-200 flex flex-col h-full rounded-md border border-primary justify-between p-6 z-[51]`}
                                     >
                                         <div
                                             className="flex justify-end"
                                             id="xmark"
                                         >
-                                            <button
-                                                data-testid="close-menu-button"
-                                                onClick={close}
-                                            >
+                                            <button onClick={close}>
                                                 <X />
                                             </button>
                                         </div>
@@ -155,9 +152,12 @@ const SideMenu = ({ setDialogOpen, user }: SideMenuProps) => {
                                         </ul>
 
                                         <div className="flex flex-col gap-y-6">
-                                            <p className="flex justify-between txt-compact-small">
+                                            <p className="flex justify-between text-sm">
                                                 © {new Date().getFullYear()}{" "}
                                                 AURA, Inc. All rights reserved.
+                                                <div className="flex items-center space-x-2">
+                                                    <Switch id="airplane-mode" />
+                                                </div>
                                             </p>
                                         </div>
                                     </div>

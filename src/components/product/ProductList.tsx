@@ -53,7 +53,10 @@ const ProductList = ({
                 {(isRelated ? products.slice(0, 3) : products).map(
                     (product) => (
                         <div key={product.id} className="flex flex-col">
-                            <Link href={`/products/${product.id}`}>
+                            <Link
+                                href={`/products/${product.id}`}
+                                prefetch={true}
+                            >
                                 <Product
                                     initialImage={product.availableImages[0]}
                                     className="mx-auto"
@@ -61,12 +64,6 @@ const ProductList = ({
                                     isFeatured={true}
                                 />
                             </Link>
-                            {/* <Product
-                            initialImage={product.availableColors[0].images[0]}
-                            className="mx-auto"
-                            size={size}
-                            isFeatured={true}
-                        /> */}
                             <div className="flex justify-between mt-4 items-start">
                                 <p
                                     className="text-sm"

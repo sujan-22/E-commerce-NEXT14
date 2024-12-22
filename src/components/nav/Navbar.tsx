@@ -49,10 +49,15 @@ const Navbar = ({
 
     return (
         <div className="sticky top-0 inset-x-0 z-40">
-            <div className="bg-black">
-                <header className="relative h-16 mx-auto border-b duration-200 bg-white">
+            <div
+                className={`bg-background/80 dark:bg-dark-background/80 backdrop-blur-md transition-colors duration-200`}
+            >
+                <header
+                    className="relative h-16 mx-auto border-b duration-200"
+                    // className={`bg-background/80 dark:bg-dark-background/80 relative h-16 mx-auto border-b  backdrop-blur-md transition-colors duration-200`}
+                >
                     <MaxWidthWrapper>
-                        <nav className="content-container txt-xsmall-plus text-ui-fg-subtle flex items-center justify-between w-full h-full text-small-regular">
+                        <nav className="text-sm flex items-center justify-between w-full h-full">
                             <div className="flex-1 basis-0 h-full flex items-center">
                                 <div className="h-full">
                                     <SideMenu
@@ -65,10 +70,12 @@ const Navbar = ({
                             <div className="flex items-center h-full">
                                 <Link
                                     href="/"
-                                    className="text-md font-semibold hover:text-muted-foreground uppercase"
-                                    data-testid="nav-store-link"
+                                    className="text-lg font-extrabold font-sans tracking-wider hover:text-muted-foreground uppercase transition-all duration-200 ease-in-out"
                                 >
-                                    The AURA
+                                    <span className="text-primary">Aurora</span>
+                                    <span className="text-muted-foreground italic">
+                                        Store
+                                    </span>
                                 </Link>
                             </div>
 
