@@ -7,6 +7,7 @@ import Transition from "@/components/utility/Transition";
 import UserNavbarWrapper from "@/components/nav/UserNavbarWrapper";
 import { Poppins } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const nunito = Poppins({
     subsets: ["latin"],
@@ -22,18 +23,25 @@ export default function RootLayout({ children }) {
     return (
         <html lang="en">
             <body className={`scrollbar-hide ${nunito.className}`}>
-                <ReactQueryProvider>
-                    <UserNavbarWrapper />
-                    <main className="flex flex-col min-h-[calc(100vh-2.5rem-1px)]">
-                        <div className="flex flex-1 flex-col h-full">
-                            <Transition>{children}</Transition>
-                        </div>
-                        <Footer />
-                        <Toaster />
-                    </main>
-                    <Product />
-                    <Category />
-                </ReactQueryProvider>
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
+                >
+                    <ReactQueryProvider>
+                        <UserNavbarWrapper />
+                        <main className="flex flex-col scrollbar-hide min-h-[calc(100vh-2.5rem-1px)]">
+                            <div className="flex scrollbar-hide flex-1 flex-col h-full">
+                                <Transition>{children}</Transition>
+                            </div>
+                            <Footer />
+                            <Toaster />
+                        </main>
+                        <Product />
+                        <Category />
+                    </ReactQueryProvider>
+                </ThemeProvider>
             </body>
         </html>
     );

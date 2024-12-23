@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useFormatPrice } from "@/lib/utils";
 import { useDeliveryStore } from "@/context/useDeliveryStore";
 import { IoCheckmarkCircle } from "react-icons/io5";
+import { useAddressStore } from "@/context/useAddressStore";
 
 export interface IDeliveyOptions {
     id: string;
@@ -18,13 +19,16 @@ export interface IDeliveyOptions {
 const Shipping = () => {
     // const [isLoading, setIsLoading] = useState(false);
     const { deliveryOption, setDeliveryOption } = useDeliveryStore();
+    const { selectedAddress } = useAddressStore();
     const { formatPrice } = useFormatPrice();
     const [error, setError] = useState<string | null>(null);
-    console.log("deliveryOption", deliveryOption);
-
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
+
+    if (!selectedAddress) {
+        router.push(`${pathname}?step=address`, { scroll: false });
+    }
 
     const isOpen = searchParams.get("step") === "delivery";
 
@@ -63,7 +67,7 @@ const Shipping = () => {
     };
 
     return (
-        <div className="bg-white">
+        <div>
             <div className="flex flex-row items-center justify-between mb-2">
                 <h2
                     className={`text-lg font-semibold flex items-center ${

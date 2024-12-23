@@ -24,7 +24,7 @@ const Product: React.FC<ProductProps> = ({
     return (
         <div
             className={cn(
-                "relative w-full overflow-hidden p-2 transition-shadow ease-in-out duration-150 border rounded-md bg-gray-100",
+                "relative w-full overflow-hidden p-2 transition-shadow ease-in-out duration-150 border rounded-md bg-muted",
                 className,
                 {
                     "aspect-[11/14]": isFeatured,

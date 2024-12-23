@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import React from "react";
 import { Label } from "../ui/label";
+import { Button } from "../ui/button";
 
 interface ProductActionsProps {
     options: string[];
@@ -28,20 +29,21 @@ const ProductActions: React.FC<ProductActionsProps> = ({
             <div className="flex flex-wrap justify-between gap-2">
                 {options.map((option) => {
                     return (
-                        <button
+                        <Button
                             onClick={() => handleSelect(option)}
                             key={option}
                             className={cn(
-                                "bg-gray-100 border text-sm h-10 rounded-sm p-2 flex-1",
+                                "bg-primary border text-sm h-10 rounded-sm p-2 flex-1",
                                 {
-                                    "border-primary": selectedOption === option,
+                                    "border-primary bg-muted text-primary":
+                                        selectedOption === option,
                                     "hover:shadow-elevation-card-rest transition-shadow ease-in-out duration-150":
                                         selectedOption !== option,
                                 }
                             )}
                         >
                             {option}
-                        </button>
+                        </Button>
                     );
                 })}
             </div>

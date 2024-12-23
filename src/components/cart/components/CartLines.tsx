@@ -83,7 +83,7 @@ const CartLines = () => {
                         if (product) {
                             return (
                                 <TableRow key={item.productId}>
-                                    <TableCell className="relative w-28 h-28 rounded-md bg-gray-200">
+                                    <TableCell className="relative w-28 h-28 rounded-md bg-muted">
                                         <CartLineImage
                                             altText={String(product.id)}
                                             imageUrl={
@@ -96,7 +96,7 @@ const CartLines = () => {
                                         {product.name}{" "}
                                         {(item.selectedColor ||
                                             item.selectedSize) && (
-                                            <p className="text-sm text-muted-foreground dark:text-neutral-400">
+                                            <p className="text-sm text-muted-foreground">
                                                 {item.selectedColor &&
                                                 item.selectedSize
                                                     ? `${item.selectedColor} / ${item.selectedSize}`

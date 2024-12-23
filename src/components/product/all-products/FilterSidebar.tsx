@@ -24,7 +24,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ mobileView }) => {
     const [selectedCategory, setSelectedCategory] = useState<string>(
         currentCategory || "all"
     );
-    const { categories, loading } = useStore();
+    const { categories } = useStore();
     const searchParams = useSearchParams();
     const currentSort = searchParams.get("sort");
 
@@ -50,7 +50,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ mobileView }) => {
             params.set("sort", currentSort);
         }
 
-        router.push(`//products/category/${value}?${params.toString()}`);
+        router.push(`/products/category/${value}?${params.toString()}`);
     };
 
     return mobileView ? (
@@ -73,7 +73,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ mobileView }) => {
     ) : (
         <div className="pr-5 text-sm pt-20">
             <p className="font-bold mb-4">Categories</p>
-            {loading ? (
+            {filterItems.length === 0 ? (
                 <p>Loading...</p>
             ) : (
                 <ul className="space-y-2 text-muted-foreground">
