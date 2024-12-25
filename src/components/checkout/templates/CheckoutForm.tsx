@@ -6,27 +6,27 @@ import Review from "../components/Review";
 import { Separator } from "@/components/ui/separator";
 
 const CheckoutForm = () => {
-    return (
+  return (
+    <div>
+      <div className="w-full h-full grid grid-cols-1 gap-y-8">
         <div>
-            <div className="w-full grid grid-cols-1 gap-y-8">
-                <div>
-                    <Addresses />
-                </div>
-                <Separator />
-                <div>
-                    <Shipping />
-                </div>
-                <Separator />
-                <div>
-                    <Review />
-                </div>
-                <Separator />
-                <div>
-                    <Payment />
-                </div>
-            </div>
+          <Addresses />
         </div>
-    );
+        <Separator />
+        <div>
+          <Shipping />
+        </div>
+        <Separator />
+        <div>
+          <Review />
+        </div>
+        <Separator />
+        <div>
+          <Payment />
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default CheckoutForm;
