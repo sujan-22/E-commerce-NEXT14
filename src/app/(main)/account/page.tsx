@@ -1,14 +1,17 @@
+"use client";
 import { Separator } from "@/components/ui/separator";
 import React from "react";
-import { ProfileForm } from "./profile/profile-form";
+import useUserStore from "@/context/useUserStore";
 
-const page = () => {
+const Page = () => {
+  const { currentUser } = useUserStore();
   return (
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-medium">Overview</h3>
         <p className="text-sm text-muted-foreground">
-          Signed in as: <span className="font-semibold"> jay@mail.com </span>
+          Signed in as:{" "}
+          <span className="font-semibold">{currentUser?.email}</span>
         </p>
       </div>
 
@@ -17,4 +20,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
