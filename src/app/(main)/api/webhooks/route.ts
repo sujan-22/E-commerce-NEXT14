@@ -1,4 +1,6 @@
-import db from "@/lib/prisma";
+export const runtime = "nodejs";
+
+import prisma from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
@@ -38,7 +40,7 @@ export async function POST(req: Request) {
             const billingAddress = session.customer_details!.address;
             const shippingAddress = session.shipping_details!.address;
 
-            await db.order.update({
+            await prisma.order.update({
                 where: {
                     id: orderId,
                 },
