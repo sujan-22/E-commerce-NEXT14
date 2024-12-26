@@ -113,11 +113,8 @@ const SideMenu = ({ setDialogOpen, user }: SideMenuProps) => {
                     <div className="mt-6 border-t pt-4">
                         <p className="text-sm flex items-center justify-between">
                             <span>
-                                © {new Date().getFullYear()} AURORA
-                                <span className="italic text-muted-foreground">
-                                    STORE
-                                </span>
-                                , Inc. All rights reserved.
+                                © {new Date().getFullYear()} Polaris , Inc. All
+                                rights reserved.
                             </span>
                             <Switch id="airplane-mode" />
                         </p>

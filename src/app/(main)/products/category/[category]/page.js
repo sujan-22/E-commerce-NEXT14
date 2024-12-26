@@ -9,6 +9,10 @@ import useStore from "@/context/useStore";
 import FilterSidebar from "@/components/product/all-products/FilterSidebar";
 import SortSidebar from "@/components/product/all-products/SortSidebar";
 
+export const metadata = {
+    title: "Polaris | Products",
+};
+
 const Page = ({ params }) => {
     const products = useStore((state) => state.allProducts);
     const [isMobileView, setIsMobileView] = useState(false);

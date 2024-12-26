@@ -41,7 +41,7 @@ export const createCheckoutSession = async ({
     });
 
     const product = await stripe.products.create({
-        name: "AURORASTORE Clothes",
+        name: "Polaris",
         images: images,
         default_price_data: {
             currency: "cad",
@@ -50,8 +50,8 @@ export const createCheckoutSession = async ({
     });
 
     const stripeSession = await stripe.checkout.sessions.create({
-        success_url: `${process.env.NEXT_PUBLIC_APP_URL}/thank-you?orderId=${order.id}`,
-        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout?step=payment`,
+        success_url: `${process.env.NEXT_PUBLIC_APP_URL}/order-confirmation?orderId=${order.id}`,
+        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cart`,
         payment_method_types: ["card"],
         mode: "payment",
         shipping_address_collection: { allowed_countries: ["CA"] },
