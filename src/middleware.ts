@@ -46,7 +46,7 @@ export default async function authMiddleware(request: NextRequest) {
     }
 
     // Handle admin routes
-    if (isAdminRoute && session.user.role !== "admin") {
+    if (isAdminRoute && session?.user.role !== "admin") {
         // If the user is not an admin, redirect them to the home page
         return NextResponse.redirect(new URL("/", request.url));
     }

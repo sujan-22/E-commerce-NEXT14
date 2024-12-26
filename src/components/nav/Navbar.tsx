@@ -59,7 +59,7 @@ const Navbar = ({
                     <MaxWidthWrapper>
                         <nav className="text-sm flex items-center justify-between w-full h-full">
                             <div className="flex-1 basis-0 h-full flex items-center">
-                                <div className="h-full">
+                                <div>
                                     <SideMenu
                                         setDialogOpen={setDialogOpen}
                                         user={user}

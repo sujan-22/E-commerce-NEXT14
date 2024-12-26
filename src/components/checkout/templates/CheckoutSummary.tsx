@@ -1,6 +1,5 @@
 "use client";
 import { Separator } from "@/components/ui/separator";
-import { useDeliveryStore } from "@/context/useDeliveryStore";
 import { useFormatPrice } from "@/lib/utils";
 import React from "react";
 import {
@@ -11,8 +10,6 @@ import {
 } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
 import useCartStore from "@/context/useCartStore";
-import { useAddressStore } from "@/context/useAddressStore";
-import { taxes } from "@/data/types/address";
 
 const CheckoutSummary = ({
     shouldDisplayTaxText,
@@ -23,24 +20,6 @@ const CheckoutSummary = ({
 }) => {
     const { cartTotal } = useCartStore();
     const { formatPrice } = useFormatPrice();
-    const { deliveryOption } = useDeliveryStore();
-    const { selectedAddress } = useAddressStore();
-
-    const selectedTax = taxes.find(
-        (tax) => tax.province === selectedAddress?.province
-    );
-
-    const taxRate = selectedTax ? parseFloat(selectedTax.taxRate) / 100 : 0.0; // Convert percentage to decimal
-    const deliveryPrice = deliveryOption?.charge ?? 0.0;
-
-    // Calculate the taxable amount (cart total + delivery price)
-    const taxableAmount = cartTotal + deliveryPrice;
-
-    // Calculate the tax amount
-    const taxAmount = taxableAmount * taxRate;
-
-    // Calculate the total price (cart total + delivery + tax)
-    const totalPrice = taxableAmount + taxAmount;
 
     return (
         <div>
@@ -70,14 +49,14 @@ const CheckoutSummary = ({
 
                 <div className="flex justify-between">
                     <p className="text-sm">Shipping</p>
-                    <p className="text-sm">{formatPrice(deliveryPrice)}</p>
+                    <p className="text-sm">{formatPrice(90)}</p>
                 </div>
 
                 <div className="flex justify-between">
                     <p className="text-sm">Tax</p>
                     <p className="text-sm">
                         {shouldDisplayTaxText ? (
-                            formatPrice(taxAmount)
+                            formatPrice(90)
                         ) : (
                             <>To be calculated</>
                         )}
@@ -88,7 +67,7 @@ const CheckoutSummary = ({
 
                 <div className="flex justify-between font-semibold">
                     <p className="text-sm">Total</p>
-                    <p className="text-sm">{formatPrice(totalPrice)}</p>
+                    <p className="text-sm">{formatPrice(90)}</p>
                 </div>
             </div>
         </div>

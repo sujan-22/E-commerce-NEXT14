@@ -1,4 +1,5 @@
-import { CartItem, Product } from "@/context/useStore";
+import { CartItem } from "@/context/useCartStore";
+import { Product } from "@/context/useStore";
 
 export const calculateCartTotal = (
     cartItems: CartItem[],

@@ -5,7 +5,7 @@ import { z } from "zod";
 // Define schema for cart actions
 const cartActionSchema = z.object({
     action: z.enum(["get", "add", "update", "remove"]),
-    userId: z.string(), // User ID is now a string (cuid)
+    userId: z.string(),
     productId: z.number().optional(),
     quantity: z.number().optional(),
     selectedColor: z.string().optional(),
