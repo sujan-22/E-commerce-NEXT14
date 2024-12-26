@@ -1,6 +1,7 @@
 "use server";
 
 import { getServerSideSession } from "@/hooks/SessionHandler";
+import { CartAPI } from "@/lib/cart-utils/CartAPI";
 import db from "@/lib/prisma";
 
 export const getPaymentStatus = async ({ orderId }: { orderId: string }) => {
@@ -22,17 +23,15 @@ export const getPaymentStatus = async ({ orderId }: { orderId: string }) => {
         },
     });
 
-    console.log(order);
-
     if (!order) {
         throw new Error("Order not found");
     }
 
-    // if (order.isPaid) {
-    //     return order;
-    // } else {
-    //     return false;
-    // }
+    await CartAPI("clear", user.id);
 
-    return order;
+    if (order.isPaid) {
+        return order;
+    } else {
+        return false;
+    }
 };

@@ -4,21 +4,24 @@ import { useQuery } from "@tanstack/react-query";
 import { getPaymentStatus } from "./actions";
 import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { useFormatPrice } from "@/lib/utils";
+import OrderDetails from "./components/OrderDetails";
+import MaxWidthWrapper from "@/components/utility/MaxWidthWrapper";
+import Items from "./components/Items";
+import CheckoutSummary from "@/components/checkout/templates/CheckoutSummary";
+import { Separator } from "@/components/ui/separator";
 
 const ThankYou = () => {
-    const { formatPrice } = useFormatPrice();
     const searchParams = useSearchParams();
     const orderId = searchParams.get("orderId") || "";
 
-    const { data } = useQuery({
+    const { data: order } = useQuery({
         queryKey: ["get-payment-status"],
         queryFn: async () => await getPaymentStatus({ orderId }),
         retry: true,
         retryDelay: 500,
     });
 
-    if (data === undefined) {
+    if (order === undefined) {
         return (
             <div className=" w-full mt-24 flex justify-center">
                 <div className=" flex flex-col items-center gap-2">
@@ -32,137 +35,46 @@ const ThankYou = () => {
         );
     }
 
-    // if (data === false) {
-    //     return (
-    //         <div className=" w-full mt-24 flex justify-center">
-    //             <div className=" flex flex-col items-center gap-2">
-    //                 <Loader2 className=" h-8 w-8 animate-spin text-zinc-500" />
-    //                 <h3 className=" font-semibold text-xl">
-    //                     Verifying your payment...
-    //                 </h3>
-    //                 <p>Please wait. This might take a moment!</p>
-    //             </div>
-    //         </div>
-    //     );
-    // }
-
-    const { billingAddress, shippingAddress, amount } = data;
+    if (order === false) {
+        return (
+            <div className=" w-full mt-24 flex justify-center">
+                <div className=" flex flex-col items-center gap-2">
+                    <Loader2 className=" h-8 w-8 animate-spin text-zinc-500" />
+                    <h3 className=" font-semibold text-xl">
+                        Verifying your payment...
+                    </h3>
+                    <p>Please wait. This might take a moment!</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div>
-            <div className=" mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-                <div className=" max-w-xl">
-                    <p className=" text-base font-medium text-primary">
-                        Thank you!
-                    </p>
-                    <h1 className=" mt-2 text-4xl font-bold tracking-tight sm:text-5xl">
-                        Your case is on the way!
-                    </h1>
-                    <p>
-                        We&apos;ve received your order and is getting processed.
-                    </p>
-                    <div className="mt-12 text-sm font-medium">
-                        <p className=" text-primary">Order number</p>
-                        <p className=" text-zinc-500">{orderId}</p>
-                    </div>
-                </div>
-                <div className=" mt-10 border-t border-zinc-200">
-                    <div className=" mt-10 flex flex-auto flex-col">
-                        <h4 className=" font-semibold text-primary">
-                            You made a greate choice!
-                        </h4>
-                        <p className=" mt-2 text-sm text-zinc-600">
-                            We at RoboCase believe that a phone case
-                            doesn&apos;t only need to look good, but also last
-                            you for the years to come. We offer a 5-year print
-                            guarantee: If your case isn&apos;t of the highest
-                            quality. we&apos;ll replace it for free.
-                        </p>
-                    </div>
-                </div>
-                <div className="flex space-x-6 overflow-hidden mt-4 rounded-xl bg-gray-900/5 ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl">
-                    {/* <PhonePreview
-                        croppedImageUrl={configuration.croppedImageUrl!}
-                        color={color!}
-                    /> */}
-                </div>
-                <div>
-                    <div className="grid grid-cols-2 gap-x-6 py-10 text-sm">
-                        <div>
-                            <p className="font-medium text-gray-900">
-                                Shipping address
-                            </p>
-                            <div className="mt-2 text-zinc-700">
-                                <address className="not-italic">
-                                    <span className="block">
-                                        {shippingAddress?.name}
-                                    </span>
-                                    <span className="block">
-                                        {shippingAddress?.street}
-                                    </span>
-                                    <span className="block">
-                                        {shippingAddress?.postalCode}{" "}
-                                        {shippingAddress?.city}
-                                    </span>
-                                </address>
-                            </div>
-                        </div>
-                        <div>
-                            <p className="font-medium text-gray-900">
-                                Billing address
-                            </p>
-                            <div className="mt-2 text-zinc-700">
-                                <address className="not-italic">
-                                    <span className="block">
-                                        {billingAddress?.name}
-                                    </span>
-                                    <span className="block">
-                                        {billingAddress?.street}
-                                    </span>
-                                    <span className="block">
-                                        {billingAddress?.postalCode}{" "}
-                                        {billingAddress?.city}
-                                    </span>
-                                </address>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-x-6 border-t border-zinc-200 py-10 text-sm">
-                        <div>
-                            <p className="font-medium text-primary">
-                                Payment status
-                            </p>
-                            <p className="mt-2 text-zinc-700">Paid</p>
-                        </div>
-
-                        <div>
-                            <p className="font-medium text-primary">
-                                Shipping Method
-                            </p>
-                            <p className="mt-2 text-zinc-700">
-                                FedEx, takes up to 3 working days
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="space-y-6 border-t border-zinc-200 pt-10 text-sm">
-                    <div className="flex justify-between">
-                        <p className="font-medium text-primary">Subtotal</p>
-                        <p className="text-zinc-700">{formatPrice(amount)}</p>
-                    </div>
-                    <div className="flex justify-between">
-                        <p className="font-medium text-primary">Shipping</p>
-                        <p className="text-zinc-700">{formatPrice(0)}</p>
-                    </div>
-                    <div className="flex justify-between">
-                        <p className="font-medium text-primary">Total</p>
-                        <p className="text-zinc-700">{formatPrice(amount)}</p>
+        <MaxWidthWrapper className=" flex justify-center items-center">
+            <div className="py-6 min-h-[calc(100vh-64px)]">
+                <div className="flex flex-col justify-center items-center gap-y-10 max-w-4xl h-full w-full">
+                    <div className="flex flex-col gap-4 max-w-4xl h-full w-full py-10">
+                        <h2 className="flex flex-col gap-y-3 text-3xl mb-4">
+                            <span>Thank you!</span>
+                            <span>Your order was placed successfully.</span>
+                        </h2>
+                        <OrderDetails order={order} />
+                        <h2 className="flex flex-row text-3xl">Summary</h2>
+                        <Separator className=" h-[1px] shrink-0 bg-border" />
+                        <Items order={order} />
+                        <Separator className=" h-[1px] shrink-0 bg-border" />
+                        <CheckoutSummary
+                            shouldDisplaySummaryText={false}
+                            shipping={3.0}
+                            totalPrice={order.amount}
+                            tax={10.3}
+                        />
+                        {/*<ShippingDetails order={order} />
+                    <PaymentDetails order={order} /> */}
                     </div>
                 </div>
             </div>
-        </div>
+        </MaxWidthWrapper>
     );
 };
 

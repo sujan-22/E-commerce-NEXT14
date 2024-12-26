@@ -19,9 +19,13 @@ const CartPage = () => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const router = useRouter();
 
-    const { cartItems } = useCartStore();
+    const { cartItems, cartTotal } = useCartStore();
     const { allProducts } = useStore();
     const { toast } = useToast();
+
+    const tax = +(cartTotal * 0.13).toFixed(2);
+    const shipping = 3.0;
+    const total = +(cartTotal + tax + shipping).toFixed(2);
 
     const { mutate: createPaymentSession } = useMutation({
         mutationKey: ["get-checkout-session"],
@@ -56,7 +60,7 @@ const CartPage = () => {
                 .filter((image) => image !== null);
 
             createPaymentSession({
-                amount: 150.8,
+                amount: total,
                 cart: cartItems,
                 images: productImages,
             });
@@ -75,8 +79,10 @@ const CartPage = () => {
                 </div>
                 <div className="w-full lg:w-1/3">
                     <CheckoutSummary
-                        shouldDisplayTaxText
                         shouldDisplayTooltip
+                        tax={tax}
+                        totalPrice={total}
+                        shipping={shipping}
                     />
 
                     {!currentUser ? (

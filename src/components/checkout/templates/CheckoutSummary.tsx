@@ -12,18 +12,28 @@ import { Info } from "lucide-react";
 import useCartStore from "@/context/useCartStore";
 
 const CheckoutSummary = ({
-    shouldDisplayTaxText,
     shouldDisplayTooltip,
+    cartPrice,
+    tax,
+    totalPrice,
+    shipping,
+    shouldDisplaySummaryText,
 }: {
-    shouldDisplayTaxText?: boolean;
+    cartPrice?: number;
     shouldDisplayTooltip?: boolean;
+    tax: number;
+    totalPrice: number;
+    shipping: number;
+    shouldDisplaySummaryText?: boolean;
 }) => {
     const { cartTotal } = useCartStore();
     const { formatPrice } = useFormatPrice();
 
     return (
         <div>
-            <h2 className="text-xl mb-4 font-semibold">Summary</h2>
+            {shouldDisplaySummaryText && (
+                <h2 className="text-xl mb-4 font-semibold">Summary</h2>
+            )}
             <div className="space-y-4">
                 <div className="flex justify-between">
                     <div className="flex items-center space-x-2">
@@ -44,30 +54,28 @@ const CheckoutSummary = ({
                             </TooltipProvider>
                         )}
                     </div>
-                    <p>{formatPrice(cartTotal)}</p>
+                    <p>
+                        {cartPrice
+                            ? formatPrice(cartPrice)
+                            : formatPrice(cartTotal)}
+                    </p>
                 </div>
 
                 <div className="flex justify-between">
                     <p className="text-sm">Shipping</p>
-                    <p className="text-sm">{formatPrice(90)}</p>
+                    <p className="text-sm">{formatPrice(shipping)}</p>
                 </div>
 
                 <div className="flex justify-between">
                     <p className="text-sm">Tax</p>
-                    <p className="text-sm">
-                        {shouldDisplayTaxText ? (
-                            formatPrice(90)
-                        ) : (
-                            <>To be calculated</>
-                        )}
-                    </p>
+                    <p className="text-sm">{formatPrice(tax)}</p>
                 </div>
 
                 <Separator />
 
                 <div className="flex justify-between font-semibold">
                     <p className="text-sm">Total</p>
-                    <p className="text-sm">{formatPrice(90)}</p>
+                    <p className="text-sm">{formatPrice(totalPrice)}</p>
                 </div>
             </div>
         </div>
