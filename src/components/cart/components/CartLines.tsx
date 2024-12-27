@@ -1,10 +1,10 @@
 "use client";
 import {
-    Table,
-    TableHeader,
-    TableRow,
-    TableCell,
-    TableBody,
+  Table,
+  TableHeader,
+  TableRow,
+  TableCell,
+  TableBody,
 } from "@/components/ui/table";
 import useStore from "@/context/useStore";
 import { cn } from "@nextui-org/react";
@@ -14,156 +14,173 @@ import { useFormatPrice } from "@/lib/utils";
 import useCartStore, { CartItem } from "@/context/useCartStore";
 import useUserStore from "@/context/useUserStore";
 import CartLineImage from "./CartLineImage";
+import { useState, useEffect } from "react";
+import CartLine from "../CartLine";
 
 const CartLines = () => {
-    const { allProducts } = useStore();
-    const { formatPrice } = useFormatPrice();
-    const { currentUser } = useUserStore();
-    const { cartItems, removeFromCart, increaseQuantity, decreaseQuantity } =
-        useCartStore();
-
-    // Handle remove item from cart
-    const handleRemove = async (item: CartItem) => {
-        removeFromCart(
-            {
-                quantity: item.quantity,
-                productId: item.productId!,
-                selectedColor: item.selectedColor,
-                selectedSize: item.selectedSize,
-            },
-            currentUser,
-            allProducts
-        );
+  const { allProducts } = useStore();
+  const { formatPrice } = useFormatPrice();
+  const { currentUser } = useUserStore();
+  const { cartItems, removeFromCart, increaseQuantity, decreaseQuantity } =
+    useCartStore();
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768); // Adjust breakpoint as needed
     };
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Initialize
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-    const handleIncrease = async (item: CartItem) => {
-        increaseQuantity(
-            {
-                quantity: item.quantity,
-                productId: item.productId,
-                selectedSize: item.selectedSize,
-                selectedColor: item.selectedColor,
-            },
-            currentUser,
-            allProducts
-        );
-    };
-
-    const handleDecrease = async (item: CartItem) => {
-        decreaseQuantity(
-            {
-                quantity: item.quantity,
-                productId: item.productId,
-                selectedSize: item.selectedSize,
-                selectedColor: item.selectedColor,
-            },
-            currentUser,
-            allProducts
-        );
-    };
-    return (
-        <div>
-            <h2 className="text-xl font-semibold mb-4">Cart</h2>
-            <Table>
-                <TableHeader className="text-sm font-semibold text-center">
-                    <TableRow>
-                        <TableCell>Item</TableCell>
-                        <TableCell></TableCell>
-                        <TableCell>Quantity</TableCell>
-                        <TableCell>Price</TableCell>
-                        <TableCell></TableCell>
-                    </TableRow>
-                </TableHeader>
-                <TableBody className="space-y-4">
-                    {cartItems.map((item) => {
-                        const product = allProducts.find(
-                            (p) => p.id === item.productId
-                        );
-
-                        if (product) {
-                            return (
-                                <TableRow key={item.productId}>
-                                    <TableCell className="relative w-28 h-28 rounded-md bg-muted">
-                                        <CartLineImage
-                                            altText={String(product.id)}
-                                            imageUrl={
-                                                product.availableImages[0]
-                                            }
-                                        />
-                                    </TableCell>
-
-                                    <TableCell>
-                                        {product.name}{" "}
-                                        {(item.selectedColor ||
-                                            item.selectedSize) && (
-                                            <p className="text-sm text-muted-foreground">
-                                                {item.selectedColor &&
-                                                item.selectedSize
-                                                    ? `${item.selectedColor} / ${item.selectedSize}`
-                                                    : item.selectedColor
-                                                    ? item.selectedColor
-                                                    : item.selectedSize}
-                                            </p>
-                                        )}
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                        <div className="flex h-8 flex-row items-center justify-center rounded-full px-2">
-                                            <MinusIcon
-                                                className={cn("w-5 h-5", {
-                                                    "text-gray-400 cursor-not-allowed":
-                                                        item.quantity === 1,
-                                                })}
-                                                onClick={() => {
-                                                    if (item.quantity! > 1) {
-                                                        handleDecrease(item);
-                                                    }
-                                                }}
-                                            />
-                                            <p className="w-6 text-center">
-                                                <span className="w-full text-sm hover:cursor-pointer">
-                                                    {item.quantity}
-                                                </span>
-                                            </p>
-                                            <PlusIcon
-                                                className="w-5 h-5 hover:cursor-pointer"
-                                                onClick={() =>
-                                                    handleIncrease(item)
-                                                }
-                                            />
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                        {product.collection.onsale?.newPrice ? (
-                                            <>
-                                                <span>
-                                                    {formatPrice(
-                                                        product.collection
-                                                            .onsale.newPrice
-                                                    )}
-                                                </span>
-                                            </>
-                                        ) : (
-                                            <span>
-                                                {formatPrice(product.price)}
-                                            </span>
-                                        )}
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                        <MdDeleteOutline
-                                            size={20}
-                                            className="cursor-pointer"
-                                            onClick={() => handleRemove(item)}
-                                        />
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        }
-                        return null; // Skip rows without matching products
-                    })}
-                </TableBody>
-            </Table>
-        </div>
+  // Handle remove item from cart
+  const handleRemove = async (item: CartItem) => {
+    removeFromCart(
+      {
+        quantity: item.quantity,
+        productId: item.productId!,
+        selectedColor: item.selectedColor,
+        selectedSize: item.selectedSize,
+      },
+      currentUser,
+      allProducts
     );
+  };
+
+  const handleIncrease = async (item: CartItem) => {
+    increaseQuantity(
+      {
+        quantity: item.quantity,
+        productId: item.productId,
+        selectedSize: item.selectedSize,
+        selectedColor: item.selectedColor,
+      },
+      currentUser,
+      allProducts
+    );
+  };
+
+  const handleDecrease = async (item: CartItem) => {
+    decreaseQuantity(
+      {
+        quantity: item.quantity,
+        productId: item.productId,
+        selectedSize: item.selectedSize,
+        selectedColor: item.selectedColor,
+      },
+      currentUser,
+      allProducts
+    );
+  };
+  return isMobile ? (
+    <div>
+      <h2 className="text-xl font-semibold mb-4">Cart</h2>
+      {cartItems.map((item) => {
+        const product = allProducts.find((p) => p.id === item.productId);
+
+        if (product) {
+          return (
+            <CartLine
+              key={item.productId}
+              product={product}
+              selectedSize={item.selectedSize}
+              selectedColor={item.selectedColor}
+              quantity={item.quantity!}
+            />
+          );
+        }
+      })}
+    </div>
+  ) : (
+    <div>
+      <h2 className="text-xl font-semibold mb-4">Cart</h2>
+      <Table>
+        <TableHeader className="text-sm font-semibold text-center">
+          <TableRow>
+            <TableCell>Item</TableCell>
+            <TableCell></TableCell>
+            <TableCell>Quantity</TableCell>
+            <TableCell>Price</TableCell>
+            <TableCell></TableCell>
+          </TableRow>
+        </TableHeader>
+        <TableBody className="space-y-4">
+          {cartItems.map((item) => {
+            const product = allProducts.find((p) => p.id === item.productId);
+
+            if (product) {
+              return (
+                <TableRow key={item.productId}>
+                  <TableCell className="relative w-28 h-28 rounded-md bg-muted">
+                    <CartLineImage
+                      altText={String(product.id)}
+                      imageUrl={product.availableImages[0]}
+                    />
+                  </TableCell>
+
+                  <TableCell>
+                    {product.name}{" "}
+                    {(item.selectedColor || item.selectedSize) && (
+                      <p className="text-sm text-muted-foreground">
+                        {item.selectedColor && item.selectedSize
+                          ? `${item.selectedColor} / ${item.selectedSize}`
+                          : item.selectedColor
+                          ? item.selectedColor
+                          : item.selectedSize}
+                      </p>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <div className="flex h-8 flex-row items-center justify-center rounded-full px-2">
+                      <MinusIcon
+                        className={cn("w-5 h-5", {
+                          "text-gray-400 cursor-not-allowed":
+                            item.quantity === 1,
+                        })}
+                        onClick={() => {
+                          if (item.quantity! > 1) {
+                            handleDecrease(item);
+                          }
+                        }}
+                      />
+                      <p className="w-6 text-center">
+                        <span className="w-full text-sm hover:cursor-pointer">
+                          {item.quantity}
+                        </span>
+                      </p>
+                      <PlusIcon
+                        className="w-5 h-5 hover:cursor-pointer"
+                        onClick={() => handleIncrease(item)}
+                      />
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {product.collection.onsale?.newPrice ? (
+                      <>
+                        <span>
+                          {formatPrice(product.collection.onsale.newPrice)}
+                        </span>
+                      </>
+                    ) : (
+                      <span>{formatPrice(product.price)}</span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <MdDeleteOutline
+                      size={20}
+                      className="cursor-pointer"
+                      onClick={() => handleRemove(item)}
+                    />
+                  </TableCell>
+                </TableRow>
+              );
+            }
+            return null; // Skip rows without matching products
+          })}
+        </TableBody>
+      </Table>
+    </div>
+  );
 };
 
 export default CartLines;
