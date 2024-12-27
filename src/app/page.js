@@ -1,7 +1,7 @@
 "use client";
 
 import MaxWidthWrapper from "@/components/utility/MaxWidthWrapper";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
     ArrowDownToLine,
     CheckCircle,
@@ -12,7 +12,6 @@ import {
 import ProductList from "@/components/product/ProductList";
 import SubscribeToNewsletter from "@/components/SubscribeToNewsletter";
 import useStore from "@/context/useStore";
-import Link from "next/link";
 import ProductListSkeleton from "@/components/product/skeleton/ProductListSkeleton";
 import { useRouter } from "next/navigation";
 

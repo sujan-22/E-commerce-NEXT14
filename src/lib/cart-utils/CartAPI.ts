@@ -1,24 +1,32 @@
 import { CartItem } from "@/context/useCartStore";
 
 export const CartAPI = async (
-    action: "add" | "remove" | "update",
+    action: "add" | "remove" | "update" | "clear",
     userId: string,
-    item: CartItem
+    item?: CartItem
 ) => {
     try {
-        const response = await fetch("/api/cart", {
+        const body =
+            action === "clear"
+                ? { action, userId }
+                : {
+                      action,
+                      userId,
+                      productId: item?.productId,
+                      quantity: item?.quantity,
+                      selectedColor: item?.selectedColor,
+                      selectedSize: item?.selectedSize,
+                  };
+        const origin =
+            process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+        const url = `${origin}/api/cart`;
+
+        const response = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-                action,
-                userId,
-                productId: item.productId,
-                quantity: item.quantity,
-                selectedColor: item.selectedColor,
-                selectedSize: item.selectedSize,
-            }),
+            body: JSON.stringify(body),
         });
 
         if (!response.ok) {

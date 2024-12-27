@@ -80,8 +80,8 @@ const CartLine: React.FC<CartLineProps> = ({
                         href={`/products/${product.id}`}
                         className="z-30 ml-2 flex flex-1 flex-row space-x-4"
                     >
-                        <div className="relative w-[30%] overflow-hidden rounded-md border">
-                            <div className="relative w-28 h-28 rounded-md bg-muted">
+                        <div className="relative w-20 h-20 overflow-hidden rounded-md border">
+                            <div className="relative w-20 h-20 rounded-md bg-muted">
                                 <CartLineImage
                                     altText={String(product.id)}
                                     imageUrl={product.availableImages[0]}

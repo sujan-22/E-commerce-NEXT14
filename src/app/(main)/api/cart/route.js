@@ -4,8 +4,8 @@ import { z } from "zod";
 
 // Define schema for cart actions
 const cartActionSchema = z.object({
-    action: z.enum(["get", "add", "update", "remove"]),
-    userId: z.string(), // User ID is now a string (cuid)
+    action: z.enum(["get", "add", "update", "remove", "clear"]),
+    userId: z.string(),
     productId: z.number().optional(),
     quantity: z.number().optional(),
     selectedColor: z.string().optional(),
@@ -26,24 +26,18 @@ export async function POST(req) {
             selectedSize,
         } = parsedData;
 
-        console.log("POST: ", parsedData);
-
-        // Connect to MongoDB client
         const client = await clientPromise;
         const db = client.db();
 
-        // Get the cart data from the database
         let cart = await db.collection("carts").findOne({ userId: userId });
 
         if (!cart) {
-            // If no cart is found, create a new cart
             cart = {
                 userId,
                 cartItems: [],
                 createdAt: new Date(),
                 updatedAt: new Date(),
             };
-            // Insert the new cart into the database
             await db.collection("carts").insertOne(cart);
         }
 
@@ -51,11 +45,9 @@ export async function POST(req) {
 
         switch (action) {
             case "get":
-                // Return the current cart data
                 return NextResponse.json(cart);
 
             case "add":
-                // Check if the item already exists in the cart
                 const existingItemIndex = cart.cartItems.findIndex(
                     (item) =>
                         item.productId === productId &&
@@ -64,7 +56,6 @@ export async function POST(req) {
                 );
 
                 if (existingItemIndex !== -1) {
-                    // If item exists, update the quantity
                     updatedCart = {
                         ...cart,
                         cartItems: cart.cartItems.map((item, index) =>
@@ -77,7 +68,6 @@ export async function POST(req) {
                         ),
                     };
                 } else {
-                    // If item does not exist, add the new item to the cart
                     const newItem = {
                         productId,
                         quantity: quantity || 1,
@@ -108,7 +98,6 @@ export async function POST(req) {
                 break;
 
             case "remove":
-                // Remove a product from the cart
                 updatedCart = {
                     ...cart,
                     cartItems: cart.cartItems.filter(
@@ -120,6 +109,14 @@ export async function POST(req) {
                 };
                 break;
 
+            case "clear":
+                updatedCart = {
+                    ...cart,
+                    cartItems: [],
+                    updatedAt: new Date(),
+                };
+                break;
+
             default:
                 return NextResponse.json(
                     { error: "Invalid action" },
@@ -127,9 +124,8 @@ export async function POST(req) {
                 );
         }
 
-        // Update the cart data in the database with the new total
         await db.collection("carts").updateOne(
-            { userId: userId }, // Use userId as a string
+            { userId: userId },
             {
                 $set: {
                     cartItems: updatedCart.cartItems,

@@ -22,10 +22,8 @@ const Footer = () => {
                                     href="/"
                                     className="text-lg font-extrabold font-sans tracking-wider hover:text-muted-foreground uppercase transition-all duration-200 ease-in-out"
                                 >
-                                    <span className="text-primary">Aurora</span>
-                                    <span className="text-muted-foreground italic">
-                                        Store
-                                    </span>
+                                    <span className="text-primary">Polaris</span>
+                                   
                                 </Link>
                             </div>
                         </div>
@@ -62,7 +60,23 @@ const Footer = () => {
                 </div>
 
                 <div className="py-10 md:flex md:items-center md:justify-between">
-                    <div className="text-center md:text-left">
+                    <div className=" text-center text-muted-foreground text-sm">
+                        Developed by{" "}
+                        <Link
+                            className=" underline"
+                            href={"https://github.com/jaypatel125"}
+                        >
+                            Jay Patel{" "}
+                        </Link>
+                        &{" "}
+                        <Link
+                            className=" underline"
+                            href={"https://github.com/sujan-22"}
+                        >
+                            Sujan Rokad
+                        </Link>
+                    </div>
+                    <div className="mt-4 md:mt-0 text-center md:text-left">
                         <p className="text-sm text-muted-foreground">
                             &copy; {new Date().getFullYear()} All Rights
                             Reserved

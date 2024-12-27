@@ -1,3 +1,7 @@
+export const metadata = {
+    title: "Polaris | Cart",
+};
+
 export default function CartLayout({
     children,
 }: {

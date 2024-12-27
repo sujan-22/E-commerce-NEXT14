@@ -1,16 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Popover, Transition } from "@headlessui/react";
-import { X } from "lucide-react";
-import { Dispatch, Fragment, SetStateAction } from "react";
-// import { handleSignOut } from "@/app/actions/authActions";
+import { Dispatch, SetStateAction } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useRouter } from "next/navigation";
 import { authClient, IUser } from "../../../auth-client";
 import useUserStore from "@/context/useUserStore";
 import useCartStore from "@/context/useCartStore";
 import { Switch } from "../ui/switch";
+import { Sheet, SheetClose, SheetContent, SheetTrigger } from "../ui/sheet";
 
 interface SideMenuProps {
     setDialogOpen: Dispatch<SetStateAction<boolean>>;
@@ -21,7 +19,7 @@ const SideMenu = ({ setDialogOpen, user }: SideMenuProps) => {
     const { logoutUser } = useUserStore();
     const { clearCart } = useCartStore();
     const isMobile = useIsMobile();
-    // const userData = useStore((state) => state.userData);
+    const router = useRouter();
 
     const getGreeting = (userData: IUser | null) => {
         const currentHour = new Date().getHours();
@@ -33,15 +31,12 @@ const SideMenu = ({ setDialogOpen, user }: SideMenuProps) => {
             greeting = "Good Morning";
         } else if (currentHour >= 12 && currentHour < 17) {
             greeting = "Good Afternoon";
-        } else if (currentHour >= 17 || currentHour < 5) {
-            // Include early morning hours
+        } else {
             greeting = "Good Evening";
         }
 
         return userName ? `${greeting}, ${userName}!` : `${greeting}!`;
     };
-
-    const router = useRouter();
 
     const handleSignOut = async () => {
         try {
@@ -61,113 +56,72 @@ const SideMenu = ({ setDialogOpen, user }: SideMenuProps) => {
         }
     };
 
-    // const handleLogout = () => {
-    //     logoutUser(); // Clear the state from Zustand
-    //     handleSignOut(); // Call the signOut method from NextAuth
-    // };
-
-    const SideMenuItems = {
-        Home: "/",
-        Store: "/store",
-        Search: "/search",
-        Account: "/account",
-        Cart: "/cart",
-        ...(!user ? {} : { "Sign out": () => handleSignOut() }),
-        ...(isMobile && !user ? { "Sign In": () => setDialogOpen(true) } : {}),
-    };
+    const SideMenuItems = [
+        { label: "Home", href: "/" },
+        { label: "Store", href: "/store" },
+        { label: "Search", href: "/search" },
+        { label: "Account", href: "/account" },
+        { label: "Cart", href: "/cart" },
+        ...(user
+            ? [{ label: "Sign out", action: handleSignOut }]
+            : isMobile
+            ? [{ label: "Sign In", action: () => setDialogOpen(true) }]
+            : []),
+    ];
 
     return (
-        <div className="h-full">
-            <div className="flex items-center h-full">
-                <Popover className="h-full flex">
-                    {({ open, close }) => (
-                        <>
-                            <div className="relative flex h-full">
-                                <Popover.Button className="relative h-full flex items-center transition-all ease-out duration-200 focus:outline-none text-sm hover:text-muted-foreground">
-                                    Menu
-                                </Popover.Button>
-                            </div>
-
-                            <Transition
-                                show={open}
-                                as={Fragment}
-                                enter="transition ease-out duration-150"
-                                enterFrom="opacity-0"
-                                enterTo="opacity-100 backdrop-blur-2xl"
-                                leave="transition ease-in duration-150"
-                                leaveFrom="opacity-100 backdrop-blur-2xl"
-                                leaveTo="opacity-0"
-                            >
-                                <Popover.Panel className="flex flex-col rounded-md absolute w-full pr-4 sm:pr-0 sm:w-1/3 2xl:w-1/4 sm:min-w-min h-[calc(100vh-1rem)] z-[51] inset-x-0 text-sm m-2 backdrop-blur-2xl">
-                                    <div
-                                        className={`bg-background dark:bg-dark-background backdrop-blur-md transition-colors duration-200 flex flex-col h-full rounded-md border border-primary justify-between p-6 z-[51]`}
-                                    >
-                                        <div
-                                            className="flex justify-end"
-                                            id="xmark"
-                                        >
-                                            <button onClick={close}>
-                                                <X />
+        <Sheet>
+            <SheetTrigger className="group flex items-center hover:text-muted-foreground">
+                <p className="text-sm">Menu</p>
+            </SheetTrigger>
+            <SheetContent
+                side={"left"}
+                className="flex w-full flex-col sm:max-w-lg z-[1000000] h-full"
+            >
+                <div className="flex flex-col h-full justify-between p-6">
+                    <div>
+                        <h2 className="text-3xl font-semibold mb-4">
+                            {getGreeting(user)}
+                        </h2>
+                        <ul className="flex flex-col gap-4">
+                            {SideMenuItems.map((item, index) => (
+                                <li key={index}>
+                                    {item.href ? (
+                                        <SheetClose asChild>
+                                            <Link
+                                                href={item.href}
+                                                className="text-xl font-medium hover:text-muted-foreground"
+                                            >
+                                                {item.label}
+                                            </Link>
+                                        </SheetClose>
+                                    ) : (
+                                        <SheetClose asChild>
+                                            <button
+                                                className="text-xl font-medium hover:text-muted-foreground"
+                                                onClick={item.action}
+                                            >
+                                                {item.label}
                                             </button>
-                                        </div>
-                                        <h2 className="text-3xl">
-                                            {getGreeting(user)}
-                                        </h2>
-                                        <ul className="flex flex-col gap-[0.2] items-start justify-start">
-                                            {Object.entries(SideMenuItems).map(
-                                                ([name, actionOrHref]) => {
-                                                    const isFunction =
-                                                        typeof actionOrHref ===
-                                                        "function";
+                                        </SheetClose>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
 
-                                                    return (
-                                                        <li key={name}>
-                                                            {isFunction ? (
-                                                                <button
-                                                                    className="text-2xl leading-10 hover:text-muted-foreground"
-                                                                    onClick={() => {
-                                                                        actionOrHref();
-                                                                        close();
-                                                                    }}
-                                                                >
-                                                                    {name}
-                                                                </button>
-                                                            ) : (
-                                                                <Link
-                                                                    href={
-                                                                        actionOrHref as string
-                                                                    }
-                                                                    className="text-2xl leading-10 hover:text-muted-foreground"
-                                                                    onClick={
-                                                                        close
-                                                                    }
-                                                                >
-                                                                    {name}
-                                                                </Link>
-                                                            )}
-                                                        </li>
-                                                    );
-                                                }
-                                            )}
-                                        </ul>
-
-                                        <div className="flex flex-col gap-y-6">
-                                            <p className="flex justify-between text-sm">
-                                                © {new Date().getFullYear()}{" "}
-                                                AURA, Inc. All rights reserved.
-                                                <div className="flex items-center space-x-2">
-                                                    <Switch id="airplane-mode" />
-                                                </div>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </Popover.Panel>
-                            </Transition>
-                        </>
-                    )}
-                </Popover>
-            </div>
-        </div>
+                    <div className="mt-6 border-t pt-4">
+                        <p className="text-sm flex items-center justify-between">
+                            <span>
+                                © {new Date().getFullYear()} Polaris , Inc. All
+                                rights reserved.
+                            </span>
+                            <Switch id="airplane-mode" />
+                        </p>
+                    </div>
+                </div>
+            </SheetContent>
+        </Sheet>
     );
 };
 

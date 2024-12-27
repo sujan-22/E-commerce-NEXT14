@@ -59,7 +59,7 @@ const Navbar = ({
                     <MaxWidthWrapper>
                         <nav className="text-sm flex items-center justify-between w-full h-full">
                             <div className="flex-1 basis-0 h-full flex items-center">
-                                <div className="h-full">
+                                <div>
                                     <SideMenu
                                         setDialogOpen={setDialogOpen}
                                         user={user}
@@ -72,9 +72,8 @@ const Navbar = ({
                                     href="/"
                                     className="text-lg font-extrabold font-sans tracking-wider hover:text-muted-foreground uppercase transition-all duration-200 ease-in-out"
                                 >
-                                    <span className="text-primary">Aurora</span>
-                                    <span className="text-muted-foreground italic">
-                                        Store
+                                    <span className="text-primary">
+                                        Polaris
                                     </span>
                                 </Link>
                             </div>

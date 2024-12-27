@@ -15,7 +15,7 @@ const nunito = Poppins({
 });
 
 export const metadata = {
-    title: "Fashion E-commerce",
+    title: "Polaris | Home",
     description: "A modern fashion e-commerce website",
 };
 
