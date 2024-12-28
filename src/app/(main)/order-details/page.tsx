@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Order from "./Order";
+import Order from "../order-confirmation/Order";
 
 export const metadata = {
     title: "Polaris | Order Confirmation",
@@ -8,7 +8,7 @@ export const metadata = {
 const Page = () => {
     return (
         <Suspense>
-            <Order />
+            <Order isOrderDetailsPage />
         </Suspense>
     );
 };

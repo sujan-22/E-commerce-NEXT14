@@ -11,7 +11,7 @@ import CheckoutSummary from "@/components/checkout/templates/CheckoutSummary";
 import { Separator } from "@/components/ui/separator";
 import ShippingDetails from "./components/ShippingDetails";
 
-const ThankYou = () => {
+const Order = ({ isOrderDetailsPage }: { isOrderDetailsPage?: boolean }) => {
     const searchParams = useSearchParams();
     const orderId = searchParams.get("orderId") || "";
 
@@ -58,8 +58,16 @@ const ThankYou = () => {
                 <div className="flex flex-col justify-center items-center gap-y-10 w-full">
                     <div className="flex flex-col gap-4 w-full py-10">
                         <h2 className="flex flex-col gap-y-3 text-3xl mb-4">
-                            <span>Thank you!</span>
-                            <span>Your order was placed successfully.</span>
+                            {!isOrderDetailsPage ? (
+                                <>
+                                    <span>Thank you!</span>
+                                    <span>
+                                        Your order was placed successfully.
+                                    </span>
+                                </>
+                            ) : (
+                                <span>Order Details</span>
+                            )}
                         </h2>
                         <OrderDetails order={order} />
                         <h2 className="flex flex-row text-3xl">Summary</h2>
@@ -81,4 +89,4 @@ const ThankYou = () => {
     );
 };
 
-export default ThankYou;
+export default Order;
