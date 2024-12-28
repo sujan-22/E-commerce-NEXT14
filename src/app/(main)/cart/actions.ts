@@ -7,11 +7,11 @@ import { stripe } from "@/lib/stripe";
 import { Order } from "@prisma/client";
 
 export const createCheckoutSession = async ({
-    amount,
+    cartTotal,
     cart,
     images,
 }: {
-    amount: number;
+    cartTotal: number;
     cart: CartItem[];
     images: string[];
 }) => {
@@ -21,12 +21,31 @@ export const createCheckoutSession = async ({
         throw new Error("No user found");
     }
 
-    //console.log(prisma);
+    const lastOrder = await prisma.order.findFirst({
+        orderBy: {
+            createdAt: "desc",
+        },
+        select: {
+            orderNumber: true,
+        },
+    });
+
+    let orderNumber = "23468";
+
+    if (lastOrder) {
+        orderNumber = (parseInt(lastOrder.orderNumber) + 1).toString();
+    }
+
+    const tax = +(cartTotal * 0.13).toFixed(2);
+    const shipping = 3.0;
+    const amount = +(cartTotal + tax + shipping).toFixed(2);
 
     let order: Order | undefined = undefined;
 
     order = await prisma.order.create({
         data: {
+            cartAmount: cartTotal,
+            orderNumber: orderNumber,
             amount: amount,
             userId: user.id,
             cart: {
