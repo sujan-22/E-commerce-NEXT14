@@ -60,7 +60,7 @@ const CartPage = () => {
                 .filter((image) => image !== null);
 
             createPaymentSession({
-                cartTotal: cartTotal,
+                cartTotal: parseFloat(cartTotal.toFixed(2)),
                 cart: cartItems,
                 images: productImages,
             });
