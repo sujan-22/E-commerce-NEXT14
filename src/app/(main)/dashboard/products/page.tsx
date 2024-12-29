@@ -118,7 +118,7 @@ const columns: ColumnDef<Product>[] = [
         cell: ({ row }) => {
             const collection: Collection[] = row.getValue("collection");
             const relevantCollections = Object.entries(collection)
-                .filter(([_, value]) => Object.keys(value).length > 0)
+                .filter(([, value]) => Object.keys(value).length > 0)
                 .map(([key]) => key);
             return (
                 <div className="capitalize">
