@@ -3,13 +3,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { getPaymentStatus } from "./actions";
 import { useSearchParams } from "next/navigation";
-import { Loader2 } from "lucide-react";
 import OrderDetails from "./components/OrderDetails";
 import MaxWidthWrapper from "@/components/utility/MaxWidthWrapper";
 import Items from "./components/Items";
 import CheckoutSummary from "@/components/checkout/templates/CheckoutSummary";
 import { Separator } from "@/components/ui/separator";
 import ShippingDetails from "./components/ShippingDetails";
+import Loader from "@/components/utility/Loader";
 
 const Order = ({ isOrderDetailsPage }: { isOrderDetailsPage?: boolean }) => {
     const searchParams = useSearchParams();
@@ -26,9 +26,9 @@ const Order = ({ isOrderDetailsPage }: { isOrderDetailsPage?: boolean }) => {
         return (
             <div className="w-full mt-24 flex justify-center">
                 <div className="flex flex-col items-center gap-2">
-                    <Loader2 className="h-8 w-8 animate-spin text-zinc-500" />
+                    <Loader />
                     <h3 className="font-semibold text-xl">
-                        Loading your order...
+                        Loading your seller request...
                     </h3>
                     <p>This won&apos;t take too long!</p>
                 </div>
@@ -40,7 +40,7 @@ const Order = ({ isOrderDetailsPage }: { isOrderDetailsPage?: boolean }) => {
         return (
             <div className="w-full mt-24 flex justify-center">
                 <div className="flex flex-col items-center gap-2">
-                    <Loader2 className="h-8 w-8 animate-spin text-zinc-500" />
+                    <Loader />
                     <h3 className="font-semibold text-xl">
                         Verifying your payment...
                     </h3>
