@@ -4,7 +4,7 @@ import MaxWidthWrapper from "@/components/utility/MaxWidthWrapper";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
-const page = () => {
+const Page = () => {
   const router = useRouter();
   return (
     <MaxWidthWrapper>
@@ -19,4 +19,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

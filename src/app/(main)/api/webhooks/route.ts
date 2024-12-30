@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       const billingAddress = session.customer_details!.address;
       const shippingAddress = session.shipping_details!.address;
 
-      await prisma.order.update({
+      const order = await prisma.order.update({
         where: {
           id: orderId,
         },
@@ -68,6 +68,7 @@ export async function POST(req: Request) {
           },
         },
       });
+      console.log(order);
     }
 
     return NextResponse.json({ result: event, ok: true });

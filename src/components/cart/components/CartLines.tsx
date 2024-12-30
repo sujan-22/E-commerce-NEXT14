@@ -9,7 +9,6 @@ import useUserStore from "@/context/useUserStore";
 import CartLineImage from "./CartLineImage";
 import { useState, useEffect } from "react";
 import CartLine from "../CartLine";
-import { Button } from "@/components/ui/button";
 
 const CartLines = () => {
   const { allProducts } = useStore();
