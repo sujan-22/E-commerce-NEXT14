@@ -25,21 +25,42 @@ import {
 } from "@/components/ui/carousel";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Product as ProductType, Variant } from "@prisma/client";
+import { Collection, Product as ProductType, Variant } from "@prisma/client";
+import { useQuery } from "@tanstack/react-query";
+import { fetchProductsByCategory } from "../../actions/product-actions/actions";
 
-interface IProduct extends ProductType {
-    variants: Variant;
+export interface ProductsWithVariantsAndCollection extends ProductType {
+    variants: Variant[];
+    collection: Collection;
 }
 
-const Product = ({ product }: { product: IProduct }) => {
+const Product = ({
+    product,
+}: {
+    product: ProductsWithVariantsAndCollection;
+}) => {
     const { formatPrice } = useFormatPrice();
     const { toast } = useToast();
     const products = useStore((state) => state.allProducts);
     const { addToCart } = useCartStore();
     const { currentUser } = useUserStore();
+    const { data: relatedProducts } = useQuery({
+        queryKey: ["get-products-by-category"],
+        queryFn: async () => await fetchProductsByCategory(product.category),
+        retry: 4,
+        refetchOnWindowFocus: true,
+        refetchOnMount: true,
+    });
 
-    const [selectedColor, setSelectedColor] = useState("");
-    const [selectedSize, setSelectedSize] = useState("");
+    const distinctColors = Array.from(
+        new Set(product.variants.map((variant) => variant.color))
+    );
+    const distinctSizes = Array.from(
+        new Set(product.variants.map((variant) => variant.size))
+    );
+
+    const [selectedColor, setSelectedColor] = useState(distinctColors[0]);
+    const [selectedSize, setSelectedSize] = useState(distinctSizes[0]);
 
     const [isMobile, setIsMobile] = useState(false);
 
@@ -52,19 +73,6 @@ const Product = ({ product }: { product: IProduct }) => {
         handleResize(); // Initialize
         return () => window.removeEventListener("resize", handleResize);
     }, []);
-
-    // useEffect(() => {
-    //     if (product) {
-    //         setSelectedColor(product.availableColors?.[0] || "");
-    //         setSelectedSize(product.availableSizes?.[0] || "");
-    //     }
-    // }, [product]);
-
-    const relatedProducts = products.filter(
-        (p) =>
-            p.category === product.category &&
-            p.routerName !== product.routerName
-    );
 
     const handleAddToCart = () => {
         const cartItem = {
@@ -79,7 +87,14 @@ const Product = ({ product }: { product: IProduct }) => {
         });
     };
 
-    console.log(product.variants);
+    const handleButtonDisable = () => {
+        const selectedVariant = product.variants.find(
+            (variant) =>
+                variant.color === selectedColor && variant.size === selectedSize
+        );
+
+        return selectedVariant ? selectedVariant.stock === 0 : true;
+    };
 
     return (
         <MaxWidthWrapper>
@@ -134,22 +149,20 @@ const Product = ({ product }: { product: IProduct }) => {
 
                 {/* Right part */}
                 <div className="flex flex-col lg:sticky lg:top-48 lg:py-0 lg:max-w-[300px] w-full py-8 gap-y-6">
-                    {/* {Array.isArray(product?.availableColors) &&
-                        product.availableColors.length > 0 && (
-                            <ProductActions
-                                options={product?.availableColors}
-                                title="Color"
-                                onSelect={(color) => setSelectedColor(color)}
-                            />
-                        )}
-                    {Array.isArray(product?.availableSizes) &&
-                        product.availableSizes.length > 0 && (
-                            <ProductActions
-                                options={product?.availableSizes}
-                                title="Size"
-                                onSelect={(size) => setSelectedSize(size)}
-                            />
-                        )} */}
+                    {product && distinctColors.length > 0 && (
+                        <ProductActions
+                            options={distinctColors}
+                            title="Color"
+                            onSelect={(color) => setSelectedColor(color)}
+                        />
+                    )}
+                    {product && distinctSizes.length > 0 && (
+                        <ProductActions
+                            options={distinctSizes}
+                            title="Size"
+                            onSelect={(size) => setSelectedSize(size)}
+                        />
+                    )}
 
                     <Separator />
                     <div className="flex items-center gap-x-2 text-sm font-semibold">
@@ -164,23 +177,33 @@ const Product = ({ product }: { product: IProduct }) => {
                             <span>{formatPrice(`${product?.basePrice}`)}</span>
                         )}
                     </div>
-                    <Button onClick={handleAddToCart}>Add to cart</Button>
-                    <ProductTabs product={product} />
+                    <Button
+                        disabled={handleButtonDisable()}
+                        variant={"outline"}
+                        onClick={handleAddToCart}
+                    >
+                        {handleButtonDisable() ? (
+                            <>Out of stock</>
+                        ) : (
+                            <>Add to cart</>
+                        )}
+                    </Button>
+                    <ProductTabs />
                 </div>
             </div>
-            {relatedProducts.length > 0 && (
+            {relatedProducts && relatedProducts.length > 0 && (
                 <div
                     className="content-container lg:my-16 sm:my-32"
                     data-testid="related-products-container"
                 >
-                    {/* <ProductList
+                    <ProductList
                         products={relatedProducts}
                         size="full"
                         headerTitle="Related Products"
                         headerLink={`/products/category/${product.category}`}
                         linkTitle="View more"
                         isRelated
-                    /> */}
+                    />
                 </div>
             )}
         </MaxWidthWrapper>

@@ -1,18 +1,16 @@
 // import Link from "next/link";
 
-import { Product } from "@/context/useStore";
+import { Collection, Product, Variant } from "@prisma/client";
 
-interface ProductInfoProps {
-    product: Product;
+interface IProductInfo extends Product {
+    collection: Collection;
+    variants: Variant[];
 }
 
-const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
+const ProductInfo = ({ product }: { product: IProductInfo }) => {
     if (!product) {
         return;
     }
-    const collectionTitle = Object.values(product.collection)?.find(
-        (collection) => collection.title
-    )?.title;
 
     return (
         <div id="product-info">
@@ -25,7 +23,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
                     //     </p>
                     // </Link>
                     <p className="text-medium text-muted-foreground hover:text-muted-foreground cursor-pointer">
-                        {collectionTitle}
+                        {product.collection.name}
                     </p>
                 )}
                 <h2 className="text-3xl leading-10 text-primary">

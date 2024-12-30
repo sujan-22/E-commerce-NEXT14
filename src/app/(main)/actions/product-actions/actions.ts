@@ -38,3 +38,26 @@ export async function fetchAllProducts() {
         throw new Error("Error fetching products");
     }
 }
+
+export async function fetchProductsByCategory(category: string) {
+    try {
+        const products = await prisma.product.findMany({
+            where: {
+                category,
+            },
+            include: {
+                variants: true,
+                collection: true,
+            },
+        });
+
+        if (!products || products.length === 0) {
+            throw new Error("No products found for the given category");
+        }
+
+        return products;
+    } catch (error) {
+        console.error("Error fetching products by category:", error);
+        throw new Error("Error fetching products");
+    }
+}

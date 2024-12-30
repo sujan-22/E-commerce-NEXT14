@@ -3,8 +3,9 @@
 
 import Product from "./Product";
 import { fetchProductByRouterName } from "../../actions/product-actions/actions";
-import Loader from "@/components/utility/Loader";
 import { useQuery } from "@tanstack/react-query";
+import { Suspense } from "react";
+import ProductPageSkeleton from "./components/ProductPageSkeleton";
 
 const Page = ({ params }) => {
     const routerName = params.routerName;
@@ -13,18 +14,16 @@ const Page = ({ params }) => {
         queryFn: async () => await fetchProductByRouterName(routerName),
         retry: false,
     });
-    if (!product) {
-        return (
-            <div className="w-full mt-24 flex justify-center">
-                <div className="flex flex-col items-center gap-2">
-                    <Loader />
-                    <h3 className="font-semibold text-xl">Loading...</h3>
-                    <p>Please wait. This might take a moment!</p>
-                </div>
-            </div>
-        );
+
+    if (!product || product.routerName !== routerName) {
+        return <ProductPageSkeleton />;
     }
-    return <Product product={product} />;
+
+    return (
+        <Suspense>
+            <Product product={product} />;
+        </Suspense>
+    );
 };
 
 export default Page;
