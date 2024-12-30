@@ -1,9 +1,10 @@
-import { ProductSchema } from "@/lib/validationSchema";
+import { CollectionSchema, ProductSchema } from "@/lib/validationSchema";
 import { z } from "zod";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
 export type Product = z.infer<typeof ProductSchema>;
+export type Collection = z.infer<typeof CollectionSchema>;
 
 interface StoreState {
     allProducts: Product[];

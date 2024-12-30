@@ -8,15 +8,24 @@ const OrderDetails = ({ order }: { order: Order }) => {
         return formatted.slice(0, 1).toUpperCase() + formatted.slice(1);
     };
     return (
-        <div>
+        <div className=" text-sm">
             <p className="mt-2">
                 Order date:{" "}
-                <span>{new Date(order.createdAt).toDateString()}</span>
+                <span className=" text-muted-foreground">
+                    {new Date(order.createdAt).toDateString()}
+                </span>
             </p>
             <p className="mt-2">
-                Order Id: <span>{order.id}</span>
+                Order Id:{" "}
+                <span className=" text-muted-foreground">{order.id}</span>
             </p>
-            <div className="flex items-center text-compact-small gap-x-4 mt-4">
+            <p className="mt-2">
+                Order Number:{" "}
+                <span className=" text-muted-foreground">
+                    {order.orderNumber}
+                </span>
+            </p>
+            <div className="flex items-center text-compact-small gap-x-4 mt-2">
                 <>
                     <p>
                         Order status:{" "}

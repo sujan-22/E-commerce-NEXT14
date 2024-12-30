@@ -25,8 +25,8 @@ const sidebarNavItems = [
         href: "/account/appearance",
     },
     {
-        title: "Notifications",
-        href: "/account/notifications",
+        title: "Preference",
+        href: "/account/preference",
     },
     {
         title: "Orders",

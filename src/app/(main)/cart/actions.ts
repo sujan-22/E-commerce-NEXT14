@@ -1,17 +1,22 @@
 "use server";
 
+import { nanoid } from "nanoid";
 import { CartItem } from "@/context/useCartStore";
 import { getServerSideSession } from "@/hooks/SessionHandler";
 import prisma from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { Order } from "@prisma/client";
 
+const generateOrderNumber = (): string => {
+    return nanoid(5);
+};
+
 export const createCheckoutSession = async ({
-    amount,
+    cartTotal,
     cart,
     images,
 }: {
-    amount: number;
+    cartTotal: number;
     cart: CartItem[];
     images: string[];
 }) => {
@@ -21,12 +26,16 @@ export const createCheckoutSession = async ({
         throw new Error("No user found");
     }
 
-    //console.log(prisma);
+    const tax = +(cartTotal * 0.13).toFixed(2);
+    const shipping = 3.0;
+    const amount = +(cartTotal + tax + shipping).toFixed(2);
 
     let order: Order | undefined = undefined;
 
     order = await prisma.order.create({
         data: {
+            cartAmount: cartTotal,
+            orderNumber: generateOrderNumber(),
             amount: amount,
             userId: user.id,
             cart: {
