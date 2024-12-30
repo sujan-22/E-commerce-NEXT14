@@ -31,8 +31,8 @@
         "src/middleware/imageUploadMiddleware.js",
         "src/components/cart/Cart.jsx",
         "src/app/layout.js",
-        "src/app/(main)/products/[productId]/loading.js",
-        "src/app/(main)/products/[productId]/Product.jsx"
+        "src/app/(main)/products/[routerName]/loading.js",
+        "src/app/(main)/products/[routerName]/Product.tsx"
     ],
     "exclude": ["node_modules"]
 }

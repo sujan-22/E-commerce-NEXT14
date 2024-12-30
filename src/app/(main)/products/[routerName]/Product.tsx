@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 // pages/products/[productId]/page.js
 
 "use client";
@@ -24,8 +25,13 @@ import {
 } from "@/components/ui/carousel";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { Product as ProductType, Variant } from "@prisma/client";
 
-const Product = ({ params }) => {
+interface IProduct extends ProductType {
+    variants: Variant;
+}
+
+const Product = ({ product }: { product: IProduct }) => {
     const { formatPrice } = useFormatPrice();
     const { toast } = useToast();
     const products = useStore((state) => state.allProducts);
@@ -40,25 +46,24 @@ const Product = ({ params }) => {
     // Check screen size
     useEffect(() => {
         const handleResize = () => {
-            setIsMobile(window.innerWidth < 768); // Adjust breakpoint as needed
+            setIsMobile(window.innerWidth < 768);
         };
         window.addEventListener("resize", handleResize);
         handleResize(); // Initialize
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    const id = params.productId;
-    const product = products.find((prod) => prod.id === parseInt(id));
-
-    useEffect(() => {
-        if (product) {
-            setSelectedColor(product.availableColors?.[0] || "");
-            setSelectedSize(product.availableSizes?.[0] || "");
-        }
-    }, [product]);
+    // useEffect(() => {
+    //     if (product) {
+    //         setSelectedColor(product.availableColors?.[0] || "");
+    //         setSelectedSize(product.availableSizes?.[0] || "");
+    //     }
+    // }, [product]);
 
     const relatedProducts = products.filter(
-        (p) => p.category === product.category && p.id !== product.id
+        (p) =>
+            p.category === product.category &&
+            p.routerName !== product.routerName
     );
 
     const handleAddToCart = () => {
@@ -73,6 +78,8 @@ const Product = ({ params }) => {
             description: "Item successfully added to your cart.",
         });
     };
+
+    console.log(product.variants);
 
     return (
         <MaxWidthWrapper>
@@ -93,7 +100,7 @@ const Product = ({ params }) => {
                             className="w-full mt-6"
                         >
                             <CarouselContent className="flex">
-                                {product?.availableImages.map((file, index) => (
+                                {product?.images.map((file, index) => (
                                     <CarouselItem
                                         key={index}
                                         className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
@@ -121,13 +128,13 @@ const Product = ({ params }) => {
                             <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10" />
                         </Carousel>
                     ) : (
-                        <ImageGallery images={product?.availableImages || []} />
+                        <ImageGallery images={product?.images || []} />
                     )}
                 </div>
 
                 {/* Right part */}
                 <div className="flex flex-col lg:sticky lg:top-48 lg:py-0 lg:max-w-[300px] w-full py-8 gap-y-6">
-                    {Array.isArray(product?.availableColors) &&
+                    {/* {Array.isArray(product?.availableColors) &&
                         product.availableColors.length > 0 && (
                             <ProductActions
                                 options={product?.availableColors}
@@ -142,23 +149,19 @@ const Product = ({ params }) => {
                                 title="Size"
                                 onSelect={(size) => setSelectedSize(size)}
                             />
-                        )}
+                        )} */}
 
                     <Separator />
                     <div className="flex items-center gap-x-2 text-sm font-semibold">
-                        {product?.collection.onsale.newPrice ? (
+                        {product.price !== product.basePrice ? (
                             <>
-                                <span>
-                                    {formatPrice(
-                                        `${product.collection.onsale.newPrice}`
-                                    )}
-                                </span>
+                                <span>{formatPrice(`${product.price}`)}</span>
                                 <span className="line-through text-muted-foreground">
-                                    {formatPrice(`${product?.price}`)}
+                                    {formatPrice(`${product?.basePrice}`)}
                                 </span>
                             </>
                         ) : (
-                            <span>{formatPrice(`${product?.price}`)}</span>
+                            <span>{formatPrice(`${product?.basePrice}`)}</span>
                         )}
                     </div>
                     <Button onClick={handleAddToCart}>Add to cart</Button>
@@ -170,14 +173,14 @@ const Product = ({ params }) => {
                     className="content-container lg:my-16 sm:my-32"
                     data-testid="related-products-container"
                 >
-                    <ProductList
+                    {/* <ProductList
                         products={relatedProducts}
                         size="full"
                         headerTitle="Related Products"
                         headerLink={`/products/category/${product.category}`}
                         linkTitle="View more"
                         isRelated
-                    />
+                    /> */}
                 </div>
             )}
         </MaxWidthWrapper>
