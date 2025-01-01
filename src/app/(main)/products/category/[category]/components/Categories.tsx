@@ -1,37 +1,16 @@
-// app/products/category/[category]/page.js
-
-"use client";
-
-import { useEffect, useState } from "react";
 import MaxWidthWrapper from "@/components/utility/MaxWidthWrapper";
 import ProductList from "@/components/product/ProductList";
-import useStore from "@/context/useStore";
 import FilterSidebar from "@/components/product/all-products/FilterSidebar";
 import SortSidebar from "@/components/product/all-products/SortSidebar";
+import { Product } from "@prisma/client";
 
-const Page = ({ params }) => {
-    const products = useStore((state) => state.allProducts);
-    const [isMobileView, setIsMobileView] = useState(false);
-    const category = params.category;
-
-    useEffect(() => {
-        const handleResize = () => {
-            const width = window.innerWidth;
-            setIsMobileView(width < 900);
-        };
-
-        handleResize();
-
-        window.addEventListener("resize", handleResize);
-
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
-    const filteredProducts =
-        category === "all"
-            ? products
-            : products.filter((product) => product.category === category);
-
+const Categories = ({
+    products,
+    isMobileView,
+}: {
+    products: Product[];
+    isMobileView: boolean;
+}) => {
     return (
         <MaxWidthWrapper>
             {/* Main layout container */}
@@ -56,7 +35,9 @@ const Page = ({ params }) => {
 
                 {/* Main Content - Products */}
                 <div className={`w-full ${isMobileView ? "" : "w-[80%]"}`}>
-                    <ProductList products={filteredProducts} size={"full"} />
+                    {products && (
+                        <ProductList products={products} size={"full"} />
+                    )}
                 </div>
 
                 {/* Right Sidebar - Sorting (hidden on mobile) */}
@@ -66,4 +47,4 @@ const Page = ({ params }) => {
     );
 };
 
-export default Page;
+export default Categories;

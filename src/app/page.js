@@ -15,6 +15,7 @@ import ProductListSkeleton from "@/components/product/skeleton/ProductListSkelet
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAllProducts } from "./(main)/actions/product-actions/actions";
+import HomeTextSkeleton from "@/components/skeletons/HomeTextSkeleton";
 
 const perks = [
     {
@@ -61,7 +62,12 @@ export default function Home() {
     const collectionsMap = {};
 
     if (!all_products) {
-        return <ProductListSkeleton size="full" />;
+        return (
+            <MaxWidthWrapper>
+                <HomeTextSkeleton />
+                <ProductListSkeleton size="full" />
+            </MaxWidthWrapper>
+        );
     }
 
     all_products.forEach((product) => {
@@ -117,24 +123,21 @@ export default function Home() {
                 </div>
                 {/* LIST PRODUCT */}
                 {/* Dynamic Collection Rendering */}
-                {Object.keys(collectionsMap).length > 0 ? (
+                {Object.keys(collectionsMap).length > 0 &&
                     Object.keys(collectionsMap).map((collectionType) => {
                         const collection = collectionsMap[collectionType];
 
                         return (
                             <div key={collectionType} className="py-20">
                                 <ProductList
-                                    products={collection.products} // Only pass products for the current collection
-                                    headerTitle={collection.title} // Pass collection title
-                                    headerLink={"/"} // Adjust this as needed
-                                    size={"full"} // Size prop for the ProductList
+                                    products={collection.products}
+                                    headerTitle={collection.title}
+                                    headerLink={"/"}
+                                    size={"full"}
                                 />
                             </div>
                         );
-                    })
-                ) : (
-                    <ProductListSkeleton size="full" /> // Loading skeleton if no collections
-                )}
+                    })}
             </MaxWidthWrapper>
             <MaxWidthWrapper className="">
                 <section className="border-t py-20">

@@ -39,7 +39,6 @@ const SignInTab = ({
     const router = useRouter();
     const { toast } = useToast();
     const [pendingCredentials, setPendingCredentials] = useState(false);
-    // const [pendingGithub, setPendingGithub] = useState(false);
 
     const form = useForm<z.infer<typeof signInSchema>>({
         resolver: zodResolver(signInSchema),

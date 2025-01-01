@@ -50,53 +50,46 @@ const ProductList = ({
                 )}
             </div>
             <div className="grid cursor-pointer grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                {(isRelated ? products.slice(0, 3) : products).map(
-                    (product) => (
-                        <div key={product.id} className="flex flex-col">
-                            <Link
-                                href={`/products/${product.routerName}`}
-                                prefetch={true}
-                            >
-                                <Product
-                                    initialImage={product.images[0]}
-                                    className="mx-auto"
-                                    size={size}
-                                    isFeatured={true}
-                                />
-                            </Link>
-                            <div className="flex justify-between mt-4 items-start">
-                                <p
-                                    className="text-sm"
-                                    data-testid="product-title"
-                                >
-                                    {product.name}
-                                </p>
-                                <div className="flex items-center gap-x-2 text-sm font-semibold">
-                                    {product.price !== product.basePrice ? (
-                                        <>
-                                            <span className="line-through text-muted-foreground">
-                                                {formatPrice(
-                                                    `${product.basePrice}`
-                                                )}
-                                            </span>
-                                            <span>
-                                                {formatPrice(
-                                                    `${product.price}`
-                                                )}
-                                            </span>
-                                        </>
-                                    ) : (
-                                        <span>
+                {(
+                    products && (isRelated ? products.slice(0, 3) : products)
+                ).map((product) => (
+                    <div key={product.id} className="flex flex-col">
+                        <Link
+                            href={`/products/${product.routerName}`}
+                            prefetch={true}
+                        >
+                            <Product
+                                initialImage={product.images[0]}
+                                className="mx-auto"
+                                size={size}
+                                isFeatured={true}
+                            />
+                        </Link>
+                        <div className="flex justify-between mt-4 items-start">
+                            <p className="text-sm" data-testid="product-title">
+                                {product.name}
+                            </p>
+                            <div className="flex items-center gap-x-2 text-sm font-semibold">
+                                {product.price !== product.basePrice ? (
+                                    <>
+                                        <span className="line-through text-muted-foreground">
                                             {formatPrice(
                                                 `${product.basePrice}`
                                             )}
                                         </span>
-                                    )}
-                                </div>
+                                        <span>
+                                            {formatPrice(`${product.price}`)}
+                                        </span>
+                                    </>
+                                ) : (
+                                    <span>
+                                        {formatPrice(`${product.basePrice}`)}
+                                    </span>
+                                )}
                             </div>
                         </div>
-                    )
-                )}
+                    </div>
+                ))}
             </div>
         </div>
     );

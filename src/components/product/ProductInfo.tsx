@@ -22,9 +22,14 @@ const ProductInfo = ({ product }: { product: IProductInfo }) => {
                     //         View Collection
                     //     </p>
                     // </Link>
-                    <p className="text-medium text-muted-foreground hover:text-muted-foreground cursor-pointer">
-                        {product.collection.name}
-                    </p>
+                    <div>
+                        <p className="text-medium text-muted-foreground hover:text-muted-foreground cursor-pointer">
+                            {product.collection.name}
+                        </p>
+                        <p className="text-medium text-muted-foreground hover:text-muted-foreground cursor-pointer">
+                            {product.collection.description}
+                        </p>
+                    </div>
                 )}
                 <h2 className="text-3xl leading-10 text-primary">
                     {product.name}

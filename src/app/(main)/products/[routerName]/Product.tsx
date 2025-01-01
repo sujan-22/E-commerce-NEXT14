@@ -8,9 +8,8 @@ import ProductTabs from "@/components/product/ProductTabs";
 import ImageGallery from "@/components/ImageGallery";
 import ProductActions from "@/components/product/ProductActions";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Separator } from "@/components/ui/separator";
-import useStore from "@/context/useStore";
 import ProductList from "@/components/product/ProductList";
 import { useFormatPrice } from "@/lib/utils";
 import useCartStore from "@/context/useCartStore";
@@ -27,7 +26,10 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Collection, Product as ProductType, Variant } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProductsByCategory } from "../../actions/product-actions/actions";
+import {
+    fetchProductsByCategory,
+    getProductSeller,
+} from "../../actions/product-actions/actions";
 
 export interface ProductsWithVariantsAndCollection extends ProductType {
     variants: Variant[];
@@ -41,12 +43,20 @@ const Product = ({
 }) => {
     const { formatPrice } = useFormatPrice();
     const { toast } = useToast();
-    const products = useStore((state) => state.allProducts);
     const { addToCart } = useCartStore();
     const { currentUser } = useUserStore();
     const { data: relatedProducts } = useQuery({
         queryKey: ["get-products-by-category"],
-        queryFn: async () => await fetchProductsByCategory(product.category),
+        queryFn: async () =>
+            await fetchProductsByCategory(product.category, true, product.id),
+        retry: 4,
+        refetchOnWindowFocus: true,
+        refetchOnMount: true,
+    });
+
+    const { data: seller } = useQuery({
+        queryKey: ["get-seller-by-product"],
+        queryFn: async () => await getProductSeller(product.routerName),
         retry: 4,
         refetchOnWindowFocus: true,
         refetchOnMount: true,
@@ -64,6 +74,13 @@ const Product = ({
 
     const [isMobile, setIsMobile] = useState(false);
 
+    const selectedVariant = useMemo(() => {
+        return product.variants.find(
+            (variant) =>
+                variant.color === selectedColor && variant.size === selectedSize
+        );
+    }, [selectedColor, selectedSize, product.variants]);
+
     // Check screen size
     useEffect(() => {
         const handleResize = () => {
@@ -75,23 +92,30 @@ const Product = ({
     }, []);
 
     const handleAddToCart = () => {
-        const cartItem = {
-            productId: product.id,
-            quantity: 1,
-            selectedColor,
-            selectedSize,
-        };
-        addToCart(cartItem, currentUser, products);
-        toast({
-            description: "Item successfully added to your cart.",
-        });
+        if (selectedVariant) {
+            addToCart(
+                product.id,
+                selectedVariant.id,
+                currentUser,
+                1,
+                selectedColor,
+                selectedSize,
+                product
+            );
+            toast({
+                description: "Item successfully added to your cart.",
+            });
+        } else {
+            toast({
+                description: "The selected variant is unavailable.",
+            });
+        }
     };
 
     const handleButtonDisable = () => {
-        const selectedVariant = product.variants.find(
-            (variant) =>
-                variant.color === selectedColor && variant.size === selectedSize
-        );
+        if (product.variants.length === 0) {
+            return false;
+        }
 
         return selectedVariant ? selectedVariant.stock === 0 : true;
     };
@@ -148,7 +172,7 @@ const Product = ({
                 </div>
 
                 {/* Right part */}
-                <div className="flex flex-col lg:sticky lg:top-48 lg:py-0 lg:max-w-[300px] w-full py-8 gap-y-6">
+                <div className="flex flex-col lg:sticky lg:top-48 lg:py-8 lg:max-w-[300px] w-full py-8 gap-y-6">
                     {product && distinctColors.length > 0 && (
                         <ProductActions
                             options={distinctColors}
@@ -164,7 +188,9 @@ const Product = ({
                         />
                     )}
 
-                    <Separator />
+                    {distinctSizes.length > 0 &&
+                        product &&
+                        distinctColors.length > 0 && <Separator />}
                     <div className="flex items-center gap-x-2 text-sm font-semibold">
                         {product.price !== product.basePrice ? (
                             <>
@@ -188,7 +214,7 @@ const Product = ({
                             <>Add to cart</>
                         )}
                     </Button>
-                    <ProductTabs />
+                    <ProductTabs seller={seller} />
                 </div>
             </div>
             {relatedProducts && relatedProducts.length > 0 && (
