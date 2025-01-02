@@ -32,14 +32,11 @@ const ProductActions: React.FC<ProductActionsProps> = ({
                         <Button
                             onClick={() => handleSelect(option)}
                             key={option}
+                            variant={"outline"}
                             className={cn(
-                                "bg-primary border text-sm h-10 rounded-sm p-2 flex-1",
-                                {
-                                    "border-primary bg-muted text-primary":
-                                        selectedOption === option,
-                                    "hover:shadow-elevation-card-rest transition-shadow ease-in-out duration-150":
-                                        selectedOption !== option,
-                                }
+                                "border text-sm h-10 rounded-sm p-2 flex-1",
+                                selectedOption === option &&
+                                    "border-primary text-primary"
                             )}
                         >
                             {option}

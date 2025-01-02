@@ -6,12 +6,12 @@ import Link from "next/link";
 import MaxWidthWrapper from "../utility/MaxWidthWrapper";
 import { ISession, IUser } from "../../../auth-client";
 import { useIsMobile } from "@/hooks/useIsMobile";
-import { usePathname } from "next/navigation"; // Import the hook
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import AuthDialog from "../auth/AuthDialog";
 import useUserStore from "@/context/useUserStore";
 import useCartStore from "@/context/useCartStore";
-import useStore from "@/context/useStore";
+import { addItemToCart } from "@/app/(main)/actions/cart-actions/actions";
 
 const Navbar = ({
     session,
@@ -21,28 +21,48 @@ const Navbar = ({
     user: IUser | null;
 }) => {
     const { setCurrentUser, setSession } = useUserStore();
-    const { syncCartWithServer } = useCartStore();
-    const { allProducts } = useStore();
+    const { syncCartWithServer, guestCart, clearGuestCart } = useCartStore();
 
     useEffect(() => {
+        const syncGuestCartToDb = async () => {
+            if (user && guestCart?.length > 0) {
+                try {
+                    for (const item of guestCart) {
+                        await addItemToCart(
+                            user.id,
+                            item.productId,
+                            item.variantId,
+                            item.quantity
+                        );
+                    }
+                    clearGuestCart();
+                } catch (error) {
+                    console.error("Error syncing guest cart to DB:", error);
+                }
+            }
+        };
+
         if (user && session) {
             setCurrentUser(user);
             setSession(session);
+            syncGuestCartToDb();
         }
-        syncCartWithServer(user, allProducts);
+
+        syncCartWithServer(user);
     }, [
         user,
         session,
+        guestCart,
         setCurrentUser,
         setSession,
-        allProducts,
         syncCartWithServer,
+        clearGuestCart,
     ]);
 
     const [isDialogOpen, setDialogOpen] = useState(false);
 
     const isMobile = useIsMobile();
-    const pathname = usePathname(); // Get the current path
+    const pathname = usePathname();
 
     const hideCartIcon = /\/(cart|checkout)/.test(pathname);
     const renderSignInTag = !user && !isMobile && !pathname.includes("cart");

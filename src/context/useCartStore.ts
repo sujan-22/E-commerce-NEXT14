@@ -1,71 +1,98 @@
-import { calculateCartTotal } from "@/components/cart/utils/calculateTotal";
 import { ProductSchema } from "@/lib/validationSchema";
 import { z } from "zod";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { IUser } from "auth-client";
-import { CartAPI, SyncCartAPI } from "@/lib/cart-utils/CartAPI";
 import { updateGuestCart } from "@/lib/cart-utils/GuestCart";
+import {
+    addItemToCart,
+    getCartItemsForUser,
+    removeItemFromCart,
+    updateQuantityInCart,
+} from "@/app/(main)/actions/cart-actions/actions";
+import { Product as IProduct } from "@prisma/client";
 
 export type Product = z.infer<typeof ProductSchema>;
-export interface CartItem {
-    productId: number;
-    selectedColor: string;
-    selectedSize: string;
-    quantity?: number;
+
+interface ICartItem {
+    id: string;
+    quantity: number;
+    color: string;
+    size: string;
+    product: IProduct;
+    variantId: string;
 }
+
+export interface IGuestCart {
+    quantity: number;
+    color: string;
+    size: string;
+    productId: string;
+    product: IProduct;
+    variantId: string;
+}
+
+export type ICartLine = {
+    items: ICartItem[];
+    cartTotal: number;
+    cartItemsCount: number;
+};
 
 export interface CartStoreState {
     cartItemsCount: number;
-    cartItems: CartItem[];
     cartTotal: number;
+    cart: ICartItem[];
+    guestCart: IGuestCart[];
+
     addToCart: (
-        item: Omit<CartItem, "price"> & { productId: number },
+        productId: string,
+        variantId: string,
         user: IUser | null,
-        products: Product[]
+        quantity: number,
+        color: string,
+        size: string,
+        product: IProduct
     ) => void;
-    decreaseQuantity: (
-        item: CartItem,
+    handleItemQuantity: (
         user: IUser | null,
-        products: Product[]
-    ) => void;
-    increaseQuantity: (
-        item: CartItem,
-        user: IUser | null,
-        products: Product[]
+        productId: string,
+        variantId: string,
+        operation: "increment" | "decrement",
+        color: string,
+        size: string,
+        product: IProduct
     ) => void;
     removeFromCart: (
-        item: CartItem,
         user: IUser | null,
-        products: Product[]
+        productId: string,
+        variantId: string,
+        color: string,
+        size: string,
+        product: IProduct
     ) => void;
     clearCart: () => void;
-    syncCartWithServer: (user: IUser | null, products: Product[]) => void;
-    syncGuestCart: (products: Product[]) => void;
+    clearGuestCart: () => void;
+    syncCartWithServer: (user: IUser | null) => void;
 }
 
 const useCartStore = create<CartStoreState>()(
     persist(
         (set, get) => ({
-            cartItems: [],
             cartTotal: 0,
             cartItemsCount: 0,
+            cart: [],
+            guestCart: [],
 
-            syncCartWithServer: async (user, products) => {
+            syncCartWithServer: async (user) => {
                 if (!user?.id) return;
 
                 try {
-                    const cart = await SyncCartAPI(user.id);
+                    const cart = await getCartItemsForUser(user.id);
                     if (cart) {
-                        const cartTotal = calculateCartTotal(cart, products);
-                        const cartItemsCount = cart.reduce(
-                            (count, item) => count + (item.quantity || 1),
-                            0
-                        );
                         set({
-                            cartTotal: cartTotal,
-                            cartItems: cart,
-                            cartItemsCount,
+                            cartTotal: cart.cartTotal,
+                            cart: cart.items,
+                            cartItemsCount: cart.cartItemsCount,
                         });
                     }
                 } catch (error) {
@@ -73,38 +100,65 @@ const useCartStore = create<CartStoreState>()(
                 }
             },
 
-            syncGuestCart: (products) => {
-                const cartTotal = calculateCartTotal(get().cartItems, products);
-                const cartItemsCount = get().cartItems.reduce(
-                    (count, item) => count + (item.quantity || 1),
-                    0
-                );
-                set({
-                    cartTotal,
-                    cartItemsCount,
-                });
-            },
-
-            addToCart: async (item, user, products) => {
+            addToCart: async (
+                productId,
+                variantId,
+                user,
+                quantity,
+                color,
+                size,
+                product
+            ) => {
                 if (user) {
                     try {
-                        await CartAPI("add", user.id, item);
-                        get().syncCartWithServer(user, products);
+                        await addItemToCart(
+                            user.id,
+                            productId,
+                            variantId,
+                            quantity
+                        );
+                        get().syncCartWithServer(user);
                     } catch (error) {
                         console.error("Error adding item to cart:", error);
                     }
                 } else {
-                    set((state) => ({
-                        cartItems: updateGuestCart(state, "add", item),
-                    }));
-                    get().syncGuestCart(products);
+                    set((state) => {
+                        const { updatedCart, updatedTotal, updatedItemsCount } =
+                            updateGuestCart(
+                                state,
+                                "add",
+                                color,
+                                size,
+                                productId,
+                                product,
+                                variantId
+                            );
+                        return {
+                            guestCart: updatedCart,
+                            cartTotal: updatedTotal,
+                            cartItemsCount: updatedItemsCount,
+                        };
+                    });
                 }
             },
-            decreaseQuantity: async (item, user, products) => {
+            handleItemQuantity: async (
+                user,
+                productId,
+                variantId,
+                operation,
+                color,
+                size,
+                product
+            ) => {
                 if (user) {
                     try {
-                        await CartAPI("update", user.id, item);
-                        get().syncCartWithServer(user, products);
+                        await updateQuantityInCart(
+                            user.id,
+                            productId,
+                            variantId,
+                            operation
+                        );
+                        get().syncCartWithServer(user);
                     } catch (error) {
                         console.error(
                             "Failed to decrease quantity in server cart:",
@@ -112,39 +166,38 @@ const useCartStore = create<CartStoreState>()(
                         );
                     }
                 } else {
-                    set((state) => ({
-                        cartItems: updateGuestCart(state, "decrease", item),
-                    }));
-                    get().syncGuestCart(products);
+                    set((state) => {
+                        const { updatedCart, updatedTotal, updatedItemsCount } =
+                            updateGuestCart(
+                                state,
+                                operation,
+                                color,
+                                size,
+                                productId,
+                                product,
+                                variantId
+                            );
+                        return {
+                            guestCart: updatedCart,
+                            cartTotal: updatedTotal,
+                            cartItemsCount: updatedItemsCount,
+                        };
+                    });
                 }
             },
 
-            // Increase item quantity
-            increaseQuantity: async (item, user, products) => {
+            removeFromCart: async (
+                user,
+                productId,
+                variantId,
+                color,
+                size,
+                product
+            ) => {
                 if (user) {
                     try {
-                        await CartAPI("update", user.id, item);
-                        get().syncCartWithServer(user, products);
-                    } catch (error) {
-                        console.error(
-                            "Failed to increase quantity in server cart:",
-                            error
-                        );
-                    }
-                } else {
-                    set((state) => ({
-                        cartItems: updateGuestCart(state, "increase", item),
-                    }));
-                    get().syncGuestCart(products);
-                }
-            },
-
-            // Remove item from cart
-            removeFromCart: async (item, user, products) => {
-                if (user) {
-                    try {
-                        await CartAPI("remove", user.id, item);
-                        get().syncCartWithServer(user, products);
+                        await removeItemFromCart(user.id, productId, variantId);
+                        get().syncCartWithServer(user);
                     } catch (error) {
                         console.error(
                             "Failed to remove item from server cart:",
@@ -152,21 +205,34 @@ const useCartStore = create<CartStoreState>()(
                         );
                     }
                 } else {
-                    set((state) => ({
-                        cartItems: updateGuestCart(state, "remove", item),
-                    }));
-                    get().syncGuestCart(products);
+                    set((state) => {
+                        const { updatedCart, updatedTotal, updatedItemsCount } =
+                            updateGuestCart(
+                                state,
+                                "remove",
+                                color,
+                                size,
+                                productId,
+                                product,
+                                variantId
+                            );
+                        return {
+                            guestCart: updatedCart,
+                            cartTotal: updatedTotal,
+                            cartItemsCount: updatedItemsCount,
+                        };
+                    });
                 }
             },
 
-            clearCart: () =>
-                set({ cartItems: [], cartTotal: 0, cartItemsCount: 0 }),
+            clearGuestCart: () => set({guestCart: [], cartTotal: 0, cartItemsCount: 0}),
+            clearCart: () => set({ cart: [], cartTotal: 0, cartItemsCount: 0 }),
         }),
         {
             name: "cart-store",
             storage: createJSONStorage(() => localStorage),
             partialize: (state) => ({
-                cartItems: state.cartItems,
+                guestCart: state.guestCart,
                 cartTotal: state.cartTotal,
                 cartItemsCount: state.cartItemsCount,
             }),

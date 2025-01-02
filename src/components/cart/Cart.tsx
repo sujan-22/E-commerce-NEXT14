@@ -1,19 +1,14 @@
-"use client";
-
 import { ShoppingBag } from "lucide-react";
 import { Sheet, SheetContent, SheetFooter, SheetTrigger } from "../ui/sheet";
 import { buttonVariants } from "../ui/button";
-import useStore from "@/context/useStore";
 import CartLine from "./CartLine";
 import Link from "next/link";
 import { useFormatPrice } from "@/lib/utils";
 import useCartStore from "@/context/useCartStore";
 
 const Cart: React.FC = () => {
-  const { allProducts } = useStore();
+  const { cartTotal, cartItemsCount, cart, guestCart } = useCartStore();
   const { formatPrice } = useFormatPrice();
-  const { cartTotal, cartItems, cartItemsCount } = useCartStore();
-
   return (
     <Sheet>
       <SheetTrigger className="group flex items-center hover:text-muted-foreground ">
@@ -26,21 +21,49 @@ const Cart: React.FC = () => {
             <>
               <div className="flex h-full flex-col justify-between overflow-hidden p-1">
                 <ul className="flex-grow overflow-auto py-4">
-                  {cartItems.map((item, i) => {
-                    const product = allProducts.find(
-                      (p) => p.id === item.productId
-                    );
+                  {(cart?.length || guestCart?.length) > 0 ? (
+                    <>
+                      {cart &&
+                        cart.map((item, i) =>
+                          item ? (
+                            <CartLine
+                              product={item.product}
+                              quantity={item.quantity}
+                              size={item.size}
+                              color={item.color}
+                              variantId={item.variantId}
+                              key={`cart-${i}`}
+                            />
+                          ) : null
+                        )}
+                      {guestCart &&
+                        guestCart.map((item, i) =>
+                          item ? (
+                            <CartLine
+                              product={item.product}
+                              quantity={item.quantity}
+                              size={item.size}
+                              color={item.color}
+                              variantId={item.variantId}
+                              key={`guestCart-${i}`}
+                            />
+                          ) : null
+                        )}
+                    </>
+                  ) : null}
 
-                    return product ? (
-                      <CartLine
-                        product={product}
-                        quantity={item.quantity!}
-                        selectedSize={item.selectedSize}
-                        selectedColor={item.selectedColor}
-                        key={i}
-                      />
-                    ) : null;
-                  })}
+                  {/* {cart?.map((item, i) => {
+                                        return item ? (
+                                            <CartLine
+                                                product={item.product}
+                                                quantity={item.quantity}
+                                                size={item.size}
+                                                color={item.color}
+                                                variantId={item.variantId}
+                                                key={i}
+                                            />
+                                        ) : null;
+                                    })} */}
                 </ul>
                 <div className="py-4 text-sm text-primary">
                   <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 pt-1">

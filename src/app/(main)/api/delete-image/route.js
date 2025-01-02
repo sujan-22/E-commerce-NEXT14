@@ -33,7 +33,7 @@ export async function DELETE(request) {
 
         // Extract the file key from the file URL
         const fileKey = fileUrl.split(
-            `${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/`
+            `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/`
         )[1];
 
         // Call function to delete the file from S3

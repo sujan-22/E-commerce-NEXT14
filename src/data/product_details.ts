@@ -9,13 +9,6 @@ export interface ISizesData {
     size: "XS" | "S" | "M" | "L" | "XL" | "XXL";
 }
 
-export interface ICollectionData {
-    type: "Winter" | "Summer" | "Spring" | "On Sale";
-    title: string;
-    description: string;
-    newPrice?: number | null;
-}
-
 export interface ICollections {
     winter: ICollectionData;
     summer: ICollectionData;
@@ -28,6 +21,7 @@ export interface IColorsData {
         | "Aqua"
         | "Beige"
         | "Blush"
+        | "Black"
         | "Blue"
         | "Brown"
         | "Burgundy"
@@ -64,6 +58,7 @@ export interface IColorsData {
         | "Teal"
         | "Turquoise"
         | "Wine"
+        | "White"
         | "Yellow";
 }
 
@@ -103,6 +98,7 @@ export const SIZES: ISizesData[] = [
 export const COLORS: IColorsData[] = [
     { color: "Aqua" },
     { color: "Beige" },
+    { color: "Black" },
     { color: "Blush" },
     { color: "Blue" },
     { color: "Brown" },
@@ -140,5 +136,6 @@ export const COLORS: IColorsData[] = [
     { color: "Teal" },
     { color: "Turquoise" },
     { color: "Wine" },
+    { color: "White" },
     { color: "Yellow" },
 ];

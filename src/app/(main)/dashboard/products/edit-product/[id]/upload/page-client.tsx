@@ -1,16 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-import Dropzone from "react-dropzone";
-import {
-    Loader2,
-    MousePointerSquareDashed,
-    Image,
-    InfoIcon,
-} from "lucide-react";
+import { useState } from "react";
+import Dropzone, { FileRejection } from "react-dropzone";
+import { MousePointerSquareDashed, ImageIcon, InfoIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import useStore from "@/context/useStore";
@@ -24,173 +18,107 @@ import {
 } from "@/components/ui/carousel";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
+import { useMutation } from "@tanstack/react-query";
+import { addImagesToProduct, removeImageFromProduct } from "./actions";
+import { useToast } from "@/components/ui/use-toast";
+import Loader from "@/components/utility/Loader";
 
-const Page = ({ params }) => {
+const PageClient = ({ productId }: { productId: string }) => {
     const [isDragOver, setIsDragOver] = useState(false);
-    const [files, setFiles] = useState([]);
-    const [isUploading, setIsUploading] = useState(false);
-    const { removeUploadedImageUrl, setUploadedImageUrls, allProducts } =
-        useStore();
-    const productId = params.id;
+    const [files, setFiles] = useState<File[]>([]);
+    const { allProducts } = useStore();
+    const { toast } = useToast();
+
+    const { mutate: handleRemoveImageFromProduct, isPending } = useMutation({
+        mutationFn: removeImageFromProduct,
+        onSuccess: () => {
+            toast({
+                title: "Image Removed",
+                description: "The image has been removed successfully.",
+            });
+            window.location.reload();
+        },
+        onError: () => {
+            toast({
+                title: "Error Removing Image",
+                description:
+                    "An error occurred while removing the image. Please try again later.",
+                variant: "destructive",
+            });
+        },
+    });
+
+    const { mutate: addImages, isPending: isUploading } = useMutation({
+        mutationFn: addImagesToProduct,
+        onSuccess: () => {
+            toast({
+                title: "Images Added",
+                description: "The images have been added successfully.",
+            });
+            window.location.reload();
+        },
+        onError: (error) => {
+            console.log(error);
+            toast({
+                title: "Error Adding Images",
+                description:
+                    "An error occurred while adding the images. Please try again later.",
+                variant: "destructive",
+            });
+        },
+    });
 
     const product = allProducts.find((prod) => prod.id === parseInt(productId));
     const router = useRouter();
-    const [isPending, startTransition] = useTransition();
+    if (!product) {
+        return (
+            <div className="w-full mt-24 flex justify-center">
+                <div className="flex flex-col items-center gap-2">
+                    <Loader />
+                    <h3 className="font-semibold text-xl">Loading data...</h3>
+                    <p>This won&apos;t take too long!</p>
+                </div>
+            </div>
+        );
+    }
 
-    const onDropRejected = (files) => {
+    const onDropRejected = (files: FileRejection[]) => {
         const [file] = files;
         setIsDragOver(false);
-        toast.error(`${file.file.type} type is not supported`);
+        toast({
+            description: `${file.file.type} type is not supported`,
+            variant: "destructive",
+        });
     };
 
-    const onDropAccepted = (acceptedFiles) => {
+    const onDropAccepted = (acceptedFiles: File[]) => {
         setFiles(acceptedFiles);
         setIsDragOver(false);
     };
 
-    const handleUpload = async () => {
-        setIsUploading(true);
-
+    const handleUpload = async (files: File[]) => {
         const formData = new FormData();
         files.forEach((file) => {
             formData.append("files", file);
         });
-
-        try {
-            const response = await fetch("/api/upload", {
-                method: "POST",
-                body: formData,
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to upload files.");
-            }
-
-            const data = await response.json();
-
-            setUploadedImageUrls(data.fileUrls);
-            toast.message("Image(s) uploaded successfully!", {
-                description: "Upload more image(s) or continue",
-            });
-            startTransition(() => {
-                router.push("/addproduct/upload");
-                setFiles([]);
-            });
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (err) {
-            toast.error(`Upload error. Please try again later`);
-        } finally {
-            setIsUploading(false);
-        }
+        addImages({ productId: parseInt(productId), formData });
     };
 
-    const handleRemoveImage = async (file) => {
-        try {
-            removeUploadedImageUrl(file);
-
-            const response = await fetch("/api/delete-image", {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    fileUrl: file,
-                }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                toast.success("Image removed successfully!");
-            } else {
-                toast.error(data.error || "Failed to remove image.");
-                console.error(
-                    "Failed to remove image:",
-                    data.error || data.details
-                );
-            }
-        } catch (error) {
-            toast.error("An error occurred while removing the image.");
-            console.error("Error removing image:", error);
-        }
+    const handleRemoveImage = async (file: string) => {
+        handleRemoveImageFromProduct({
+            productId: parseInt(productId),
+            imageUrl: file,
+        });
     };
 
-    const handleRemoveFile = (file) => {
+    const handleRemoveFile = (file: File) => {
         const updatedFiles = files.filter((f) => f !== file);
-        setFiles(updatedFiles); // Update the state with the removed file
+        setFiles(updatedFiles);
     };
 
     return (
-        <div className="flex flex-col items-center my-16 w-full">
-            <div
-                className={cn(
-                    "relative h-full w-full rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:rounded-xl flex flex-col justify-center items-center",
-                    { "ring-blue-900/25 bg-blue-900/10": isDragOver }
-                )}
-                style={{ minHeight: "400px" }}
-            >
-                <Dropzone
-                    multiple={true}
-                    onDropRejected={onDropRejected}
-                    onDropAccepted={onDropAccepted}
-                    accept={{
-                        "image/jpg": [".jpg"],
-                        "image/png": [".png"],
-                        "image/jpeg": [".jpeg"],
-                        "image/webp": [".webp"],
-                    }}
-                    onDragEnter={() => setIsDragOver(true)}
-                    onDragLeave={() => setIsDragOver(false)}
-                >
-                    {({ getRootProps, getInputProps }) => (
-                        <div
-                            {...getRootProps()}
-                            className="h-full w-full flex flex-1 flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg"
-                        >
-                            <input {...getInputProps()} />
-                            {isUploading || isPending ? (
-                                <Loader2 className="animate-spin h-6 w-6 text-zinc-500 mb-2" />
-                            ) : isDragOver ? (
-                                <MousePointerSquareDashed className="h-6 w-6 text-zinc-500 mb-2" />
-                            ) : (
-                                <Image
-                                    className="h-6 w-6 text-zinc-500 mb-2"
-                                    alt=""
-                                    width={6}
-                                    height={6}
-                                />
-                            )}
-                            <div className="text-sm text-zinc-700 mb-2">
-                                {isUploading ? (
-                                    <>
-                                        <p>Uploading...</p>
-                                    </>
-                                ) : isDragOver ? (
-                                    <p>
-                                        <span className="font-semibold">
-                                            Drop file
-                                        </span>{" "}
-                                        to upload
-                                    </p>
-                                ) : (
-                                    <p>
-                                        <span className="font-semibold">
-                                            Click to upload
-                                        </span>{" "}
-                                        or drag and drop
-                                    </p>
-                                )}
-                            </div>
-                            {!isPending && (
-                                <p className="text-xs text-zinc-500">
-                                    PNG, JPG, JPEG, WEBP
-                                </p>
-                            )}
-                        </div>
-                    )}
-                </Dropzone>
-            </div>
-            <div className="flex justify-between w-full mt-4">
+        <div className="flex flex-col items-center my-4 w-full">
+            <div className="flex justify-between w-full">
                 <Button
                     onClick={() => handleUpload(files)}
                     disabled={files.length === 0 || isPending || isUploading}
@@ -212,12 +140,17 @@ const Page = ({ params }) => {
             {product && (
                 <div className=" w-full">
                     <Alert className="mt-2">
-                        <InfoIcon className="h-5 w-5" />
-                        <AlertTitle className="text-lg font-semibold">
-                            Uploaded Images
+                        <InfoIcon className="h-4 w-4" />
+                        <AlertTitle className="text-md font-semibold">
+                            Current Product Images
                         </AlertTitle>
+                        <AlertDescription>
+                            You can add more images to this product, remove
+                            existing ones or click continue to edit other
+                            details
+                        </AlertDescription>
                     </Alert>
-                    <div className="max-w-full overflow-hidden mt-4">
+                    <div className="max-w-full overflow-hidden mt-2">
                         {/* Carousel */}
                         <Carousel opts={{ align: "center" }} className="w-full">
                             <CarouselContent className="flex">
@@ -268,8 +201,8 @@ const Page = ({ params }) => {
             {files.length > 0 && (
                 <div className=" w-full">
                     <Alert className="mt-2">
-                        <InfoIcon className="h-5 w-5" />
-                        <AlertTitle className="text-lg font-semibold">
+                        <InfoIcon className="h-4 w-4" />
+                        <AlertTitle className="text-md font-semibold">
                             Preview your selected images before uploading.
                         </AlertTitle>
                         <AlertDescription>
@@ -279,7 +212,7 @@ const Page = ({ params }) => {
                             button.
                         </AlertDescription>
                     </Alert>
-                    <div className="max-w-full overflow-hidden mt-4">
+                    <div className="max-w-full overflow-hidden mt-2">
                         {/* Carousel */}
                         <Carousel opts={{ align: "center" }} className="w-full">
                             <CarouselContent className="flex">
@@ -323,8 +256,75 @@ const Page = ({ params }) => {
                     </div>{" "}
                 </div>
             )}
+            <div
+                className={cn(
+                    "relative h-full w-full rounded-xl bg-gray-900/5 my-2 ring-1 ring-inset ring-gray-900/10 lg:rounded-xl flex flex-col justify-center items-center",
+                    { "ring-blue-900/25 bg-blue-900/10": isDragOver }
+                )}
+                style={{ minHeight: "400px" }}
+            >
+                <Dropzone
+                    multiple={true}
+                    onDropRejected={onDropRejected}
+                    onDropAccepted={onDropAccepted}
+                    accept={{
+                        "image/jpg": [".jpg"],
+                        "image/png": [".png"],
+                        "image/jpeg": [".jpeg"],
+                        "image/webp": [".webp"],
+                    }}
+                    onDragEnter={() => setIsDragOver(true)}
+                    onDragLeave={() => setIsDragOver(false)}
+                >
+                    {({ getRootProps, getInputProps }) => (
+                        <div
+                            {...getRootProps()}
+                            className="h-full w-full flex flex-1 flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg"
+                        >
+                            <input {...getInputProps()} />
+                            {isUploading ? (
+                                <Loader />
+                            ) : isDragOver ? (
+                                <MousePointerSquareDashed className="h-6 w-6 text-zinc-500 mb-2" />
+                            ) : (
+                                <ImageIcon
+                                    className="h-6 w-6 text-zinc-500 mb-2"
+                                    width={6}
+                                    height={6}
+                                />
+                            )}
+                            <div className="text-sm text-zinc-700 mb-2">
+                                {isUploading ? (
+                                    <>
+                                        <p>Uploading...</p>
+                                    </>
+                                ) : isDragOver ? (
+                                    <p>
+                                        <span className="font-semibold">
+                                            Drop file
+                                        </span>{" "}
+                                        to upload
+                                    </p>
+                                ) : (
+                                    <p>
+                                        <span className="font-semibold">
+                                            Click to upload
+                                        </span>{" "}
+                                        or drag and drop
+                                    </p>
+                                )}
+                            </div>
+                            {!isPending && (
+                                <p className="text-xs text-zinc-500">
+                                    PNG, JPG, JPEG, WEBP
+                                </p>
+                            )}
+                        </div>
+                    )}
+                </Dropzone>
+            </div>
         </div>
     );
 };
 
-export default Page;
+export default PageClient;

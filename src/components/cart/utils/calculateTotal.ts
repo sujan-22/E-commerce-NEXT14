@@ -1,25 +1,11 @@
-import { CartItem } from "@/context/useCartStore";
-import { Product } from "@/context/useStore";
+import { IGuestCart } from "@/context/useCartStore";
 
-export const calculateCartTotal = (
-    cartItems: CartItem[],
-    allProducts: Product[]
-) => {
-    return cartItems.reduce((total, item) => {
-        const product = allProducts.find(
-            (product) => product.id === item.productId
-        );
-
-        if (product) {
-            let itemPrice = product.price;
-
-            if (product.collection?.onsale?.newPrice) {
-                itemPrice = product.collection.onsale.newPrice;
-            }
-
-            return total + item.quantity! * itemPrice;
-        }
-
-        return total;
+export const calculateCartTotal = (guestCart: IGuestCart[]): number => {
+    return guestCart.reduce((total, item) => {
+        const productPrice =
+            item.product?.basePrice === item.product.price
+                ? item.product.basePrice
+                : item.product.price;
+        return total + productPrice! * item.quantity;
     }, 0);
 };
