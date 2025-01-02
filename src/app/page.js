@@ -11,9 +11,11 @@ import {
 } from "lucide-react";
 import ProductList from "@/components/product/ProductList";
 import SubscribeToNewsletter from "@/components/SubscribeToNewsletter";
-import useStore from "@/context/useStore";
 import ProductListSkeleton from "@/components/product/skeleton/ProductListSkeleton";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { fetchAllProducts } from "./(main)/actions/product-actions/actions";
+import HomeTextSkeleton from "@/components/skeletons/HomeTextSkeleton";
 
 const perks = [
     {
@@ -49,21 +51,39 @@ const perks = [
 ];
 
 export default function Home() {
-    const products = useStore((state) => state.allProducts);
-    const collectionsMap = {};
+    const { data: all_products } = useQuery({
+        queryKey: ["get-payment-status"],
+        queryFn: async () => await fetchAllProducts(),
+        retry: true,
+        retryDelay: 500,
+    });
     const router = useRouter();
 
-    // Populate collectionsMap with collections and their products
-    products.forEach((product) => {
-        // Check if the product is part of a collection
-        for (const collectionName in product.collection) {
-            const collection = product.collection[collectionName];
+    const collectionsMap = {};
+
+    if (!all_products) {
+        return (
+            <MaxWidthWrapper>
+                <HomeTextSkeleton />
+                <ProductListSkeleton size="full" />
+            </MaxWidthWrapper>
+        );
+    }
+
+    all_products.forEach((product) => {
+        // Check if the product has a collection
+        if (product.collection) {
+            const collection = product.collection;
+            // Check if the collection has a type
             if (collection.type && !collectionsMap[collection.type]) {
+                // Initialize a new collection type entry in the map
                 collectionsMap[collection.type] = {
-                    title: collection.title,
+                    title: collection.name, // Assuming collection.name is the title
                     products: [],
                 };
             }
+
+            // If the collection type exists in collectionsMap, add the product
             if (collectionsMap[collection.type]) {
                 collectionsMap[collection.type].products.push(product);
             }
@@ -103,22 +123,21 @@ export default function Home() {
                 </div>
                 {/* LIST PRODUCT */}
                 {/* Dynamic Collection Rendering */}
-                {products && products.length > 0 ? (
-                    Object.entries(collectionsMap).map(
-                        ([collectionType, { title, products }]) => (
+                {Object.keys(collectionsMap).length > 0 &&
+                    Object.keys(collectionsMap).map((collectionType) => {
+                        const collection = collectionsMap[collectionType];
+
+                        return (
                             <div key={collectionType} className="py-20">
                                 <ProductList
-                                    products={products}
-                                    headerTitle={title}
+                                    products={collection.products}
+                                    headerTitle={collection.title}
                                     headerLink={"/"}
                                     size={"full"}
                                 />
                             </div>
-                        )
-                    )
-                ) : (
-                    <ProductListSkeleton size="full" />
-                )}
+                        );
+                    })}
             </MaxWidthWrapper>
             <MaxWidthWrapper className="">
                 <section className="border-t py-20">

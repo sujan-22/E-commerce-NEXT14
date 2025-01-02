@@ -1,65 +1,62 @@
-import useStore, { Product } from "@/context/useStore";
 import Link from "next/link";
 import { cn, useFormatPrice } from "@/lib/utils";
 import { MinusIcon, PlusIcon, XIcon } from "lucide-react";
 import useCartStore from "@/context/useCartStore";
 import useUserStore from "@/context/useUserStore";
 import CartLineImage from "./components/CartLineImage";
+import { Product } from "@prisma/client";
 
 interface CartLineProps {
     product: Product;
     quantity: number;
-    selectedSize: string;
-    selectedColor: string;
+    size: string;
+    color: string;
+    variantId: string;
 }
 
 const CartLine: React.FC<CartLineProps> = ({
     product,
     quantity,
-    selectedSize,
-    selectedColor,
+    size,
+    color,
+    variantId,
 }) => {
-    const { removeFromCart, increaseQuantity, decreaseQuantity } =
-        useCartStore();
-    const { allProducts } = useStore();
+    const { removeFromCart, handleItemQuantity } = useCartStore();
     const { currentUser } = useUserStore();
     const { formatPrice } = useFormatPrice();
 
     const handleRemove = () => {
         removeFromCart(
-            {
-                productId: product.id!,
-                selectedColor,
-                selectedSize,
-            },
             currentUser,
-            allProducts
+            product.id,
+            variantId,
+            color,
+            size,
+            product
         );
     };
 
     const handleIncrease = () => {
-        increaseQuantity(
-            {
-                productId: product.id!,
-                selectedColor,
-                selectedSize,
-                quantity: quantity + 1,
-            },
+        handleItemQuantity(
             currentUser,
-            allProducts
+            product.id,
+            variantId,
+            "increment",
+            color,
+            size,
+            product
         );
     };
 
     const handleDecrease = () => {
-        decreaseQuantity(
-            {
-                productId: product.id!,
-                selectedColor,
-                selectedSize,
-                quantity: quantity - 1,
-            },
+        handleItemQuantity(
             currentUser,
-            allProducts
+            product.id,
+            variantId,
+            "decrement",
+            color,
+            size,
+            product
         );
     };
 
@@ -84,7 +81,7 @@ const CartLine: React.FC<CartLineProps> = ({
                             <div className="relative w-20 h-20 rounded-md bg-muted">
                                 <CartLineImage
                                     altText={String(product.id)}
-                                    imageUrl={product.availableImages[0]}
+                                    imageUrl={product.images[0]}
                                 />
                             </div>
                         </div>
@@ -92,13 +89,13 @@ const CartLine: React.FC<CartLineProps> = ({
                             <span className="leading-tight">
                                 {product.name}
                             </span>
-                            {(selectedColor || selectedSize) && (
+                            {(color || size) && (
                                 <p className="text-sm text-muted-foreground dark:text-neutral-400">
-                                    {selectedColor && selectedSize
-                                        ? `${selectedColor} / ${selectedSize}`
-                                        : selectedColor
-                                        ? selectedColor
-                                        : selectedSize}
+                                    {color && size
+                                        ? `${color} / ${size}`
+                                        : color
+                                        ? color
+                                        : size}
                                 </p>
                             )}
                         </div>
@@ -107,16 +104,12 @@ const CartLine: React.FC<CartLineProps> = ({
 
                 <div className="flex flex-1 flex-col justify-between">
                     <p className="flex justify-end space-y-2 text-right text-sm">
-                        {product.collection.onsale?.newPrice ? (
+                        {product.basePrice === product.price ? (
                             <>
-                                <span>
-                                    {formatPrice(
-                                        product.collection.onsale.newPrice
-                                    )}
-                                </span>
+                                <span>{formatPrice(product.price)}</span>
                             </>
                         ) : (
-                            <span>{formatPrice(product.price)}</span>
+                            <span>{formatPrice(product.basePrice)}</span>
                         )}
                     </p>
 

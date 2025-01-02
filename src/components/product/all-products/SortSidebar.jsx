@@ -1,5 +1,5 @@
 import React from "react";
-import { useRouter, useSearchParams } from "next/navigation"; // Import necessary hooks
+import { useRouter, useSearchParams } from "next/navigation";
 import {
     Select,
     SelectContent,
@@ -17,15 +17,19 @@ const SortSidebar = ({ mobileView }) => {
     const currentSort = searchParams.get("sort") || "relevance";
 
     const sortItems = [
-        { key: "relevance", label: "Relevance" },
-        { key: "latest", label: "Latest arrivals" },
+        { key: "none", label: "None" },
         { key: "price_low_to_high", label: "Price: Low to High" },
         { key: "price_high_to_low", label: "Price: High to Low" },
     ];
 
     const handleSortChange = (value) => {
         const params = new URLSearchParams(searchParams);
-        params.set("sort", value);
+
+        if (value === "none") {
+            params.delete("sort");
+        } else {
+            params.set("sort", value);
+        }
         router.push(`?${params.toString()}`);
     };
 

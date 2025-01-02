@@ -30,19 +30,7 @@ const ProductImageSkeleton: React.FC<ProductSkeletonProps> = ({
                     "w-full": size === "full",
                 }
             )}
-        >
-            <SkeletonPlaceholder />
-        </Skeleton>
-    );
-};
-
-const SkeletonPlaceholder: React.FC = () => {
-    return (
-        // <div
-        //     className="absolute inset-0 bg-gray-300 animate-pulse rounded-md"
-        //     style={{ objectFit: "cover" }}
-        // />
-        <Skeleton />
+        ></Skeleton>
     );
 };
 

@@ -5,12 +5,13 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "../ui/accordion";
+import { User } from "@prisma/client";
 
-const ProductTabs = () => {
+const ProductTabs = ({ seller }: { seller: User | undefined }) => {
     const tabs = [
         {
             label: "Product Information",
-            component: <ProductInfoTab />,
+            component: <ProductInfoTab seller={seller} />,
         },
         {
             label: "Shipping & Returns",
@@ -32,11 +33,19 @@ const ProductTabs = () => {
     );
 };
 
-const ProductInfoTab = () => {
+const ProductInfoTab = ({ seller }: { seller: User | undefined }) => {
     return (
         <div className="text-small-regular py-8">
             <div className="grid grid-cols-2 gap-x-8">
                 <div className="flex flex-col gap-y-4">
+                    <div>
+                        <span className="font-semibold">Seller name</span>
+                        <p>{seller?.name}</p>
+                    </div>
+                    <div>
+                        <span className="font-semibold">Seller email</span>
+                        <p>{seller?.email}</p>
+                    </div>
                     <div>
                         <span className="font-semibold">Material</span>
                         <p>-</p>

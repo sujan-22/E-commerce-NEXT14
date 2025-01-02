@@ -2,11 +2,12 @@ const products = {
     products: [
         {
             id: 1,
-            name: "Soft Baby Cap – Cozy Comfort for Little Ones",
+            name: "Baby Cap",
             description:
                 "A soft, comfortable baby cap made from gentle materials, perfect for keeping your baby warm and stylish during cooler months. Available in multiple colors to match any outfit.",
             category: "Baby",
             price: 9.99,
+            basePrice: 6.99,
             availableColors: ["Black", "Gray", "White"],
             availableImages: [
                 "/assets/product_images/baby-cap-black.png",
@@ -30,7 +31,7 @@ const products = {
         },
         {
             id: 2,
-            name: "Cozy Baby Onesie – Stylish Comfort for Newborns",
+            name: "Baby Onesie",
             description:
                 "A cozy and soft onesie that ensures your baby stays comfortable all day long. Made with breathable fabric, it’s perfect for playtime or naptime. Available in classic colors and easy to wear for any season.",
             price: 19.99,
@@ -59,7 +60,7 @@ const products = {
         },
         {
             id: 3,
-            name: "Durable Everyday Bag – Practical and Trendy",
+            name: "Everyday Bag",
             description:
                 "A versatile, durable bag designed for everyday use. Its spacious interior and sleek design make it perfect for work, school, or casual outings. Available in stylish black and white colors.",
             price: 24.99,
@@ -86,7 +87,7 @@ const products = {
         },
         {
             id: 4,
-            name: "Stylish Bomber Jacket – Warmth and Fashion Combined",
+            name: "Bomber Jacket",
             description:
                 "This stylish bomber jacket is designed for all seasons, providing the perfect balance of warmth and fashion. Whether you're layering up for winter or styling it for a casual look, it’s a must-have in every wardrobe.",
             price: 49.99,
@@ -111,7 +112,7 @@ const products = {
         },
         {
             id: 5,
-            name: "Classic Cowboy Hat – Ready for Outdoor Adventures",
+            name: "Classic Hat",
             description:
                 "A timeless cowboy hat that’s ideal for outdoor enthusiasts. Whether you’re attending a rodeo, going for a hike, or simply enjoying a sunny day, this hat provides both style and protection from the elements.",
             category: "Accessories",
@@ -135,7 +136,7 @@ const products = {
         },
         {
             id: 6,
-            name: "Classic Coffee Cup – A Must-Have for Coffee Lovers",
+            name: "Classic Coffee Cup",
             description:
                 "This classic coffee cup is perfect for your morning brew or afternoon tea. Made from high-quality materials, it keeps your drink warm while adding a touch of elegance to your kitchen or office.",
             category: "Accessories",
@@ -156,7 +157,7 @@ const products = {
         },
         {
             id: 7,
-            name: "Cozy Dog Sweater – Warmth for Your Furry Friend",
+            name: "Dog Sweater",
             description:
                 "This cozy dog sweater is perfect for keeping your pet warm and stylish during the colder months. Made with soft, breathable fabric, it's comfortable and ensures your dog stays snug no matter the weather.",
             category: "Pets",
@@ -177,7 +178,7 @@ const products = {
         },
         {
             id: 8,
-            name: "Trendy Everyday Hat – Casual Style for Any Occasion",
+            name: "Everyday Cap",
             description:
                 "A versatile and trendy hat for everyday wear. Whether you’re out for a walk, running errands, or heading to a casual outing, this hat adds the perfect finishing touch to your look.",
             category: "Accessories",
@@ -198,7 +199,7 @@ const products = {
         },
         {
             id: 9,
-            name: "Comfortable Black Hoodie – Casual All-Day Wear",
+            name: "Comfortable Black Hoodie",
             description:
                 "A cozy and stylish black hoodie designed for comfort and warmth. Perfect for any casual occasion, whether you're lounging at home, heading to the gym, or hanging out with friends.",
             category: "Women",
@@ -223,7 +224,7 @@ const products = {
         },
         {
             id: 10,
-            name: "Trendy T-Shirt Circles – A Stylish Statement",
+            name: "T-Shirt Circles",
             description:
                 "A modern t-shirt featuring unique circular designs. Perfect for adding a touch of style to your casual wardrobe, it’s made with soft fabric for all-day comfort. Available in black, blue, and white.",
             category: "Men",
@@ -245,7 +246,7 @@ const products = {
         },
         {
             id: 11,
-            name: "Comfy Colorful T-Shirt – Perfect for Every Day",
+            name: "Comfy Colorful T-Shirt",
             description:
                 "A vibrant and comfy t-shirt available in multiple colors. Whether you're dressing up or down, this t-shirt is perfect for a laid-back look or an easygoing day out. Soft and breathable fabric ensures comfort all day long.",
             category: "Men",
@@ -275,7 +276,7 @@ const products = {
         },
         {
             id: 12,
-            name: "Stylish Everyday Bag – Functional and Fashionable",
+            name: "Laptop Bag",
             description:
                 "A stylish and practical bag that’s perfect for daily use. Its chic design and spacious interior make it the ideal accessory for carrying all your essentials while maintaining a fashionable look.",
             category: "Bags",
@@ -299,7 +300,7 @@ const products = {
         },
         {
             id: 13,
-            name: "Elegant Wrist Watch – Timeless Style for Men and Women",
+            name: "Wrist Watch",
             description:
                 "A sleek wristwatch designed to elevate your look. With its refined design and high-quality craftsmanship, it’s perfect for any occasion, whether it's formal or casual. Available in black, silver, and gold.",
             category: "Accessories",
@@ -317,7 +318,7 @@ const products = {
         },
         {
             id: 14,
-            name: "Comfortable Black Hoodie for Women – All-Season Essential",
+            name: "Black Hoodie for Women",
             description:
                 "A comfortable and versatile black hoodie designed for women. Made for all seasons, it’s perfect for layering or wearing on its own. Whether you're lounging or out with friends, it offers the perfect balance of warmth and style.",
             category: "Women",
@@ -335,7 +336,7 @@ const products = {
         },
         {
             id: 15,
-            name: "High-Quality Wireless Headphones – Premium Sound Experience",
+            name: "Top Wireless Headphones",
             description:
                 "These wireless headphones deliver superior sound quality, perfect for music lovers and audiophiles. Enjoy clear, crisp audio with excellent bass and sound clarity, all while experiencing the convenience of wireless technology.",
             category: "Electronics",

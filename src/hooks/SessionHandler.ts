@@ -7,6 +7,6 @@ export async function getServerSideSession() {
     });
     return {
         session: session?.session || null,
-        user: session?.user || null,
+        user: session?.user,
     };
 }

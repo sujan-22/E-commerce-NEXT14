@@ -1,71 +1,59 @@
-import { CartItem, CartStoreState } from "@/context/useCartStore";
+import { calculateCartTotal } from "@/components/cart/utils/calculateTotal";
+import { IGuestCart, CartStoreState } from "@/context/useCartStore";
+import { Product } from "@prisma/client";
 
 export const updateGuestCart = (
     state: CartStoreState,
-    action: "add" | "remove" | "increase" | "decrease",
-    item: CartItem
-): CartItem[] => {
-    const { productId, selectedColor, selectedSize } = item;
+    action: "add" | "remove" | "increment" | "decrement",
+    color: string,
+    size: string,
+    productId: string,
+    product: Product,
+    variantId: string
+): {
+    updatedCart: IGuestCart[];
+    updatedTotal: number;
+    updatedItemsCount: number;
+} => {
+    const updatedCart = [...state.guestCart];
 
-    // Normalize null values for comparison
-    const normalizedColor = selectedColor || "";
-    const normalizedSize = selectedSize || "";
-
-    const existingItem = state.cartItems.find(
-        (cartItem) =>
-            cartItem.productId === productId &&
-            (cartItem.selectedColor || "") === normalizedColor &&
-            (cartItem.selectedSize || "") === normalizedSize
+    const itemIndex = updatedCart.findIndex(
+        (item) =>
+            item.productId === productId &&
+            item.color === color &&
+            item.size === size
     );
 
     if (action === "add") {
-        if (existingItem) {
-            // If the item exists, update the quantity
-            return state.cartItems.map((cartItem) =>
-                cartItem === existingItem
-                    ? {
-                          ...cartItem,
-                          quantity: cartItem.quantity! + 1,
-                      }
-                    : cartItem
-            );
+        if (itemIndex > -1) {
+            updatedCart[itemIndex].quantity += 1;
         } else {
-            // Add the new item
-            return [
-                ...state.cartItems,
-                {
-                    ...item,
-                    quantity: 1, // Set initial quantity to 1
-                    selectedColor: normalizedColor,
-                    selectedSize: normalizedSize,
-                },
-            ];
+            updatedCart.push({
+                productId,
+                color,
+                size,
+                quantity: 1,
+                product,
+                variantId,
+            });
         }
-    } else if (action === "remove") {
-        // Remove the item
-        return state.cartItems.filter(
-            (cartItem) =>
-                !(
-                    cartItem.productId === productId &&
-                    cartItem.selectedColor === normalizedColor &&
-                    cartItem.selectedSize === normalizedSize
-                )
-        );
-    } else if (action === "increase") {
-        // Increase the quantity
-        return state.cartItems.map((cartItem) =>
-            cartItem === existingItem
-                ? { ...cartItem, quantity: cartItem.quantity! + 1 }
-                : cartItem
-        );
-    } else if (action === "decrease") {
-        // Decrease the quantity (but not below 1)
-        return state.cartItems.map((cartItem) =>
-            cartItem === existingItem && cartItem.quantity! > 1
-                ? { ...cartItem, quantity: cartItem.quantity! - 1 }
-                : cartItem
-        );
+    } else if (action === "remove" && itemIndex > -1) {
+        updatedCart.splice(itemIndex, 1);
+    } else if (action === "increment" && itemIndex > -1) {
+        updatedCart[itemIndex].quantity += 1;
+    } else if (action === "decrement" && itemIndex > -1) {
+        updatedCart[itemIndex].quantity -= 1;
+        if (updatedCart[itemIndex].quantity <= 0) {
+            updatedCart.splice(itemIndex, 1);
+        }
     }
 
-    return state.cartItems; // Default case
+    // Calculate updated totals
+    const updatedTotal = calculateCartTotal(updatedCart);
+    const updatedItemsCount = updatedCart.reduce(
+        (count, item) => count + item.quantity,
+        0
+    );
+
+    return { updatedCart, updatedTotal, updatedItemsCount };
 };

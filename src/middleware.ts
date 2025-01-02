@@ -4,7 +4,7 @@ import type { Session } from "auth";
 
 const authRoutes = ["/sign-in", "/sign-up"];
 const passwordRoutes = ["/reset-password", "/forgot-password"];
-const adminRoutes = ["/admin"];
+const adminRoutes = ["/dashboard"];
 const protectedRoutes = ["/account", "/checkout", "/addproduct"];
 
 export default async function authMiddleware(request: NextRequest) {
@@ -39,19 +39,15 @@ export default async function authMiddleware(request: NextRequest) {
     //     // Redirect unauthenticated users to the sign-in page
     //     return NextResponse.redirect(new URL("/", request.url));
     // }
-
-    // If the user is authenticated and trying to access auth or password routes, redirect them to home
     if (isAuthRoute || isPasswordRoute) {
         return NextResponse.redirect(new URL("/", request.url));
     }
 
     // Handle admin routes
     if (isAdminRoute && session?.user.role !== "admin") {
-        // If the user is not an admin, redirect them to the home page
         return NextResponse.redirect(new URL("/", request.url));
     }
 
-    // If the user is not authenticated but is accessing protected routes, redirect to sign-in
     if (isProtectedRoute && !session) {
         return NextResponse.redirect(new URL("/sign-in", request.url));
     }
