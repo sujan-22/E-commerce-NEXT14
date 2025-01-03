@@ -14,7 +14,7 @@ import { Product as IProduct } from "@prisma/client";
 
 export type Product = z.infer<typeof ProductSchema>;
 
-interface ICartItem {
+export interface ICartItem {
     id: string;
     quantity: number;
     color: string;
@@ -225,7 +225,8 @@ const useCartStore = create<CartStoreState>()(
                 }
             },
 
-            clearGuestCart: () => set({guestCart: [], cartTotal: 0, cartItemsCount: 0}),
+            clearGuestCart: () =>
+                set({ guestCart: [], cartTotal: 0, cartItemsCount: 0 }),
             clearCart: () => set({ cart: [], cartTotal: 0, cartItemsCount: 0 }),
         }),
         {
