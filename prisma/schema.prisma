@@ -13,12 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum OrderStatus {
-  fulfilled
-  shipped
-  awaiting_shipment
-}
-
+// AUTHENTICATION MODELS
 model User {
   id            String   @id @default(cuid()) @map("_id")
   name          String
@@ -29,7 +24,7 @@ model User {
   role          String   @default("user")
   banned        Boolean  @default(false)
   banReason     String?
-  banExpires    Int? /// Unix timestamp for ban expiration
+  banExpires    DateTime? /// Unix timestamp for ban expiration
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -82,22 +77,46 @@ model Verification {
   updatedAt  DateTime @updatedAt
 }
 
+
+// ORDER RELATED MODELS
+enum OrderStatus {
+  fulfilled
+  shipped
+  awaiting_shipment
+}
+
 model Order {
-  id                String           @id @default(cuid()) @map("_id")
-  orderNumber       String           @unique
+  id          String      @id @default(cuid()) @map("_id")
+  orderNumber String      @unique
+  amount      Float
+  isPaid      Boolean     @default(false)
+  status      OrderStatus @default(awaiting_shipment)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  cartAmount  Float
+
   userId            String
-  amount            Float
-  cart              Cart             @relation(fields: [cartId], references: [id])
-  isPaid            Boolean          @default(false)
-  status            OrderStatus      @default(awaiting_shipment)
-  shippingAddress   ShippingAddress? @relation(fields: [shippingAddressId], references: [id])
-  shippingAddressId String?
-  billingAddress    BillingAddress?  @relation(fields: [billingAddressId], references: [id])
-  billingAddressId  String?
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
   user              User             @relation(fields: [userId], references: [id])
-  cartId            String
+  shippingAddressId String?
+  shippingAddress   ShippingAddress? @relation(fields: [shippingAddressId], references: [id])
+  billingAddressId  String?
+  billingAddress    BillingAddress?  @relation(fields: [billingAddressId], references: [id])
+
+  OrderItem OrderItem[]
+}
+
+model OrderItem {
+  id        String   @id @default(cuid()) @map("_id")
+  orderId   String
+  productId String
+  variantId String
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+  variant Variant @relation(fields: [variantId], references: [id])
 }
 
 model ShippingAddress {
@@ -109,7 +128,8 @@ model ShippingAddress {
   country     String
   state       String?
   phoneNumber String?
-  orders      Order[]
+
+  orders Order[]
 }
 
 model BillingAddress {
@@ -121,18 +141,21 @@ model BillingAddress {
   country     String
   state       String?
   phoneNumber String?
-  orders      Order[]
+
+  orders Order[]
 }
 
+// SELLER RELATED MODELS
 model SellerRequest {
   id           String        @id @default(cuid()) @map("_id")
-  userId       String        @unique
   status       RequestStatus @default(pending)
   denialReason String?
   approvedAt   DateTime?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum RequestStatus {
@@ -141,35 +164,40 @@ enum RequestStatus {
   denied
 }
 
+// PRODUCT RELATED MODELS
 model Product {
-  id           String      @id @default(cuid()) @map("_id")
-  name         String
-  routerName   String      @unique
-  description  String
-  price        Float?
-  basePrice    Float
-  images       String[]
-  category     String
+  id          String   @id @default(cuid()) @map("_id")
+  name        String
+  routerName  String   @unique
+  description String
+  price       Float?
+  basePrice   Float
+  images      String[]
+  category    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  collectionId String?
+  collection   Collection? @relation("ProductCollections", fields: [collectionId], references: [id])
   userId       String
   user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  variants     Variant[]
-  collection   Collection? @relation("ProductCollections", fields: [collectionId], references: [id])
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  collectionId String?
 
-  CartItem CartItem[]
+  variants  Variant[]
+  CartItem  CartItem[]
+  OrderItem OrderItem[]
 }
 
 model Variant {
-  id        String  @id @default(cuid()) @map("_id")
-  color     String
-  size      String
-  stock     Int
+  id    String @id @default(cuid()) @map("_id")
+  color String
+  size  String
+  stock Int
+
   productId String
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  CartItem CartItem[]
+  CartItem  CartItem[]
+  OrderItem OrderItem[]
 }
 
 model Collection {
@@ -177,9 +205,10 @@ model Collection {
   name        String
   description String?
   type        CollectionType
-  products    Product[]      @relation("ProductCollections")
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
+
+  products Product[] @relation("ProductCollections")
 }
 
 enum CollectionType {
@@ -189,30 +218,29 @@ enum CollectionType {
   WeeklyPicks
 }
 
+// CART RELATED MODELS
 model CartItem {
-  id String @id @default(cuid()) @map("_id")
-
-  cartId    String
-  productId String
-  variantId String   @unique
+  id        String   @id @default(cuid()) @map("_id")
   quantity  Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id])
-  variant Variant @relation(fields: [variantId], references: [id])
+  variantId String  @unique
+  variant   Variant @relation(fields: [variantId], references: [id])
+  cartId    String
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
 }
 
 model Cart {
-  id String @id @default(cuid()) @map("_id")
-
-  userId    String     @unique
-  items     CartItem[]
+  id        String   @id @default(cuid()) @map("_id")
+  userId    String   @unique
   total     Float
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Order Order[]
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  items CartItem[]
 }

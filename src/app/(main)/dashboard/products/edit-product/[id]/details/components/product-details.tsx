@@ -4,7 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import useStore, { Product } from "@/context/useStore";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
     Carousel,
@@ -30,7 +30,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import { COLLECTION_DATA, COLORS, SIZES } from "@/data/product_details";
+import { COLORS, SIZES } from "@/data/product_details";
 
 const ProductDetails = ({ product }: { product: Product }) => {
     const { categories } = useStore();
@@ -248,7 +248,7 @@ const ProductDetails = ({ product }: { product: Product }) => {
                         <div>
                             <Label>Select a Collection</Label>
 
-                            <Select
+                            {/* <Select
                                 value={options.collection}
                                 onValueChange={(value) => {
                                     setOptions((prev) => ({
@@ -282,7 +282,7 @@ const ProductDetails = ({ product }: { product: Product }) => {
                                         )}
                                     </SelectGroup>
                                 </SelectContent>
-                            </Select>
+                            </Select> */}
 
                             {/* Continue Button */}
                             <Button

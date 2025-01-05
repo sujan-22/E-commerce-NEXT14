@@ -18,7 +18,7 @@ const Navbar = ({
     user,
 }: {
     session: ISession | null;
-    user: IUser | null;
+    user: IUser | null | undefined;
 }) => {
     const { setCurrentUser, setSession } = useUserStore();
     const { syncCartWithServer, guestCart, clearGuestCart } = useCartStore();
@@ -47,7 +47,6 @@ const Navbar = ({
             setSession(session);
             syncGuestCartToDb();
         }
-
         syncCartWithServer(user);
     }, [
         user,

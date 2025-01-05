@@ -54,7 +54,7 @@ const CheckoutSummary = ({
                             </TooltipProvider>
                         )}
                     </div>
-                    <p>
+                    <p className="text-sm">
                         {cartPrice
                             ? formatPrice(cartPrice)
                             : formatPrice(cartTotal)}

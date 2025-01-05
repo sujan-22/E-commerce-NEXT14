@@ -8,54 +8,54 @@ import OrderOverview from "@/components/order/order-overview";
 import { getAllOrdersByUserId } from "./actions";
 
 const Page = () => {
-  const { currentUser } = useUserStore();
+    const { currentUser } = useUserStore();
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["get-orders"],
-    queryFn: async () => await getAllOrdersByUserId(currentUser!.id),
-    retry: true,
-    retryDelay: 500,
-  });
+    const { data, isLoading, isError } = useQuery({
+        queryKey: ["get-orders"],
+        queryFn: async () => await getAllOrdersByUserId(currentUser!.id),
+        retry: true,
+        retryDelay: 500,
+    });
 
-  if (isLoading) {
+    if (isLoading) {
+        return (
+            <div>
+                <h3 className="text-lg">Orders</h3>
+                <p className="text-sm text-muted-foreground">
+                    View your previous orders and their status.
+                </p>
+
+                <div className="w-full mt-24 flex justify-center">
+                    <div className="flex flex-col items-center gap-2">
+                        <Loader />
+                        <h3 className="font-semibold text-xl">
+                            Loading data...
+                        </h3>
+                        <p>This won&apos;t take too long!</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (isError) {
+        return <div>Error loading orders.</div>;
+    }
+
+    const orders = data?.orders;
     return (
-      <div>
-        <h3 className="text-lg">Orders</h3>
-        <p className="text-sm text-muted-foreground">
-          View your previous orders and their status.
-        </p>
+        <div className="space-y-6">
+            <div>
+                <h3 className="text-lg">Orders</h3>
+                <p className="text-sm text-muted-foreground">
+                    View your previous orders and their status.
+                </p>
+            </div>
 
-        <div className="w-full mt-24 flex justify-center">
-          <div className="flex flex-col items-center gap-2">
-            <Loader />
-            <h3 className="font-semibold text-xl">Loading data...</h3>
-            <p>This won&apos;t take too long!</p>
-          </div>
+            <Separator />
+            <OrderOverview orders={orders!} />
         </div>
-      </div>
     );
-  }
-
-  if (isError) {
-    return <div>Error loading orders.</div>;
-  }
-
-  const orders = data?.orders;
-  console.log(orders);
-
-  return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg">Orders</h3>
-        <p className="text-sm text-muted-foreground">
-          View your previous orders and their status.
-        </p>
-      </div>
-
-      <Separator />
-      <OrderOverview orders={orders!} />
-    </div>
-  );
 };
 
 export default Page;
