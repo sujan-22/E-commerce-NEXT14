@@ -97,7 +97,6 @@ model Order {
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
   user              User             @relation(fields: [userId], references: [id])
-  cartAmount        Float
   cartId            String
 }
 
