@@ -2,11 +2,23 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Order } from "@prisma/client";
+import { Cart, CartItem, Order, Product, Variant } from "@prisma/client";
 import OrderCard from "../order-card";
 import { Separator } from "@/components/ui/separator";
 
-const OrderOverview = ({ orders }: { orders: Order[] }) => {
+interface ICart extends Cart {
+  items: ICartItem[];
+}
+
+interface ICartItem extends CartItem {
+  product: Product;
+  variant: Variant;
+}
+export interface IOrder extends Order {
+  cart: ICart;
+}
+
+const OrderOverview = ({ orders }: { orders: IOrder[] }) => {
   if (orders?.length) {
     return (
       <div className="flex flex-col gap-y-8 w-full">

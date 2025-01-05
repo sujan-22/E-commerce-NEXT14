@@ -10,9 +10,19 @@ export const getAllOrders = async () => {
         user: {
           select: { name: true, email: true },
         },
+        cart: {
+          include: {
+            items: {
+              include: {
+                product: true,
+                variant: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
-        createdAt: "desc", 
+        createdAt: "desc",
       },
     });
 

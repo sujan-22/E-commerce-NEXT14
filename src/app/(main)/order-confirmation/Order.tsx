@@ -18,8 +18,8 @@ const Order = ({ isOrderDetailsPage }: { isOrderDetailsPage?: boolean }) => {
   const { data: order } = useQuery({
     queryKey: ["get-payment-status"],
     queryFn: async () => await getPaymentStatus({ orderId }),
-    retry: true,
-    retryDelay: 500,
+    retry: 2,
+    retryOnMount: true,
   });
 
   if (order === undefined) {
@@ -28,7 +28,7 @@ const Order = ({ isOrderDetailsPage }: { isOrderDetailsPage?: boolean }) => {
         <div className="flex flex-col items-center gap-2">
           <Loader />
           <h3 className="font-semibold text-xl">
-            Loading your seller request...
+            Fetching your order details...
           </h3>
           <p>This won&apos;t take too long!</p>
         </div>
@@ -48,7 +48,7 @@ const Order = ({ isOrderDetailsPage }: { isOrderDetailsPage?: boolean }) => {
     );
   }
 
-  const tax = +(order.cartAmount * 0.13).toFixed(2);
+  const tax = +(order.amount * 0.13).toFixed(2);
 
   return (
     <MaxWidthWrapper className="flex justify-center">
@@ -76,7 +76,7 @@ const Order = ({ isOrderDetailsPage }: { isOrderDetailsPage?: boolean }) => {
               shipping={3.0}
               totalPrice={order.amount}
               tax={tax}
-              cartPrice={order.cartAmount}
+              cartPrice={order.cart.total}
             />
             <ShippingDetails order={order} />
             {/*  <PaymentDetails order={order} /> */}

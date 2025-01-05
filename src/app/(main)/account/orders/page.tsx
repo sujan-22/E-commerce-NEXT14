@@ -1,29 +1,21 @@
 "use client";
 import { Separator } from "@/components/ui/separator";
-import { getAllOrders } from "../../dashboard/orders/actions";
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "@/components/utility/Loader";
 import useUserStore from "@/context/useUserStore";
 import OrderOverview from "@/components/order/order-overview";
+import { getAllOrdersByUserId } from "./actions";
 
 const Page = () => {
   const { currentUser } = useUserStore();
 
-  const {
-    data: orders,
-    isLoading,
-    isError,
-  } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["get-orders"],
-    queryFn: async () => await getAllOrders(),
+    queryFn: async () => await getAllOrdersByUserId(currentUser!.id),
     retry: true,
     retryDelay: 500,
   });
-
-  const userOrders = orders?.requests!.filter(
-    (order) => order.userId === currentUser?.id
-  );
 
   if (isLoading) {
     return (
@@ -48,6 +40,9 @@ const Page = () => {
     return <div>Error loading orders.</div>;
   }
 
+  const orders = data?.orders;
+  console.log(orders);
+
   return (
     <div className="space-y-6">
       <div>
@@ -58,7 +53,7 @@ const Page = () => {
       </div>
 
       <Separator />
-      <OrderOverview orders={userOrders!} />
+      <OrderOverview orders={orders!} />
     </div>
   );
 };
