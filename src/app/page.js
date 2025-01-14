@@ -103,10 +103,9 @@ export default function Home() {
                         <span className=" text-red-600">fashion trends</span>.
                     </h1>
                     <p className=" mt-6 text-lg max-w-prose text-muted-foreground">
-                        Welcome to AURA (Art of Uniqueness, Refined Aesthetics),
-                        where our carefully curated collection of
-                        fashion-forward items meets uncompromising quality and
-                        style.
+                        Welcome to POLARIS Store, where our carefully curated
+                        collection of fashion-forward items meets uncompromising
+                        quality and style.
                     </p>
                     <div className=" flex flex-col sm:flex-row gap-4 mt-6">
                         <Button
@@ -114,10 +113,7 @@ export default function Home() {
                             onClick={handleNavigation}
                             // className={buttonVariants()}
                         >
-                            Shop the Latest Collection
-                        </Button>
-                        <Button variant="ghost">
-                            Learn About Our Craftsmanship &rarr;
+                            Shop Now&rarr;
                         </Button>
                     </div>
                 </div>

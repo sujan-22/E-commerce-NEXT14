@@ -58,7 +58,7 @@ const SideMenu = ({ setDialogOpen, user }: SideMenuProps) => {
 
     const SideMenuItems = [
         { label: "Home", href: "/" },
-        { label: "Store", href: "/store" },
+        { label: "Store", href: "/products/category/all" },
         ...(user?.role === "admin"
             ? [{ label: "Dashboard", href: "/dashboard" }]
             : []),
